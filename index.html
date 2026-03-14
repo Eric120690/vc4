@@ -4434,7 +4434,7 @@ async function processCtxFile(file) {
       html += `</div>`;
       res.innerHTML = html;
       showToast('success', `✓ Gắn ngữ cảnh: ${successWords.length}/${totalCtxWords} từ trong "${packName}"`);
-      renderWordTable();
+      renderList();
     } catch(err) {
       res.innerHTML = `<span style="color:var(--neon-pink)">✕ Lỗi: ${h(err.message)}</span>`;
       showToast('error','✕ '+err.message);
