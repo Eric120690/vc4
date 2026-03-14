@@ -658,7 +658,14 @@ const IDB = (() => {
   .flashcard.flipped { transform:rotateY(180deg); }
   .fc-face {
     position:absolute; inset:0; border-radius:20px; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; backface-visibility:hidden; padding:28px; text-align:center; min-height:240px;
+    align-items:center; justify-content:center; backface-visibility:hidden;
+    padding:20px 24px; text-align:center; overflow:hidden;
+  }
+  /* Sizer ẩn: đẩy chiều cao card theo nội dung thực */
+  .fc-sizer {
+    visibility:hidden; pointer-events:none; aria-hidden:true;
+    display:flex; flex-direction:column; align-items:center;
+    padding:20px 24px; width:100%; min-height:240px;
   }
   .fc-front {
     background:linear-gradient(135deg, rgba(0,245,255,0.08), rgba(191,0,255,0.08));
@@ -2592,6 +2599,16 @@ function renderFlashcard() {
                : c.example  ? `<div class="fc-example" style="margin-top:6px" onclick="event.stopPropagation()">🗣 ${h(c.example)}</div>` : '')
           }
           <button class="fc-art-btn" onclick="openArtDrawer(studyQueue[currentIndex]);event.stopPropagation()">📰 xem ngữ cảnh báo chí →</button>
+        </div>
+        <!-- Sizer: đẩy chiều cao theo nội dung thực của mặt front -->
+        <div class="fc-sizer" aria-hidden="true">
+          <div class="fc-hint" style="opacity:0">_</div>
+          <div class="fc-word" style="background:none;-webkit-text-fill-color:transparent">${reversedMode ? h(c.meaning) : h(c.word)}</div>
+          ${c.phonetics ? `<div class="fc-phonetic" style="opacity:0">_</div>` : ''}
+          ${c.level     ? `<div class="fc-level"    style="opacity:0">_</div>` : ''}
+          <div class="fc-speak-row" style="opacity:0"><button class="fc-speak-btn fc-speak-us">🔊 US</button></div>
+          ${c.example   ? `<div class="fc-example"  style="opacity:0">🗣 ${h(c.example)}</div>` : ''}
+          <div style="height:28px;opacity:0">_</div>
         </div>
       </div>
     </div>
