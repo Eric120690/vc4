@@ -659,13 +659,13 @@ const IDB = (() => {
   .fc-face {
     position:absolute; inset:0; border-radius:20px; display:flex; flex-direction:column;
     align-items:center; justify-content:center; backface-visibility:hidden;
-    padding:20px 24px; text-align:center; overflow:hidden;
+    padding:20px 24px 24px; text-align:center; overflow:hidden;
   }
   /* Sizer ẩn: đẩy chiều cao card theo nội dung thực */
   .fc-sizer {
-    visibility:hidden; pointer-events:none; aria-hidden:true;
+    visibility:hidden; pointer-events:none;
     display:flex; flex-direction:column; align-items:center;
-    padding:20px 24px; width:100%; min-height:240px;
+    padding:20px 24px 24px; width:100%; min-height:240px;
   }
   .fc-front {
     background:linear-gradient(135deg, rgba(0,245,255,0.08), rgba(191,0,255,0.08));
@@ -1399,6 +1399,27 @@ const IDB = (() => {
       <div class="admin-stat"><div class="admin-stat-val" id="astatWords">—</div><div class="admin-stat-lbl">Tổng từ</div></div>
       <div class="admin-stat"><div class="admin-stat-val" id="astatMastered">—</div><div class="admin-stat-lbl">Đã thuộc</div></div>
     </div>
+    <!-- Upload ngữ cảnh -->
+    <div style="margin-bottom:20px;padding:16px;background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.12);border-radius:14px">
+      <div style="font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(0,245,255,0.5);margin-bottom:12px">📰 Upload ngữ cảnh báo chí</div>
+      <div class="excel-dropzone" id="ctxDropzone" style="min-height:80px;padding:14px;border-color:rgba(0,245,255,0.2)"
+        ondragover="handleDragOver2(event)" ondragleave="handleDragLeave2(event)" ondrop="handleDropCtx(event)">
+        <input type="file" id="ctxFile" accept=".xlsx,.xls" onchange="handleFileSelectCtx(event)">
+        <span class="dz-icon" style="font-size:1.3rem">📰</span>
+        <div class="dz-title" style="font-size:0.78rem">Kéo thả hoặc nhấp để chọn file ngữ cảnh</div>
+        <div class="dz-sub" style="font-size:0.63rem">Hệ thống tự đối chiếu Word → gắn vào từ khớp trong tất cả các pack</div>
+        <div class="col-tags" style="margin-top:8px">
+          <span class="col-tag" style="border-color:rgba(0,245,255,0.3);color:var(--neon-cyan)">Word</span>
+          <span class="col-tag">Nguồn báo</span>
+          <span class="col-tag">Ngữ cảnh VI</span>
+          <span class="col-tag">Trích dẫn gốc</span>
+          <span class="col-tag">Dịch câu</span>
+          <span class="col-tag">Link</span>
+        </div>
+      </div>
+      <div id="ctxImportResult" style="margin-top:10px;font-size:0.75rem;color:rgba(255,255,255,0.45);display:none;line-height:1.8"></div>
+    </div>
+
     <div class="admin-users-title">◈ Danh sách người dùng</div>
     <input class="admin-search" id="adminSearch" placeholder="🔍  Tìm theo tên hoặc email..." oninput="filterAdminUsers()">
     <div class="admin-users-list" id="adminUsersList">
@@ -2605,10 +2626,11 @@ function renderFlashcard() {
           <div class="fc-hint" style="opacity:0">_</div>
           <div class="fc-word" style="background:none;-webkit-text-fill-color:transparent">${reversedMode ? h(c.meaning) : h(c.word)}</div>
           ${c.phonetics ? `<div class="fc-phonetic" style="opacity:0">_</div>` : ''}
+          ${c.type      ? `<div class="fc-type"     style="opacity:0">_</div>` : ''}
           ${c.level     ? `<div class="fc-level"    style="opacity:0">_</div>` : ''}
-          <div class="fc-speak-row" style="opacity:0"><button class="fc-speak-btn fc-speak-us">🔊 US</button></div>
+          <div class="fc-speak-row" style="opacity:0"><button class="fc-speak-btn fc-speak-us">🔊 US</button><button class="fc-speak-btn fc-speak-uk">🔊 UK</button></div>
           ${c.example   ? `<div class="fc-example"  style="opacity:0">🗣 ${h(c.example)}</div>` : ''}
-          <div style="height:28px;opacity:0">_</div>
+          <button class="fc-art-btn" style="opacity:0">📰 xem ngữ cảnh báo chí →</button>
         </div>
       </div>
     </div>
@@ -4303,6 +4325,108 @@ function toggleArt(i) {
 }
 function closeArtDrawer() {
   document.getElementById('artOverlay').classList.remove('open');
+}
+// ── CONTEXT FILE UPLOAD (Admin) ──
+function handleDragOver2(e) { e.preventDefault(); document.getElementById('ctxDropzone').classList.add('drag-over'); }
+function handleDragLeave2() { document.getElementById('ctxDropzone').classList.remove('drag-over'); }
+function handleDropCtx(e) { e.preventDefault(); handleDragLeave2(); const f=e.dataTransfer.files[0]; if(f) processCtxFile(f); }
+function handleFileSelectCtx(e) { const f=e.target.files[0]; if(f) processCtxFile(f); e.target.value=''; }
+
+async function processCtxFile(file) {
+  if (!file.name.match(/\.(xlsx|xls)$/i)) { showToast('error','✕ Chỉ hỗ trợ .xlsx hoặc .xls'); return; }
+  const res = document.getElementById('ctxImportResult');
+  res.style.display = 'block';
+  res.textContent = '⟳ Đang xử lý...';
+
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      const wb   = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''});
+      if (!rows.length) { showToast('error','✕ File trống'); return; }
+
+      function getC(row, aliases) {
+        const keys = Object.keys(row).map(k=>k.toLowerCase().trim());
+        for (const a of aliases) { const i=keys.indexOf(a); if(i>=0) return String(Object.values(row)[i]).trim(); }
+        return '';
+      }
+      const CCTX = {
+        word:     ['word'],
+        source:   ['nguồn báo','nguon bao','article_source','source'],
+        url:      ['link','url','article_url'],
+        ctx_vi:   ['ngữ cảnh vi','ngu canh vi','article_context_vi','context_vi'],
+        quote:    ['trích dẫn gốc','trich dan goc','trích dẫn','article_quote','quote'],
+        quote_vi: ['dịch câu','dich cau','article_quote_vi','quote_vi'],
+      };
+
+      // Gom theo word (lowercase) → mảng bài báo
+      const byWord = {};
+      rows.forEach(row => {
+        const w = getC(row, CCTX.word).toLowerCase();
+        if (!w) return;
+        if (!byWord[w]) byWord[w] = [];
+        byWord[w].push({
+          source:   getC(row, CCTX.source),
+          url:      getC(row, CCTX.url),
+          ctx_vi:   getC(row, CCTX.ctx_vi),
+          quote:    getC(row, CCTX.quote),
+          quote_vi: getC(row, CCTX.quote_vi),
+        });
+      });
+
+      const totalCtxWords = Object.keys(byWord).length;
+      let matchedPacks = 0, matchedWords = 0;
+
+      // Lấy tất cả adminPacks từ Firestore và merge
+      try {
+        const packsSnap = await window._getDocs(window._collection(window._db, 'adminPacks'));
+        for (const packDoc of packsSnap.docs) {
+          const data = packDoc.data();
+          const packWords = data.words || [];
+          let changed = false;
+          packWords.forEach(w => {
+            const key = (w.word||'').toLowerCase();
+            if (!byWord[key]) return;
+            const arts = byWord[key];
+            w.art_source   = arts.map(a=>a.source).join('|');
+            w.art_url      = arts.map(a=>a.url).join('|');
+            w.art_ctx_vi   = arts.map(a=>a.ctx_vi).join('|');
+            w.art_quote    = arts.map(a=>a.quote).join('|');
+            w.art_quote_vi = arts.map(a=>a.quote_vi).join('|');
+            changed = true; matchedWords++;
+          });
+          if (changed) {
+            await window._setDoc(
+              window._doc(window._db, 'adminPacks', packDoc.id),
+              { words: packWords, updatedAt: Date.now() },
+              { merge: true }
+            );
+            matchedPacks++;
+          }
+        }
+        await _bumpAppVersion();
+      } catch(err) { console.warn('Firebase merge error:', err); }
+
+      // Merge vào pack đang mở (nếu có)
+      if (words.length) {
+        words.forEach(w => {
+          const key = w.word.toLowerCase();
+          if (!byWord[key]) return;
+          const arts = byWord[key];
+          w.art_source   = arts.map(a=>a.source).join('|');
+          w.art_url      = arts.map(a=>a.url).join('|');
+          w.art_ctx_vi   = arts.map(a=>a.ctx_vi).join('|');
+          w.art_quote    = arts.map(a=>a.quote).join('|');
+          w.art_quote_vi = arts.map(a=>a.quote_vi).join('|');
+        });
+        await saveData();
+      }
+
+      res.innerHTML = `✅ File có <strong style="color:var(--neon-cyan)">${totalCtxWords}</strong> từ · Đã cập nhật <strong style="color:var(--neon-green)">${matchedWords}</strong> từ trong <strong style="color:var(--neon-green)">${matchedPacks}</strong> pack`;
+      showToast('success', `✓ Gắn ngữ cảnh: ${matchedWords} từ / ${matchedPacks} pack`);
+    } catch(err) { res.textContent = '✕ Lỗi: '+err.message; showToast('error','✕ '+err.message); }
+  };
+  reader.readAsArrayBuffer(file);
 }
 </script>
 </body>
