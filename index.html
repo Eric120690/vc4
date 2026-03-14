@@ -902,6 +902,69 @@ const IDB = (() => {
   .pack-progress-bar { height:3px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden; margin-bottom:5px; }
   .pack-progress-fill { height:100%; background:linear-gradient(90deg,var(--neon-cyan),var(--neon-green)); border-radius:3px; }
   .pack-progress-label { font-size:0.65rem; color:rgba(255,255,255,0.3); }
+
+  /* ── MOBILE: 2 cột compact, 8-10 gói/màn hình ── */
+  @media (max-width: 600px) {
+    .packs-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .pack-card {
+      padding: 10px 10px 9px;
+      border-radius: 13px;
+      min-height: unset;
+    }
+    .pack-card:hover { transform: none; }
+    .pack-icon {
+      font-size: 1.25rem !important;
+      margin-bottom: 5px !important;
+      display: block;
+    }
+    .pack-card.pinned .pack-icon { transform: scale(1.05); }
+    .pack-name {
+      font-size: 0.76rem !important;
+      margin-bottom: 2px !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    .pack-meta {
+      font-size: 0.6rem !important;
+      margin-bottom: 6px !important;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pack-progress-bar { margin-bottom: 0; }
+    .pack-progress-label { display: none; }
+    .pack-sort-wrap,
+    .btn-publish { display: none !important; }
+    /* Pin toggle: thu nhỏ, bỏ label */
+    .pin-toggle-label { display: none; }
+    .pin-toggle-wrap {
+      margin-top: 5px !important;
+      padding-top: 5px !important;
+      border-top: 1px solid rgba(255,255,255,0.06) !important;
+    }
+    /* Actions ẩn, hiện khi active */
+    .pack-actions { position:absolute; top:5px; right:5px; opacity:0; gap:2px; }
+    .pack-card:active .pack-actions { opacity:1; }
+    .pack-action-btn { width:20px; height:20px; font-size:0.6rem; }
+    .pack-order-num { font-size:0.48rem; top:5px; left:7px; }
+    /* Add card */
+    .pack-add-card {
+      min-height: 72px !important;
+      padding: 8px 6px !important;
+      border-radius: 13px !important;
+      gap: 4px !important;
+    }
+    .pack-add-icon { font-size: 1.3rem !important; }
+    .pack-add-label { font-size: 0.58rem !important; text-align: center; }
+    .shared-pack-card { border-radius: 13px !important; }
+    .shared-section-label { grid-column: 1 / -1 !important; }
+  }
   /* ── Sort order input (admin) ── */
   .pack-sort-wrap {
     display:flex; align-items:center; gap:6px; margin-top:10px;
@@ -1987,11 +2050,6 @@ async function renderPacksGrid() {
 
     loadAdminPacks().then(async adminPacks => {
       if (!adminPacks.length) return;
-      const label = document.createElement('div');
-      label.className = 'shared-section-label';
-      label.style.cssText = 'grid-column:1/-1';
-      label.innerHTML = '⬡ Giáo trình';
-      grid.insertBefore(label, grid.firstChild);
 
       for (let i = 0; i < adminPacks.length; i++) {
         const pack = adminPacks[i];
@@ -2023,7 +2081,6 @@ async function renderPacksGrid() {
           <div class="pack-progress-bar"><div class="pack-progress-fill" style="width:${pct}%"></div></div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
             <div class="pack-progress-label" style="margin-top:0">${pct}% hoàn thành</div>
-            <div class="pack-admin-badge">⬡ giáo trình</div>
           </div>
           <div class="pin-toggle-wrap${isPinned ? ' active' : ''}" onclick="event.stopPropagation()">
             <label class="pin-toggle">
@@ -2042,14 +2099,6 @@ async function renderPacksGrid() {
     }).catch(() => {});
 
     // Pack riêng của user
-    if (packs.length) {
-      const myLabel = document.createElement('div');
-      myLabel.className = 'shared-section-label';
-      myLabel.style.cssText = 'grid-column:1/-1;margin-top:8px';
-      myLabel.innerHTML = '◈ Gói của tôi';
-      grid.appendChild(myLabel);
-    }
-
     const addCard = document.createElement('div');
     addCard.className = 'pack-add-card';
     addCard.innerHTML = '<div class="pack-add-icon">⊕</div><div class="pack-add-label">TẠO GÓI MỚI</div>';
