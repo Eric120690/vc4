@@ -1421,182 +1421,6 @@ const IDB = (() => {
   .admin-hist-date { color:rgba(255,255,255,0.4); }
   .admin-hist-val { color:var(--neon-cyan); font-weight:700; }
 
-  /* ===== READING ARTICLES ===== */
-  .ra-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; padding:4px 0; }
-  @media(max-width:600px){ .ra-grid { grid-template-columns:1fr; } }
-
-  .ra-card {
-    background:var(--glass); border:1.5px solid var(--glass-border);
-    border-radius:18px; padding:20px; cursor:pointer; transition:all 0.25s; position:relative; overflow:hidden;
-  }
-  .ra-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px;
-    background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple)); opacity:0; transition:opacity 0.25s; border-radius:18px 18px 0 0; }
-  .ra-card:hover { border-color:rgba(0,245,255,0.3); transform:translateY(-3px); background:rgba(255,255,255,0.06); }
-  .ra-card:hover::before { opacity:1; }
-  .ra-card.done { border-color:rgba(57,255,20,0.3); }
-  .ra-card.done::before { opacity:1; background:linear-gradient(90deg,var(--neon-green),var(--neon-cyan)); }
-
-  .ra-card-num { font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase;
-    color:rgba(255,255,255,0.3); font-family:'Space Mono',monospace; margin-bottom:6px; }
-  .ra-card-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:#fff;
-    margin-bottom:6px; line-height:1.3; }
-  .ra-card-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
-  .ra-badge { font-size:0.6rem; padding:2px 8px; border-radius:20px; letter-spacing:0.08em;
-    font-family:'Space Mono',monospace; }
-  .ra-badge-level { background:rgba(0,245,255,0.1); border:1px solid rgba(0,245,255,0.25); color:var(--neon-cyan); }
-  .ra-badge-topic { background:rgba(191,0,255,0.1); border:1px solid rgba(191,0,255,0.2); color:rgba(191,0,255,0.8); }
-  .ra-badge-words { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.5); }
-  .ra-card-done-badge { display:inline-flex; align-items:center; gap:4px; font-size:0.62rem;
-    color:var(--neon-green); font-family:'Space Mono',monospace; }
-
-  /* Reading overlay */
-  .ra-overlay {
-    display:none; position:fixed; inset:0; z-index:400;
-    background:rgba(3,3,15,0.98); backdrop-filter:blur(12px);
-    flex-direction:column; overflow:hidden;
-  }
-  .ra-overlay.show { display:flex; }
-
-  .ra-header {
-    display:flex; align-items:center; gap:12px; padding:14px 20px;
-    border-bottom:1px solid rgba(255,255,255,0.07); flex-shrink:0;
-  }
-  .ra-back-btn {
-    padding:7px 14px; border-radius:20px; background:rgba(255,255,255,0.05);
-    border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.5);
-    font-size:0.72rem; cursor:pointer; font-family:'Syne',sans-serif; font-weight:700;
-    transition:all 0.15s;
-  }
-  .ra-back-btn:hover { border-color:rgba(0,245,255,0.3); color:var(--neon-cyan); }
-  .ra-header-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; color:#fff; flex:1; }
-  .ra-header-num { font-family:'Space Mono',monospace; font-size:0.65rem; color:rgba(255,255,255,0.3); }
-
-  /* Mode tabs inside overlay */
-  .ra-mode-tabs {
-    display:flex; gap:0; background:rgba(0,0,0,0.3);
-    border-bottom:1px solid rgba(255,255,255,0.07); flex-shrink:0;
-  }
-  .ra-mode-btn {
-    flex:1; padding:11px; border:none; background:transparent;
-    color:rgba(255,255,255,0.35); font-family:'Space Mono',monospace;
-    font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-    cursor:pointer; transition:all 0.2s; border-bottom:2px solid transparent;
-  }
-  .ra-mode-btn.active { color:var(--neon-cyan); border-bottom-color:var(--neon-cyan); background:rgba(0,245,255,0.04); }
-
-  /* Flashcard pane */
-  /* Reading flashcard — clone từ flashcard chính */
-  .ra-fc-pane { flex:1; overflow-y:auto; padding:20px; display:none; }
-  .ra-fc-pane.active { display:block; }
-
-  /* Tái dùng stats-row, fc-scene, fc-face, fc-word, fc-phonetic... từ flashcard chính */
-  .ra-fc-wrap { max-width:540px; margin:0 auto; }
-
-  /* Progress bar giống flashcard chính */
-  .ra-fc-controls {
-    display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap;
-  }
-  .ra-fc-prog-info { font-size:0.75rem; color:rgba(255,255,255,0.4); }
-  .ra-fc-prog-info strong { color:var(--neon-purple); font-size:1rem; }
-  .ra-fc-prog-wrap { flex:1; min-width:80px; height:4px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden; }
-  .ra-fc-prog-bar  { height:100%; background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple)); border-radius:4px; transition:width 0.4s; box-shadow:0 0 8px rgba(0,245,255,0.5); }
-
-  /* Card scene — dùng lại fc-scene, flashcard, fc-face */
-  .ra-fc-hint-text { font-size:0.6rem; color:rgba(255,255,255,0.2); letter-spacing:0.15em;
-    text-transform:uppercase; }
-
-  /* Action row giống flashcard chính */
-  .ra-fc-action-row {
-    display:flex; align-items:center; gap:8px; margin-top:12px; justify-content:center;
-  }
-  .ra-fc-btn-flip {
-    padding:10px 20px; border-radius:10px; border:1px solid rgba(0,245,255,0.3);
-    background:rgba(0,245,255,0.07); color:var(--neon-cyan); cursor:pointer;
-    font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700;
-    letter-spacing:0.06em; text-transform:uppercase; transition:all 0.18s;
-  }
-  .ra-fc-btn-flip:hover { background:rgba(0,245,255,0.14); }
-  .ra-fc-btn-next {
-    padding:10px 24px; border-radius:10px; border:none; cursor:pointer;
-    font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:800;
-    letter-spacing:0.06em; text-transform:uppercase;
-    background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
-    color:#000; transition:all 0.2s;
-  }
-  .ra-fc-btn-next:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,245,255,0.3); }
-  .ra-fc-btn-skip {
-    padding:10px 16px; border-radius:10px; cursor:pointer;
-    font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700;
-    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
-    color:rgba(255,255,255,0.4); transition:all 0.2s;
-  }
-  .ra-fc-btn-skip:hover { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.6); }
-
-  /* Reading pane */
-  .ra-read-pane { flex:1; overflow-y:auto; padding:20px 24px; display:none; max-width:680px; margin:0 auto; width:100%; }
-  .ra-read-pane.active { display:block; }
-  .ra-read-title { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:#fff;
-    margin-bottom:6px; line-height:1.3; }
-  .ra-read-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
-  .ra-read-body { font-size:1rem; line-height:1.9; color:rgba(255,255,255,0.8);
-    font-family:'Inter',sans-serif; white-space:pre-wrap; }
-  .ra-done-bar {
-    padding:16px 20px; border-top:1px solid rgba(255,255,255,0.07);
-    display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
-    background:rgba(0,0,0,0.3);
-  }
-  .ra-done-btn {
-    padding:12px 28px; border-radius:12px; border:none; cursor:pointer;
-    font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:800; letter-spacing:0.08em;
-    text-transform:uppercase; background:linear-gradient(135deg,var(--neon-green),var(--neon-cyan));
-    color:#000; transition:all 0.2s;
-  }
-  .ra-done-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(57,255,20,0.3); }
-  .ra-done-btn:disabled { opacity:0.4; cursor:default; transform:none; box-shadow:none; }
-  .ra-done-hint { font-size:0.7rem; color:rgba(255,255,255,0.3); font-family:'Space Mono',monospace; }
-
-  /* Admin reading list */
-  .ra-admin-card {
-    background:var(--glass); border:1px solid var(--glass-border); border-radius:14px;
-    padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; gap:12px;
-  }
-  .ra-admin-card-info { flex:1; }
-  .ra-admin-card-title { font-family:'Syne',sans-serif; font-weight:700; color:#fff; font-size:0.88rem; margin-bottom:3px; }
-  .ra-admin-card-meta { font-size:0.68rem; color:rgba(255,255,255,0.4); font-family:'Space Mono',monospace; }
-  .ra-admin-btns { display:flex; gap:6px; }
-
-  /* Create/Edit form overlay */
-  .ra-form-overlay {
-    display:none; position:fixed; inset:0; z-index:500;
-    background:rgba(0,0,0,0.85); backdrop-filter:blur(6px);
-    align-items:flex-start; justify-content:center; padding:20px; overflow-y:auto;
-  }
-  .ra-form-overlay.show { display:flex; }
-  .ra-form-box {
-    background:var(--dark2); border:1px solid var(--glass-border); border-radius:20px;
-    padding:28px; width:100%; max-width:600px; animation:fadeUp 0.3s ease; margin:auto;
-  }
-  .ra-form-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800;
-    color:var(--neon-cyan); margin-bottom:16px; }
-  .ra-form-label { font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase;
-    color:rgba(255,255,255,0.35); font-family:'Space Mono',monospace; margin-bottom:6px; display:block; }
-  .ra-form-input {
-    width:100%; padding:11px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.1);
-    background:rgba(0,0,0,0.4); color:#fff; font-family:'Inter',sans-serif; font-size:0.88rem;
-    outline:none; transition:border-color 0.2s; margin-bottom:14px;
-  }
-  .ra-form-input:focus { border-color:rgba(0,245,255,0.4); }
-  .ra-form-textarea { min-height:160px; resize:vertical; }
-  .ra-form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .ra-vocab-result { background:rgba(57,255,20,0.05); border:1px solid rgba(57,255,20,0.15);
-    border-radius:10px; padding:12px 14px; margin-bottom:14px; font-size:0.75rem;
-    color:rgba(57,255,20,0.8); display:none; }
-  .ra-form-actions { display:flex; gap:10px; margin-top:6px; }
-  .ra-publish-toggle {
-    display:flex; align-items:center; gap:10px; margin-bottom:16px;
-    padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px;
-  }
-
   /* ===== DEEP LEARNING MODE ===== */
   /* Toggle button replacing "Tự đọc" */
   .dl-toggle-btn {
@@ -1618,6 +1442,121 @@ const IDB = (() => {
   }
   .dl-toggle-btn.active .dl-toggle-dot { background:var(--neon-purple); box-shadow:0 0 6px var(--neon-purple); animation:pulse 1.5s infinite; }
   @keyframes dlPulse { 0%,100%{box-shadow:0 0 10px rgba(191,0,255,0.25)} 50%{box-shadow:0 0 22px rgba(191,0,255,0.5)} }
+
+  /* ═══════════════════════════════════════════
+     WORD WEB DRAWER
+  ═══════════════════════════════════════════ */
+  .ww-toggle-btn {
+    display:inline-flex; align-items:center; gap:7px;
+    padding:5px 13px; border-radius:20px; cursor:pointer;
+    font-family:'Space Mono',monospace; font-size:0.65rem; font-weight:700;
+    letter-spacing:0.08em; text-transform:uppercase; transition:all 0.25s;
+    border:1px solid rgba(0,245,255,0.3); background:rgba(0,245,255,0.06); color:rgba(0,245,255,0.7);
+    user-select:none;
+  }
+  .ww-toggle-btn:hover { border-color:rgba(0,245,255,0.6); background:rgba(0,245,255,0.12); color:var(--neon-cyan); box-shadow:0 0 14px rgba(0,245,255,0.2); }
+  .ww-toggle-dot { width:6px; height:6px; border-radius:50%; background:rgba(0,245,255,0.5); transition:all 0.25s; }
+
+  /* Drawer */
+  .ww-drawer {
+    position:fixed; top:0; right:0; bottom:0;
+    width:min(520px, 100vw);
+    background:rgba(5,5,20,0.97);
+    border-left:1px solid rgba(0,245,255,0.12);
+    z-index:400;
+    display:flex; flex-direction:column;
+    transform:translateX(100%);
+    transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    backdrop-filter:blur(20px);
+  }
+  .ww-drawer.open { transform:translateX(0); }
+  .ww-backdrop {
+    position:fixed; inset:0; z-index:399;
+    background:rgba(0,0,0,0.5); backdrop-filter:blur(2px);
+    opacity:0; pointer-events:none; transition:opacity 0.3s;
+  }
+  .ww-backdrop.show { opacity:1; pointer-events:all; }
+
+  /* Drawer header */
+  .ww-header {
+    display:flex; align-items:center; gap:12px;
+    padding:16px 18px 14px;
+    border-bottom:1px solid rgba(0,245,255,0.08);
+    flex-shrink:0;
+  }
+  .ww-header-icon { font-size:1.2rem; line-height:1; }
+  .ww-header-title {
+    font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:800;
+    color:var(--neon-cyan); letter-spacing:0.06em; text-transform:uppercase; flex:1;
+  }
+  .ww-header-sub { font-size:0.62rem; color:rgba(255,255,255,0.3); font-family:'Space Mono',monospace; letter-spacing:0.08em; }
+  .ww-close {
+    width:30px; height:30px; border-radius:50%; border:1px solid rgba(255,255,255,0.1);
+    background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.4);
+    cursor:pointer; font-size:0.8rem; transition:all 0.2s;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .ww-close:hover { background:rgba(255,0,110,0.15); border-color:rgba(255,0,110,0.4); color:var(--neon-pink); }
+
+  /* Filter bar */
+  .ww-filters {
+    display:flex; gap:6px; padding:10px 18px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    flex-wrap:wrap; flex-shrink:0;
+  }
+  .ww-filter-btn {
+    padding:4px 11px; border-radius:20px; border:1px solid rgba(255,255,255,0.1);
+    background:transparent; color:rgba(255,255,255,0.35);
+    font-family:'Space Mono',monospace; font-size:0.6rem; letter-spacing:0.06em;
+    cursor:pointer; transition:all 0.18s;
+  }
+  .ww-filter-btn:hover { border-color:rgba(255,255,255,0.25); color:rgba(255,255,255,0.6); }
+  .ww-filter-btn.active-all    { border-color:rgba(0,245,255,0.5);  background:rgba(0,245,255,0.1);  color:var(--neon-cyan); }
+  .ww-filter-btn.active-done   { border-color:rgba(57,255,20,0.5);  background:rgba(57,255,20,0.1);  color:var(--neon-green); }
+  .ww-filter-btn.active-learn  { border-color:rgba(191,0,255,0.5);  background:rgba(191,0,255,0.1);  color:var(--neon-purple); }
+  .ww-filter-btn.active-hard   { border-color:rgba(255,140,0,0.5);  background:rgba(255,140,0,0.1);  color:#ff8c00; }
+
+  /* Canvas area */
+  .ww-canvas-wrap {
+    flex:1; position:relative; overflow:hidden;
+  }
+  #wwCanvas { width:100%; height:100%; display:block; cursor:grab; }
+  #wwCanvas:active { cursor:grabbing; }
+
+  /* Tooltip */
+  .ww-tooltip {
+    position:absolute; pointer-events:none;
+    background:rgba(5,5,20,0.96); border:1px solid rgba(0,245,255,0.25);
+    border-radius:12px; padding:10px 14px; max-width:200px;
+    opacity:0; transform:translateY(6px); transition:opacity 0.2s, transform 0.2s;
+    z-index:10;
+  }
+  .ww-tooltip.show { opacity:1; transform:translateY(0); }
+  .ww-tt-word { font-family:'Syne',sans-serif; font-weight:800; font-size:0.9rem; color:#fff; margin-bottom:3px; }
+  .ww-tt-phonetic { font-size:0.68rem; color:var(--neon-cyan); margin-bottom:4px; }
+  .ww-tt-meaning { font-size:0.72rem; color:rgba(255,255,255,0.6); line-height:1.4; }
+  .ww-tt-badge {
+    display:inline-block; margin-top:6px; padding:2px 8px; border-radius:20px;
+    font-size:0.58rem; font-family:'Space Mono',monospace; letter-spacing:0.08em; font-weight:700;
+  }
+  .ww-tt-badge.mastered { background:rgba(57,255,20,0.15); color:var(--neon-green); border:1px solid rgba(57,255,20,0.3); }
+  .ww-tt-badge.learning { background:rgba(191,0,255,0.15); color:var(--neon-purple); border:1px solid rgba(191,0,255,0.3); }
+  .ww-tt-badge.hard     { background:rgba(255,140,0,0.15); color:#ff8c00; border:1px solid rgba(255,140,0,0.3); }
+
+  /* Legend footer */
+  .ww-legend {
+    display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+    padding:10px 18px; border-top:1px solid rgba(255,255,255,0.05);
+    flex-shrink:0;
+  }
+  .ww-legend-item { display:flex; align-items:center; gap:5px; font-size:0.6rem; color:rgba(255,255,255,0.35); font-family:'Space Mono',monospace; }
+  .ww-legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .ww-empty {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    height:100%; gap:12px; color:rgba(255,255,255,0.25);
+    font-family:'Space Mono',monospace; font-size:0.75rem; text-align:center; padding:30px;
+  }
+  .ww-empty-icon { font-size:2.5rem; opacity:0.4; }
 
   /* Overlay full screen */
   .dl-overlay {
@@ -2119,7 +2058,6 @@ const IDB = (() => {
     <div class="admin-main-tabs">
       <button class="admin-main-tab active" id="adminTab-users" onclick="switchAdminTab('users')">◈ Người dùng</button>
       <button class="admin-main-tab" id="adminTab-settings" onclick="switchAdminTab('settings')">⚙ Cài đặt</button>
-      <button class="admin-main-tab" id="adminTab-reading" onclick="switchAdminTab('reading')">📖 Bài Đọc</button>
     </div>
 
     <!-- TAB: Người dùng -->
@@ -2134,17 +2072,6 @@ const IDB = (() => {
       <input class="admin-search" id="adminSearch" placeholder="🔍  Tìm theo tên hoặc email..." oninput="filterAdminUsers()">
       <div class="admin-users-list" id="adminUsersList">
         <div class="admin-loading">⟳ Đang tải dữ liệu...</div>
-      </div>
-    </div>
-
-    <!-- TAB: Bài Đọc (Admin) -->
-    <div class="admin-tab-panel" id="adminPanel-reading">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <div style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--neon-cyan);font-family:'Space Mono',monospace">📖 Quản lý bài đọc</div>
-        <button onclick="raOpenCreate()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:10px;color:var(--neon-cyan);font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.05em">+ Thêm bài mới</button>
-      </div>
-      <div id="raAdminList">
-        <div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.8rem">⟳ Đang tải...</div>
       </div>
     </div>
 
@@ -2319,7 +2246,6 @@ const IDB = (() => {
   <div class="main-nav" id="mainNav">
     <button class="main-nav-btn active" id="mainNavPacks" onclick="switchMainTab('packs')">📦 Từ Vựng</button>
     <button class="main-nav-btn" id="mainNavChallenge" onclick="switchMainTab('challenge')">⚡ Thử Thách<span class="nav-dot" id="challengeNavDot" style="display:none"></span></button>
-    <button class="main-nav-btn" id="mainNavReading" onclick="switchMainTab('reading')">📖 Bài Đọc</button>
   </div>
 
   <!-- ===== PACKS SCREEN ===== -->
@@ -2333,10 +2259,6 @@ const IDB = (() => {
     <!-- TAB: Thử Thách -->
     <div id="mainTabChallenge" style="display:none">
       <div id="challengeCardContainer"></div>
-    </div>
-    <!-- TAB: Bài Đọc -->
-    <div id="mainTabReading" style="display:none">
-      <div id="readingContainer"></div>
     </div>
   </div>
 
@@ -3402,6 +3324,9 @@ function renderFlashcard() {
         <button class="dl-toggle-btn" onclick="dlOpen()">
           <span class="dl-toggle-dot"></span>DEEP LEARNING
         </button>
+        <button class="ww-toggle-btn" onclick="wwOpen()">
+          <span class="ww-toggle-dot"></span>🕸 WORD WEB
+        </button>
         <div class="autoplay-toggle">
           <label class="toggle-switch">
             <input type="checkbox" id="reversedToggle" ${reversedMode?'checked':''} onchange="reversedMode=this.checked;isFlipped=false;renderFlashcard()">
@@ -3445,6 +3370,9 @@ function renderFlashcard() {
       <div class="prog-wrap"><div class="prog-bar" style="width:${prog}%"></div></div>
       <button class="dl-toggle-btn" id="dlToggleBtn" onclick="dlOpen()">
         <span class="dl-toggle-dot"></span>DEEP LEARNING
+      </button>
+      <button class="ww-toggle-btn" onclick="wwOpen()">
+        <span class="ww-toggle-dot"></span>🕸 WORD WEB
       </button>
       <div class="autoplay-toggle">
         <label class="toggle-switch">
@@ -4050,13 +3978,10 @@ async function recordStudyActivity(wordCount) {
 function switchMainTab(tab) {
   document.getElementById('mainTabPacks').style.display = tab === 'packs' ? '' : 'none';
   document.getElementById('mainTabChallenge').style.display = tab === 'challenge' ? '' : 'none';
-  document.getElementById('mainTabReading').style.display = tab === 'reading' ? '' : 'none';
   document.getElementById('mainNavPacks').classList.toggle('active', tab === 'packs');
   document.getElementById('mainNavChallenge').classList.toggle('active', tab === 'challenge');
-  document.getElementById('mainNavReading').classList.toggle('active', tab === 'reading');
   if (tab === 'packs') renderPacksGrid();
   if (tab === 'challenge') loadAndRenderChallenge();
-  if (tab === 'reading') raLoadList();
 }
 
 // ============================================================
@@ -4610,11 +4535,10 @@ function closeAdmin(e) {
 }
 
 function switchAdminTab(tab) {
-  ['users','settings','reading'].forEach(t => {
+  ['users','settings'].forEach(t => {
     document.getElementById('adminTab-' + t)?.classList.toggle('active', t === tab);
     document.getElementById('adminPanel-' + t)?.classList.toggle('active', t === tab);
   });
-  if (tab === 'reading') raLoadAdminList();
 }
 
 function _adminLoadSettingsUI() {
@@ -4850,12 +4774,24 @@ async function openAdminDetail(uid) {
 
   // Load full user data
   try {
-    const snap = await window._getDoc(window._doc(window._db,'users',uid));
-    _currentDetailData = snap.exists() ? snap.data() : {};
-    const userPacks = _currentDetailData.packs || [];
+    const [userSnap, xpSnap] = await Promise.all([
+      window._getDoc(window._doc(window._db,'users',uid)),
+      window._getDoc(window._doc(window._db,'users',uid,'xp','data')).catch(()=>null),
+    ]);
+    _currentDetailData = userSnap.exists() ? userSnap.data() : {};
+    const xpData       = xpSnap && xpSnap.exists() ? xpSnap.data() : {};
+    const userPacks    = _currentDetailData.packs || [];
     const studyHistory = _currentDetailData.studyHistory || {};
 
-    // Load pack details
+    // XP & engagement stats
+    const totalXP     = xpData.total || 0;
+    const streak      = xpData.loginStreakDays || 0;
+    const activeByDay = xpData.activeMinutesByDay || {};
+    const totalMins   = Object.values(activeByDay).reduce((s,v)=>s+(v||0),0);
+    const readingDone = (xpData.readingDone || []).length;
+    const fmtMin = m => m < 60 ? m+'p' : Math.floor(m/60)+'g'+(m%60 ? (m%60)+'p' : '');
+
+    // Pack details
     const packResults = await Promise.all(
       userPacks.map(async p => {
         try {
@@ -4867,38 +4803,69 @@ async function openAdminDetail(uid) {
     );
     _currentDetailPacks = packResults;
 
-    const totalWords = packResults.reduce((s,p)=>s+p.words.length,0);
+    const totalWords    = packResults.reduce((s,p)=>s+p.words.length,0);
     const totalMastered = packResults.reduce((s,p)=>s+p.mastered,0);
-    const totalDays = Object.keys(studyHistory).length;
+    const totalDays     = Object.keys(studyHistory).length;
 
-    // Overview stats
+    // Overview stats — 6 chỉ số
+    document.getElementById('adminDetailStats').style.gridTemplateColumns = 'repeat(3,1fr)';
     document.getElementById('adminDetailStats').innerHTML = `
-      <div class="admin-user-stat"><div class="admin-user-stat-val">${packResults.length}</div><div class="admin-user-stat-lbl">Gói từ</div></div>
+      <div class="admin-user-stat"><div class="admin-user-stat-val yellow">${totalXP}</div><div class="admin-user-stat-lbl">Tổng XP</div></div>
       <div class="admin-user-stat"><div class="admin-user-stat-val green">${totalMastered}</div><div class="admin-user-stat-lbl">Đã thuộc</div></div>
-      <div class="admin-user-stat"><div class="admin-user-stat-val yellow">${totalDays}</div><div class="admin-user-stat-lbl">Ngày học</div></div>
+      <div class="admin-user-stat"><div class="admin-user-stat-val">${totalWords}</div><div class="admin-user-stat-lbl">Tổng từ</div></div>
+      <div class="admin-user-stat"><div class="admin-user-stat-val" style="color:var(--neon-purple)">${fmtMin(totalMins)}</div><div class="admin-user-stat-lbl">Giờ học</div></div>
+      <div class="admin-user-stat"><div class="admin-user-stat-val yellow">${streak}</div><div class="admin-user-stat-lbl">Streak 🔥</div></div>
+      <div class="admin-user-stat"><div class="admin-user-stat-val" style="color:var(--neon-pink)">${readingDone}</div><div class="admin-user-stat-lbl">Bài đọc</div></div>
     `;
 
     // Overview info
     const lastSeen = u.lastSeen ? new Date(u.lastSeen).toLocaleString('vi-VN') : '—';
+    const joinDate = u.approvedAt ? new Date(u.approvedAt).toLocaleDateString('vi-VN') : '—';
     document.getElementById('adminDetailInfo').innerHTML = `
-      <div>🆔 UID: <span style="color:rgba(255,255,255,0.7);font-size:0.68rem">${uid}</span></div>
+      <div>🆔 UID: <span style="color:rgba(255,255,255,0.5);font-size:0.65rem">${uid}</span></div>
       <div>📧 Email: <span style="color:var(--neon-cyan)">${h(u.email)}</span></div>
-      <div>📚 Tổng từ vựng: <span style="color:#fff;font-weight:700">${totalWords}</span></div>
+      <div>📦 Gói từ: <span style="color:#fff;font-weight:700">${packResults.length} gói · ${totalWords} từ</span></div>
+      <div>📅 Số ngày học: <span style="color:#fff;font-weight:700">${totalDays} ngày</span></div>
+      <div>🗓 Tham gia: <span style="color:rgba(255,255,255,0.6)">${joinDate}</span></div>
       <div>🕒 Hoạt động cuối: <span style="color:rgba(255,255,255,0.6)">${lastSeen}</span></div>
     `;
 
     // Packs tab
     renderAdminDetailPacks();
 
-    // History tab
-    const histDays = Object.keys(studyHistory).sort().reverse();
-    document.getElementById('adminDetailHistory').innerHTML = histDays.length
-      ? histDays.map(d=>`
-          <div class="admin-history-row">
-            <span class="admin-hist-date">📅 ${d}</span>
-            <span class="admin-hist-val">${studyHistory[d]} từ đã học</span>
-          </div>`).join('')
-      : '<div style="color:rgba(255,255,255,0.25);font-size:0.78rem;padding:16px;text-align:center">Chưa có lịch sử học tập.</div>';
+    // History tab — gộp tất cả nguồn dữ liệu theo ngày
+    const allDates = new Set([
+      ...Object.keys(studyHistory),
+      ...Object.keys(activeByDay),
+      ...Object.keys(xpData).filter(k=>k.startsWith('day_')).map(k=>k.slice(4)),
+    ]);
+    const sortedDates = [...allDates].sort().reverse();
+
+    // Build history HTML
+    const buildHistRows = () => sortedDates.slice(0,90).map(d => {
+      const w     = studyHistory[d] || 0;
+      const m     = activeByDay[d]  || 0;
+      const xpDay = xpData['day_'+d];
+      const xp    = xpDay && typeof xpDay==='object' ? (xpDay.xp||0) : (xpDay||0);
+      const fade  = (!w && !m && !xp) ? 'opacity:0.3;' : '';
+      return '<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:4px;' +
+        'padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.72rem;' + fade + '">' +
+        '<span style="font-family:monospace;color:rgba(255,255,255,0.5)">'+d+'</span>' +
+        '<span style="text-align:right;color:var(--neon-cyan);font-weight:700">'+(w||'—')+'</span>' +
+        '<span style="text-align:right;color:var(--neon-purple)">'+(m?fmtMin(m):'—')+'</span>' +
+        '<span style="text-align:right;color:var(--neon-yellow)">'+(xp||'—')+'</span>' +
+        '</div>';
+    }).join('');
+
+    const histHeader = '<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:4px;' +
+      'font-size:0.58rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;' +
+      'padding:6px 10px;border-bottom:1px solid rgba(255,255,255,0.06);font-family:monospace;margin-bottom:2px">' +
+      '<span>Ngày</span><span style="text-align:right">Từ học</span>' +
+      '<span style="text-align:right">Active</span><span style="text-align:right">XP</span></div>';
+
+    document.getElementById('adminDetailHistory').innerHTML = sortedDates.length
+      ? histHeader + buildHistRows()
+      : '<div style="color:rgba(255,255,255,0.25);font-size:0.78rem;padding:20px;text-align:center">Chưa có lịch sử hoạt động.</div>';
 
   } catch(e) {
     document.getElementById('adminDetailStats').innerHTML = `<div style="color:var(--neon-pink);font-size:0.8rem;grid-column:span 3">✕ Lỗi tải dữ liệu: ${e.message}</div>`;
@@ -5990,122 +5957,6 @@ window.addEventListener('online',  () => _showOfflineBanner(false));
 window.addEventListener('offline', () => _showOfflineBanner(true));
 if (!navigator.onLine) _showOfflineBanner(true);
 </script>
-  <!-- ===== READING OVERLAY ===== -->
-  <div class="ra-overlay" id="raOverlay">
-    <div class="ra-header">
-      <button class="ra-back-btn" onclick="raClose()">← Quay lại</button>
-      <div class="ra-header-title" id="raOverlayTitle">—</div>
-      <div class="ra-header-num" id="raOverlayNum"></div>
-    </div>
-    <div class="ra-mode-tabs">
-      <button class="ra-mode-btn active" id="raModeFlash" onclick="raSwitchMode('flash')">📚 Từ vựng</button>
-      <button class="ra-mode-btn" id="raModeRead" onclick="raSwitchMode('read')">📖 Đọc bài</button>
-    </div>
-    <!-- Flashcard pane — dùng lại CSS của flashcard chính -->
-    <div class="ra-fc-pane active" id="raFcPane">
-      <div class="ra-fc-wrap">
-        <!-- Stats row giống flashcard chính -->
-        <div class="stats-row" id="raStatsRow" style="margin-bottom:16px">
-          <div class="stat-card"><div class="stat-value" id="raStatRemain">—</div><div class="stat-label">Còn lại</div></div>
-          <div class="stat-card"><div class="stat-value" id="raStatDone" style="color:var(--neon-green)">0</div><div class="stat-label">Đã xem</div></div>
-          <div class="stat-card"><div class="stat-value" id="raStatTotal">—</div><div class="stat-label">Tổng từ</div></div>
-        </div>
-        <!-- Progress bar -->
-        <div class="ra-fc-controls">
-          <div class="ra-fc-prog-info"><strong id="raFcCurrent">1</strong> / <span id="raFcTotal">?</span></div>
-          <div class="ra-fc-prog-wrap"><div class="ra-fc-prog-bar" id="raFcProgBar" style="width:0%"></div></div>
-        </div>
-        <!-- Card — dùng lại fc-scene, flashcard, fc-face của flashcard chính -->
-        <div class="fc-scene">
-          <div class="flashcard" id="raFcCard" onclick="raFcFlip()">
-            <div class="fc-face fc-front">
-              <div class="fc-hint ra-fc-hint-text" id="raFcHint">Nhấn để xem nghĩa ↕</div>
-              <div class="fc-word" id="raFcWord">—</div>
-              <div class="fc-phonetic" id="raFcPhonetic"></div>
-              <div class="fc-type" id="raFcType"></div>
-            </div>
-            <div class="fc-face fc-back">
-              <div class="fc-hint ra-fc-hint-text">Nghĩa tiếng Việt</div>
-              <div class="fc-word" id="raFcMeaning" style="font-size:1.4rem"></div>
-            </div>
-            <!-- Sizer -->
-            <div class="fc-sizer" aria-hidden="true">
-              <div class="fc-hint" style="opacity:0">_</div>
-              <div class="fc-word" style="background:none;-webkit-text-fill-color:transparent">placeholder</div>
-            </div>
-          </div>
-        </div>
-        <!-- Actions -->
-        <div class="ra-fc-action-row">
-          <button class="ra-fc-btn-flip" onclick="raFcFlip()">↻ Lật thẻ</button>
-          <button class="ra-fc-btn-next" onclick="raFcNext()">Tiếp theo →</button>
-          <button class="ra-fc-btn-skip" onclick="raFcSkip()">Bỏ qua</button>
-        </div>
-      </div>
-    </div>
-    <!-- Reading pane -->
-    <div class="ra-read-pane" id="raReadPane">
-      <div class="ra-read-title" id="raReadTitle"></div>
-      <div class="ra-read-meta" id="raReadMeta"></div>
-      <div class="ra-read-body" id="raReadBody"></div>
-    </div>
-    <div class="ra-done-bar" id="raDoneBar" style="display:none">
-      <div class="ra-done-hint" id="raDoneHint">Đọc xong bài này chưa?</div>
-      <button class="ra-done-btn" id="raDoneBtn" onclick="raMarkDone()">✓ Hoàn thành · +XP</button>
-    </div>
-  </div>
-
-  <!-- ===== READING CREATE/EDIT FORM ===== -->
-  <div class="ra-form-overlay" id="raFormOverlay">
-    <div class="ra-form-box">
-      <div class="ra-form-title" id="raFormTitle">+ Thêm bài đọc mới</div>
-
-      <label class="ra-form-label">Tiêu đề bài</label>
-      <input class="ra-form-input" id="raFTitle" placeholder="Ví dụ: The Future of Renewable Energy">
-
-      <div class="ra-form-row">
-        <div>
-          <label class="ra-form-label">Cấp độ</label>
-          <select class="ra-form-input" id="raFLevel" style="margin-bottom:14px">
-            <option value="A2">A2</option>
-            <option value="B1">B1</option>
-            <option value="B2" selected>B2</option>
-            <option value="C1">C1</option>
-            <option value="C2">C2</option>
-          </select>
-        </div>
-        <div>
-          <label class="ra-form-label">Chủ đề</label>
-          <input class="ra-form-input" id="raFTopic" placeholder="Technology, Environment...">
-        </div>
-      </div>
-
-      <label class="ra-form-label">Nội dung bài đọc</label>
-      <textarea class="ra-form-input ra-form-textarea" id="raFContent" placeholder="Paste toàn bộ nội dung bài đọc vào đây..."></textarea>
-
-      <label class="ra-form-label">File từ vựng (.xlsx) — tùy chọn</label>
-      <div style="position:relative;border:1px dashed rgba(0,245,255,0.3);border-radius:10px;padding:16px;text-align:center;margin-bottom:14px;cursor:pointer" onclick="document.getElementById('raFVocabFile').click()">
-        <input type="file" id="raFVocabFile" accept=".xlsx,.xls" style="display:none" onchange="raHandleVocabFile(this)">
-        <div style="font-size:0.75rem;color:rgba(0,245,255,0.6)" id="raVocabFileLabel">📂 Chọn file Excel từ vựng (giống format pack)</div>
-      </div>
-      <div class="ra-vocab-result" id="raVocabResult"></div>
-
-      <div class="ra-publish-toggle">
-        <label class="toggle-switch">
-          <input type="checkbox" id="raFPublished" checked>
-          <span class="toggle-track"></span>
-        </label>
-        <span style="font-size:0.75rem;color:rgba(255,255,255,0.55)">Hiển thị cho người dùng</span>
-      </div>
-
-      <div class="ra-form-actions">
-        <button class="btn-primary" style="flex:1" onclick="raFormSave()">💾 Lưu bài</button>
-        <button class="btn-cancel" onclick="raFormClose()">Hủy</button>
-      </div>
-      <div id="raFormStatus" style="margin-top:10px;font-size:0.75rem;text-align:center"></div>
-    </div>
-  </div>
-
   <!-- ===== DEEP LEARNING OVERLAY ===== -->
   <button class="dl-exit-btn" id="dlExitBtn" onclick="dlExitOrSummary()">✕ Kết thúc</button>
   <div class="dl-overlay" id="dlOverlay">
@@ -6385,475 +6236,6 @@ async function processCtxFile(file) {
     }
   };
   reader.readAsArrayBuffer(file);
-}
-</script>
-
-<script>
-// ============================================================
-//  READING ARTICLES
-//  Firestore: /readingArticles/{id}
-//  User progress: /users/{uid}/xp/data.readingDone = ['id1','id2',...]
-// ============================================================
-
-let raArticles    = [];   // cache danh sách bài
-let raCurrentArt  = null; // bài đang đọc/học
-let raVocabQueue  = [];   // flashcard queue
-let raVocabIndex  = 0;
-let raVocabFlipped = false;
-let raDoneSet     = new Set(); // bài user đã đọc
-let raEditingId   = null; // null = create, string = edit
-let raPendingVocab = [];  // từ vựng parsed từ file Excel
-
-// ── Load danh sách bài (user) ──
-async function raLoadList() {
-  const el = document.getElementById('readingContainer');
-  el.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3)">⟳ Đang tải...</div>';
-
-  // Load progress
-  await raLoadProgress();
-
-  try {
-    const snap = await window._getDocs(
-      window._query(
-        window._collection(window._db, 'readingArticles'),
-        window._orderBy('order','asc')
-      )
-    ).catch(() => null);
-
-    if (!snap || snap.empty) {
-      el.innerHTML = '<div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,0.25)"><div style="font-size:2rem;margin-bottom:12px">📖</div><div>Chưa có bài đọc nào.<br><span style="font-size:0.75rem">Admin sẽ thêm sớm!</span></div></div>';
-      return;
-    }
-
-    raArticles = snap.docs
-      .map(d => ({id: d.id, ...d.data()}))
-      .filter(a => a.published);
-
-    _raRenderList(el);
-  } catch(e) {
-    el.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,0,110,0.6)">✕ Lỗi tải bài đọc</div>';
-  }
-}
-
-function _raRenderList(el) {
-  if (!raArticles.length) {
-    el.innerHTML = '<div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,0.25)"><div style="font-size:2rem;margin-bottom:12px">📖</div><div>Chưa có bài đọc nào.</div></div>';
-    return;
-  }
-
-  const total = raArticles.length;
-  const done  = raArticles.filter(a => raDoneSet.has(a.id)).length;
-
-  el.innerHTML = `
-    <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-family:'Space Mono',monospace;margin-bottom:8px">Tiến độ</div>
-      <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${done} / ${total}</div>
-      <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);margin-top:2px">bài đã đọc</div>
-      <div style="height:4px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;margin-top:10px">
-        <div style="height:100%;width:${total ? Math.round(done/total*100) : 0}%;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-green));border-radius:4px;transition:width 0.5s"></div>
-      </div>
-    </div>
-    <div class="ra-grid">
-      ${raArticles.map((a,i) => _raCardHTML(a, i)).join('')}
-    </div>`;
-}
-
-function _raCardHTML(a, i) {
-  const done = raDoneSet.has(a.id);
-  const vocabCount = (a.vocabulary || []).length;
-  return `
-    <div class="ra-card ${done?'done':''}" onclick="raOpen('${a.id}')">
-      <div class="ra-card-num">Bài ${a.order || i+1}</div>
-      <div class="ra-card-title">${h(a.title || 'Untitled')}</div>
-      <div class="ra-card-meta">
-        ${a.level ? `<span class="ra-badge ra-badge-level">${h(a.level)}</span>` : ''}
-        ${a.topic ? `<span class="ra-badge ra-badge-topic">${h(a.topic)}</span>` : ''}
-        ${vocabCount ? `<span class="ra-badge ra-badge-words">${vocabCount} từ vựng</span>` : ''}
-      </div>
-      ${done ? '<div class="ra-card-done-badge">✓ Đã đọc</div>' : '<div style="font-size:0.68rem;color:rgba(255,255,255,0.25)">Chưa đọc</div>'}
-    </div>`;
-}
-
-// ── Load progress từ Firestore ──
-async function raLoadProgress() {
-  if (!isLoggedIn()) return;
-  try {
-    const ref = window._doc(window._db, 'users', getUID(), 'xp', 'data');
-    const snap = await window._getDoc(ref).catch(() => null);
-    const done = snap?.exists() ? (snap.data().readingDone || []) : [];
-    raDoneSet = new Set(done);
-  } catch(e) {}
-}
-
-// ── Mở bài đọc ──
-async function raOpen(id) {
-  const art = raArticles.find(a => a.id === id);
-  if (!art) return;
-  raCurrentArt = art;
-
-  // Setup overlay
-  document.getElementById('raOverlayTitle').textContent = art.title || '';
-  document.getElementById('raOverlayNum').textContent = `Bài ${art.order || ''}`;
-
-  // Setup vocab flashcard
-  raVocabQueue  = [...(art.vocabulary || [])];
-  raVocabIndex  = 0;
-  raVocabFlipped = false;
-
-  // Switch to vocab mode first (or reading if no vocab)
-  if (raVocabQueue.length) {
-    raSwitchMode('flash');
-    raFcRender();
-  } else {
-    raSwitchMode('read');
-  }
-
-  // Setup reading pane
-  document.getElementById('raReadTitle').textContent = art.title || '';
-  document.getElementById('raReadMeta').innerHTML = `
-    ${art.level ? `<span class="ra-badge ra-badge-level">${h(art.level)}</span>` : ''}
-    ${art.topic ? `<span class="ra-badge ra-badge-topic">${h(art.topic)}</span>` : ''}`;
-  document.getElementById('raReadBody').textContent = art.content || '';
-
-  // Done bar
-  const doneBar = document.getElementById('raDoneBar');
-  const doneBtn = document.getElementById('raDoneBtn');
-  const doneHint = document.getElementById('raDoneHint');
-  doneBar.style.display = '';
-  if (raDoneSet.has(id)) {
-    doneBtn.textContent = '✓ Đã hoàn thành';
-    doneBtn.disabled = true;
-    doneHint.textContent = 'Bạn đã đọc bài này rồi!';
-  } else {
-    doneBtn.textContent = '✓ Hoàn thành · +XP';
-    doneBtn.disabled = false;
-    doneHint.textContent = 'Đọc xong bài này chưa?';
-  }
-
-  document.getElementById('raOverlay').classList.add('show');
-}
-
-function raClose() {
-  document.getElementById('raOverlay').classList.remove('show');
-  raCurrentArt = null;
-}
-
-// ── Switch mode ──
-function raSwitchMode(mode) {
-  const isFlash = mode === 'flash';
-  document.getElementById('raFcPane').classList.toggle('active', isFlash);
-  document.getElementById('raReadPane').classList.toggle('active', !isFlash);
-  document.getElementById('raModeFlash').classList.toggle('active', isFlash);
-  document.getElementById('raModeRead').classList.toggle('active', !isFlash);
-  // Show done bar only in reading mode
-  const doneBar = document.getElementById('raDoneBar');
-  if (doneBar) doneBar.style.display = !isFlash ? '' : 'none';
-}
-
-// ── Flashcard ──
-function raFcRender() {
-  if (!raVocabQueue.length) return;
-  const total   = raVocabQueue.length;
-  const idx     = raVocabIndex % total;
-  const w       = raVocabQueue[idx];
-  const done    = Math.min(raVocabIndex, total);
-  const remain  = total - done;
-  raVocabFlipped = false;
-
-  // Stats row
-  const setTxt = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
-  setTxt('raStatRemain', remain);
-  setTxt('raStatDone',   done);
-  setTxt('raStatTotal',  total);
-  setTxt('raFcCurrent',  idx + 1);
-  setTxt('raFcTotal',    total);
-  const bar = document.getElementById('raFcProgBar');
-  if (bar) bar.style.width = Math.round((done / total) * 100) + '%';
-
-  // Card content
-  setTxt('raFcWord',     w.word     || '');
-  setTxt('raFcPhonetic', w.phonetics ? `/${w.phonetics}/` : '');
-  setTxt('raFcType',     w.type     || '');
-  setTxt('raFcMeaning',  w.meaning  || '');
-  setTxt('raFcHint',     'Nhấn để xem nghĩa ↕');
-
-  const card = document.getElementById('raFcCard');
-  if (card) {
-    card.classList.remove('flipped');
-    card.style.animation = 'none'; void card.offsetWidth; card.style.animation = 'fadeUp 0.3s ease';
-  }
-}
-
-function raFcFlip() {
-  raVocabFlipped = !raVocabFlipped;
-  const card = document.getElementById('raFcCard');
-  if (card) card.classList.toggle('flipped', raVocabFlipped);
-  const hint = document.getElementById('raFcHint');
-  if (hint) hint.textContent = raVocabFlipped ? 'Nhấn để ẩn nghĩa ↕' : 'Nhấn để xem nghĩa ↕';
-}
-
-function raFcNext() {
-  raVocabIndex++;
-  if (raVocabIndex >= raVocabQueue.length) {
-    // Hết vòng → celebrate nhỏ rồi gợi ý đọc bài
-    const wrap = document.querySelector('.ra-fc-wrap');
-    if (wrap) wrap.innerHTML = `
-      <div style="text-align:center;padding:40px 20px">
-        <span style="font-size:3rem;display:block;margin-bottom:16px;animation:bounce 0.8s ease infinite alternate">🎉</span>
-        <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;
-          background:linear-gradient(135deg,var(--neon-green),var(--neon-cyan));
-          -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-          margin-bottom:10px">Xong rồi!</div>
-        <div style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:24px;line-height:1.7">
-          Bạn đã xem qua tất cả <strong style="color:#fff">${raVocabQueue.length}</strong> từ vựng.<br>
-          Sẵn sàng đọc bài chưa?
-        </div>
-        <button onclick="raSwitchMode('read')" class="btn-primary" style="font-size:0.9rem">
-          📖 Đọc bài ngay →
-        </button>
-      </div>`;
-    return;
-  }
-  raFcRender();
-}
-
-function raFcSkip() {
-  raVocabIndex++;
-  if (raVocabIndex >= raVocabQueue.length) raVocabIndex = 0;
-  raFcRender();
-}
-
-// ── Mark hoàn thành ──
-async function raMarkDone() {
-  if (!raCurrentArt || !isLoggedIn()) return;
-  const id = raCurrentArt.id;
-  if (raDoneSet.has(id)) return;
-
-  raDoneSet.add(id);
-
-  // Update Firestore
-  try {
-    const ref = window._doc(window._db, 'users', getUID(), 'xp', 'data');
-    const snap = await window._getDoc(ref).catch(() => null);
-    const prev = snap?.exists() ? (snap.data().readingDone || []) : [];
-    if (!prev.includes(id)) {
-      await window._setDoc(ref, { readingDone: [...prev, id] }, { merge: true });
-    }
-  } catch(e) { console.warn('[Reading] save progress error', e); }
-
-  // XP
-  xpOnFlashcardAction();
-  xpAdd(15, 'reading_done');
-  _xpFloatBadge && _xpFloatBadge(15, document.getElementById('raDoneBtn'));
-
-  // Update UI
-  document.getElementById('raDoneBtn').textContent = '✓ Đã hoàn thành';
-  document.getElementById('raDoneBtn').disabled = true;
-  document.getElementById('raDoneHint').textContent = 'Tuyệt vời! +15 XP';
-
-  showToast('success', '📖 +15 XP — Hoàn thành bài đọc!');
-}
-
-// ── ADMIN: Load danh sách ──
-async function raLoadAdminList() {
-  const el = document.getElementById('raAdminList');
-  el.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3)">⟳ Đang tải...</div>';
-  try {
-    const snap = await window._getDocs(
-      window._query(
-        window._collection(window._db, 'readingArticles'),
-        window._orderBy('order','asc')
-      )
-    ).catch(() => null);
-
-    if (!snap || snap.empty) {
-      el.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:0.8rem">Chưa có bài nào. Bấm "+ Thêm bài mới" để bắt đầu.</div>';
-      return;
-    }
-
-    const arts = snap.docs.map(d => ({id: d.id, ...d.data()}));
-    el.innerHTML = arts.map(a => `
-      <div class="ra-admin-card">
-        <div class="ra-admin-card-info">
-          <div class="ra-admin-card-title">${a.order ? `#${a.order} · ` : ''}${h(a.title||'Untitled')}</div>
-          <div class="ra-admin-card-meta">
-            ${a.level||''} · ${a.topic||''} · ${(a.vocabulary||[]).length} từ vựng
-            · ${a.published ? '<span style="color:var(--neon-green)">✓ Published</span>' : '<span style="color:rgba(255,230,0,0.7)">Draft</span>'}
-          </div>
-        </div>
-        <div class="ra-admin-btns">
-          <button class="admin-pack-btn admin-pack-btn-view" onclick="raOpenCreate('${a.id}')">Sửa</button>
-          <button class="admin-pack-btn admin-pack-btn-del" onclick="raDelete('${a.id}', '${h(a.title||'')}')">Xóa</button>
-        </div>
-      </div>`).join('');
-  } catch(e) {
-    el.innerHTML = '<div style="color:var(--neon-pink);font-size:0.8rem;padding:10px">✕ Lỗi tải dữ liệu</div>';
-  }
-}
-
-// ── ADMIN: Mở form tạo/sửa ──
-async function raOpenCreate(id) {
-  raEditingId   = id || null;
-  raPendingVocab = [];
-
-  document.getElementById('raFormTitle').textContent = id ? '✎ Sửa bài đọc' : '+ Thêm bài đọc mới';
-  document.getElementById('raFTitle').value    = '';
-  document.getElementById('raFLevel').value    = 'B2';
-  document.getElementById('raFTopic').value    = '';
-  document.getElementById('raFContent').value  = '';
-  document.getElementById('raFPublished').checked = true;
-  document.getElementById('raVocabFileLabel').textContent = '📂 Chọn file Excel từ vựng (giống format pack)';
-  document.getElementById('raVocabResult').style.display = 'none';
-  document.getElementById('raFormStatus').textContent = '';
-
-  if (id) {
-    // Load existing
-    try {
-      const snap = await window._getDoc(window._doc(window._db, 'readingArticles', id));
-      if (snap.exists()) {
-        const d = snap.data();
-        document.getElementById('raFTitle').value   = d.title || '';
-        document.getElementById('raFLevel').value   = d.level || 'B2';
-        document.getElementById('raFTopic').value   = d.topic || '';
-        document.getElementById('raFContent').value = d.content || '';
-        document.getElementById('raFPublished').checked = !!d.published;
-        raPendingVocab = d.vocabulary || [];
-        if (raPendingVocab.length) {
-          document.getElementById('raVocabResult').style.display = 'block';
-          document.getElementById('raVocabResult').textContent = `✓ ${raPendingVocab.length} từ vựng đã tải`;
-        }
-      }
-    } catch(e) {}
-  }
-
-  document.getElementById('raFormOverlay').classList.add('show');
-}
-
-function raFormClose() {
-  document.getElementById('raFormOverlay').classList.remove('show');
-  raEditingId = null; raPendingVocab = [];
-}
-
-// ── ADMIN: Xử lý file vocab Excel ──
-function raHandleVocabFile(input) {
-  const file = input.files[0];
-  if (!file) return;
-  document.getElementById('raVocabFileLabel').textContent = '⟳ Đang đọc file...';
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
-      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''});
-
-      const COL = {
-        word:      ['word'],
-        meaning:   ['nghĩa tiếng việt','meaning','nghĩa','nghia'],
-        phonetics: ['phonetics','phonetic','phiên âm','phien am'],
-        type:      ['type','loại từ','loai tu'],
-        level:     ['level'],
-      };
-      function getC(row, aliases) {
-        const keys = Object.keys(row).map(k=>k.toLowerCase().trim());
-        for (const a of aliases) { const i=keys.indexOf(a); if(i>=0) return String(Object.values(row)[i]).trim(); }
-        return '';
-      }
-
-      raPendingVocab = rows
-        .map(row => ({
-          word:      getC(row, COL.word),
-          meaning:   getC(row, COL.meaning),
-          phonetics: getC(row, COL.phonetics),
-          type:      getC(row, COL.type),
-          level:     getC(row, COL.level),
-        }))
-        .filter(w => w.word && w.meaning);
-
-      document.getElementById('raVocabFileLabel').textContent = `✓ ${file.name}`;
-      const res = document.getElementById('raVocabResult');
-      res.style.display = 'block';
-      res.textContent = `✓ Đọc được ${raPendingVocab.length} từ vựng từ file`;
-    } catch(err) {
-      document.getElementById('raVocabFileLabel').textContent = '✕ Lỗi đọc file';
-      showToast('error','✕ ' + err.message);
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-// ── ADMIN: Lưu bài ──
-async function raFormSave() {
-  const title   = document.getElementById('raFTitle').value.trim();
-  const level   = document.getElementById('raFLevel').value;
-  const topic   = document.getElementById('raFTopic').value.trim();
-  const content = document.getElementById('raFContent').value.trim();
-  const published = document.getElementById('raFPublished').checked;
-  const status  = document.getElementById('raFormStatus');
-
-  if (!title)   { showToast('error','⚠ Chưa có tiêu đề'); return; }
-  if (!content) { showToast('error','⚠ Chưa có nội dung bài'); return; }
-
-  status.textContent = '⟳ Đang lưu...';
-  status.style.color = 'rgba(255,255,255,0.4)';
-
-  try {
-    // Tính order: nếu tạo mới thì lấy max order + 1
-    let order = 1;
-    if (!raEditingId) {
-      const snap = await window._getDocs(
-        window._collection(window._db, 'readingArticles')
-      ).catch(() => null);
-      if (snap && !snap.empty) {
-        const orders = snap.docs.map(d => d.data().order || 0);
-        order = Math.max(...orders) + 1;
-      }
-    } else {
-      const existing = await window._getDoc(
-        window._doc(window._db, 'readingArticles', raEditingId)
-      ).catch(() => null);
-      order = existing?.data()?.order || 1;
-    }
-
-    const data = {
-      title, level, topic, content,
-      published,
-      order,
-      vocabulary: raPendingVocab,
-      updatedAt: Date.now(),
-      createdBy: getUID(),
-    };
-
-    const ref = raEditingId
-      ? window._doc(window._db, 'readingArticles', raEditingId)
-      : window._doc(window._collection(window._db, 'readingArticles'));
-
-    await window._setDoc(ref, data, { merge: !!raEditingId });
-
-    status.textContent = '✓ Đã lưu thành công!';
-    status.style.color = 'var(--neon-green)';
-    showToast('success', raEditingId ? '✓ Đã cập nhật bài đọc' : '✓ Đã thêm bài đọc mới');
-
-    setTimeout(() => {
-      raFormClose();
-      raLoadAdminList();
-    }, 800);
-  } catch(e) {
-    status.textContent = '✕ Lỗi: ' + e.message;
-    status.style.color = 'var(--neon-pink)';
-  }
-}
-
-// ── ADMIN: Xóa bài ──
-async function raDelete(id, title) {
-  if (!confirm(`Xóa bài "${title}"?
-Hành động này không thể hoàn tác.`)) return;
-  try {
-    await window._deleteDoc(window._doc(window._db, 'readingArticles', id));
-    showToast('success', '✓ Đã xóa bài đọc');
-    raLoadAdminList();
-  } catch(e) {
-    showToast('error', '✕ ' + e.message);
-  }
 }
 </script>
 
@@ -7600,6 +6982,392 @@ function dlExitOrSummary() {
   } else {
     dlExit();
   }
+}
+</script>
+  <!-- ===== WORD WEB DRAWER ===== -->
+  <div class="ww-backdrop" id="wwBackdrop" onclick="wwClose()"></div>
+  <div class="ww-drawer" id="wwDrawer">
+    <div class="ww-header">
+      <span class="ww-header-icon">🕸</span>
+      <div>
+        <div class="ww-header-title">Word Web</div>
+        <div class="ww-header-sub" id="wwHeaderSub">Mạng lưới từ vựng</div>
+      </div>
+      <button class="ww-close" onclick="wwClose()">✕</button>
+    </div>
+    <div class="ww-filters">
+      <button class="ww-filter-btn active-all" id="wwF-all"    onclick="wwSetFilter('all')">✦ Tất cả</button>
+      <button class="ww-filter-btn"            id="wwF-done"   onclick="wwSetFilter('done')">● Đã thuộc</button>
+      <button class="ww-filter-btn"            id="wwF-learn"  onclick="wwSetFilter('learn')">○ Đang học</button>
+      <button class="ww-filter-btn"            id="wwF-hard"   onclick="wwSetFilter('hard')">⚑ Từ khó</button>
+    </div>
+    <div class="ww-canvas-wrap">
+      <canvas id="wwCanvas"></canvas>
+      <div class="ww-tooltip" id="wwTooltip">
+        <div class="ww-tt-word" id="wwTtWord"></div>
+        <div class="ww-tt-phonetic" id="wwTtPhonetic"></div>
+        <div class="ww-tt-meaning" id="wwTtMeaning"></div>
+        <div id="wwTtBadge"></div>
+      </div>
+    </div>
+    <div class="ww-legend">
+      <div class="ww-legend-item"><div class="ww-legend-dot" style="background:var(--neon-green);box-shadow:0 0 6px var(--neon-green)"></div>Đã thuộc</div>
+      <div class="ww-legend-item"><div class="ww-legend-dot" style="background:var(--neon-purple);box-shadow:0 0 6px var(--neon-purple)"></div>Đang học</div>
+      <div class="ww-legend-item"><div class="ww-legend-dot" style="background:#ff8c00;box-shadow:0 0 6px #ff8c00"></div>Từ khó</div>
+      <div class="ww-legend-item"><div class="ww-legend-dot" style="background:rgba(255,255,255,0.15)"></div>Ẩn</div>
+      <div style="margin-left:auto;font-size:0.58rem;color:rgba(255,255,255,0.2);font-family:'Space Mono',monospace">Kéo để xoay · Click để xem nghĩa</div>
+    </div>
+  </div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  WORD WEB  —  force-directed graph on canvas
+// ══════════════════════════════════════════════════
+let wwFilter = 'all';
+let wwNodes  = [];
+let wwEdges  = [];
+let wwAnim   = null;
+let wwDrag   = null;     // { node, ox, oy }
+let wwPan    = { x:0, y:0 };
+let wwPanDrag= null;     // { sx, sy, ox, oy }
+let wwScale  = 1;
+let wwHover  = null;
+
+const WW_COLORS = {
+  done  : { fill:'#39ff14', glow:'rgba(57,255,20,0.55)',  stroke:'rgba(57,255,20,0.9)' },
+  learn : { fill:'#bf00ff', glow:'rgba(191,0,255,0.55)', stroke:'rgba(191,0,255,0.9)' },
+  hard  : { fill:'#ff8c00', glow:'rgba(255,140,0,0.55)', stroke:'rgba(255,140,0,0.9)' },
+  hidden: { fill:'rgba(255,255,255,0.1)', glow:'transparent', stroke:'rgba(255,255,255,0.15)' },
+};
+
+function wwGetStatus(w) {
+  if (w.hidden)   return 'hidden';
+  if (w.mastered) return 'done';
+  if (dlHardWords && dlHardWords.some(x => x.word === w.word)) return 'hard';
+  return 'learn';
+}
+
+function wwOpen() {
+  if (!words || !words.length) { showToast && showToast('error','✕ Chưa có từ vựng nào'); return; }
+  document.getElementById('wwDrawer').classList.add('open');
+  document.getElementById('wwBackdrop').classList.add('show');
+  wwBuild();
+}
+
+function wwClose() {
+  document.getElementById('wwDrawer').classList.remove('open');
+  document.getElementById('wwBackdrop').classList.remove('show');
+  if (wwAnim) { cancelAnimationFrame(wwAnim); wwAnim = null; }
+}
+
+function wwSetFilter(f) {
+  wwFilter = f;
+  ['all','done','learn','hard'].forEach(k => {
+    const b = document.getElementById('wwF-' + k);
+    if (!b) return;
+    b.className = 'ww-filter-btn' + (k === f ? ' active-' + f : '');
+  });
+  // fix active class name for 'all'
+  if (f === 'all') document.getElementById('wwF-all').className = 'ww-filter-btn active-all';
+  wwBuild();
+}
+
+function wwBuild() {
+  const canvas = document.getElementById('wwCanvas');
+  if (!canvas) return;
+
+  // Resize canvas to wrapper
+  const wrap = canvas.parentElement;
+  canvas.width  = wrap.clientWidth  * window.devicePixelRatio;
+  canvas.height = wrap.clientHeight * window.devicePixelRatio;
+  canvas.style.width  = wrap.clientWidth  + 'px';
+  canvas.style.height = wrap.clientHeight + 'px';
+
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+
+  // Filter words
+  const pool = words.filter(w => {
+    if (w.hidden && wwFilter !== 'all') return false;
+    if (wwFilter === 'done')  return w.mastered && !w.hidden;
+    if (wwFilter === 'learn') return !w.mastered && !w.hidden;
+    if (wwFilter === 'hard')  return dlHardWords && dlHardWords.some(x => x.word === w.word);
+    return true; // 'all'
+  });
+
+  const sub = document.getElementById('wwHeaderSub');
+  if (sub) sub.textContent = pool.length + ' từ · kéo để khám phá';
+
+  if (!pool.length) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.font = '2.5rem sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🕸', W/2, H/2 - 24);
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '500 13px Space Mono, monospace';
+    ctx.fillText('Không có từ nào ở bộ lọc này', W/2, H/2 + 16);
+    ctx.restore();
+    return;
+  }
+
+  // Build nodes
+  const CX = W / 2, CY = H / 2;
+  const R  = Math.min(W, H) * 0.35;
+  wwNodes = pool.map((w, i) => {
+    const angle = (i / pool.length) * Math.PI * 2;
+    const r2 = R * (0.4 + Math.random() * 0.6);
+    return {
+      word: w,
+      x: CX + Math.cos(angle) * r2,
+      y: CY + Math.sin(angle) * r2,
+      vx: 0, vy: 0,
+      r: w.mastered ? 18 : 13,
+      status: wwGetStatus(w),
+    };
+  });
+
+  // Build edges: connect words that share same level or first letter
+  wwEdges = [];
+  for (let i = 0; i < wwNodes.length; i++) {
+    for (let j = i + 1; j < wwNodes.length; j++) {
+      const a = wwNodes[i].word, b = wwNodes[j].word;
+      const sameLevel   = a.level && b.level && a.level === b.level;
+      const sameLetter  = a.word && b.word && a.word[0].toLowerCase() === b.word[0].toLowerCase();
+      const sameMeaning = a.meaning && b.meaning &&
+        a.meaning.split(' ').some(t => t.length > 3 && b.meaning.includes(t));
+      if (sameLevel || sameLetter || sameMeaning) {
+        wwEdges.push({ a: i, b: j,
+          type: sameLevel ? 'level' : sameMeaning ? 'meaning' : 'letter' });
+      }
+    }
+  }
+
+  wwPan   = { x: 0, y: 0 };
+  wwScale = 1;
+  wwHover = null;
+
+  if (wwAnim) cancelAnimationFrame(wwAnim);
+  wwTick(canvas, W, H, 0);
+  wwBindEvents(canvas);
+}
+
+function wwTick(canvas, W, H, frame) {
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.save();
+  ctx.scale(dpr, dpr);
+  ctx.translate(W/2 + wwPan.x, H/2 + wwPan.y);
+  ctx.scale(wwScale, wwScale);
+  ctx.translate(-W/2, -H/2);
+
+  // ── Force-directed physics (only first 180 frames) ──
+  if (frame < 180) {
+    const k = 80, ideal = 110, repulse = 3200;
+    wwNodes.forEach(n => { n.vx *= 0.82; n.vy *= 0.82; });
+
+    // Repulsion
+    for (let i = 0; i < wwNodes.length; i++) {
+      for (let j = i+1; j < wwNodes.length; j++) {
+        const dx = wwNodes[j].x - wwNodes[i].x;
+        const dy = wwNodes[j].y - wwNodes[i].y;
+        const d2 = dx*dx + dy*dy + 1;
+        const f  = repulse / d2;
+        wwNodes[i].vx -= f * dx; wwNodes[i].vy -= f * dy;
+        wwNodes[j].vx += f * dx; wwNodes[j].vy += f * dy;
+      }
+    }
+    // Spring along edges
+    wwEdges.forEach(e => {
+      const a = wwNodes[e.a], b = wwNodes[e.b];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const d  = Math.sqrt(dx*dx + dy*dy) || 1;
+      const f  = (d - ideal) * 0.04;
+      a.vx += f*(dx/d); a.vy += f*(dy/d);
+      b.vx -= f*(dx/d); b.vy -= f*(dy/d);
+    });
+    // Center gravity
+    wwNodes.forEach(n => {
+      n.vx += (W/2 - n.x) * 0.008;
+      n.vy += (H/2 - n.y) * 0.008;
+      n.x  += n.vx;
+      n.y  += n.vy;
+    });
+  }
+
+  // ── Draw edges ──
+  wwEdges.forEach(e => {
+    const a = wwNodes[e.a], b = wwNodes[e.b];
+    const col = e.type === 'level'   ? 'rgba(0,245,255,0.12)'
+              : e.type === 'meaning' ? 'rgba(191,0,255,0.14)'
+              :                        'rgba(255,255,255,0.06)';
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.strokeStyle = col;
+    ctx.lineWidth = e.type === 'level' ? 1.2 : 0.7;
+    ctx.stroke();
+  });
+
+  // ── Draw nodes ──
+  wwNodes.forEach((n, i) => {
+    const col = WW_COLORS[n.status] || WW_COLORS.learn;
+    const isHovered = wwHover === i;
+    const r = isHovered ? n.r * 1.3 : n.r;
+
+    // Glow
+    if (n.status !== 'hidden') {
+      const grad = ctx.createRadialGradient(n.x, n.y, r*0.2, n.x, n.y, r*2.8);
+      grad.addColorStop(0, col.glow);
+      grad.addColorStop(1, 'transparent');
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r*2.8, 0, Math.PI*2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    // Circle
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, r, 0, Math.PI*2);
+    ctx.fillStyle = n.status === 'hidden'
+      ? 'rgba(255,255,255,0.04)'
+      : col.fill + (isHovered ? 'ff' : '33');
+    ctx.fill();
+    ctx.strokeStyle = col.stroke;
+    ctx.lineWidth   = isHovered ? 2 : 1;
+    ctx.stroke();
+
+    // Label
+    const fs = isHovered ? 11 : (n.status === 'done' ? 10 : 8.5);
+    ctx.fillStyle = n.status === 'hidden' ? 'rgba(255,255,255,0.2)' : '#fff';
+    ctx.font = `${n.status === 'done' ? '700' : '400'} ${fs}px "Space Mono", monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    // Clip long words
+    const label = n.word.word.length > 12 ? n.word.word.slice(0,11)+'…' : n.word.word;
+    ctx.fillText(label, n.x, n.y);
+  });
+
+  ctx.restore();
+
+  wwAnim = requestAnimationFrame(() => {
+    if (!document.getElementById('wwDrawer').classList.contains('open')) return;
+    wwTick(canvas, W, H, frame + 1);
+  });
+}
+
+// ── Events ──
+function wwBindEvents(canvas) {
+  // Remove old listeners by replacing canvas (simple approach)
+  canvas.onmousemove = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left - canvas.clientWidth/2  - wwPan.x) / wwScale + canvas.clientWidth/2;
+    const my = (e.clientY - rect.top  - canvas.clientHeight/2 - wwPan.y) / wwScale + canvas.clientHeight/2;
+
+    if (wwDrag) {
+      wwDrag.node.x = mx + wwDrag.ox;
+      wwDrag.node.y = my + wwDrag.oy;
+      return;
+    }
+    if (wwPanDrag) {
+      wwPan.x = wwPanDrag.ox + (e.clientX - wwPanDrag.sx);
+      wwPan.y = wwPanDrag.oy + (e.clientY - wwPanDrag.sy);
+      return;
+    }
+
+    let found = null;
+    wwNodes.forEach((n, i) => {
+      const dx = n.x - mx, dy = n.y - my;
+      if (dx*dx + dy*dy < (n.r+8)*(n.r+8)) found = i;
+    });
+    wwHover = found;
+    canvas.style.cursor = found !== null ? 'pointer' : 'grab';
+
+    const tt = document.getElementById('wwTooltip');
+    if (found !== null) {
+      const n = wwNodes[found];
+      document.getElementById('wwTtWord').textContent     = n.word.word    || '';
+      document.getElementById('wwTtPhonetic').textContent = n.word.phonetics ? `/${n.word.phonetics}/` : '';
+      document.getElementById('wwTtMeaning').textContent  = n.word.meaning  || '';
+      const badge = document.getElementById('wwTtBadge');
+      badge.className = 'ww-tt-badge ' + n.status;
+      badge.textContent = n.status === 'done' ? '✓ Đã thuộc' : n.status === 'hard' ? '⚑ Từ khó' : '○ Đang học';
+      // Position tooltip
+      const tx = Math.min(e.clientX - rect.left + 14, canvas.clientWidth  - 220);
+      const ty = Math.max(e.clientY - rect.top  - 20,  10);
+      tt.style.left = tx + 'px';
+      tt.style.top  = ty + 'px';
+      tt.classList.add('show');
+    } else {
+      tt.classList.remove('show');
+    }
+  };
+
+  canvas.onmousedown = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left - canvas.clientWidth/2  - wwPan.x) / wwScale + canvas.clientWidth/2;
+    const my = (e.clientY - rect.top  - canvas.clientHeight/2 - wwPan.y) / wwScale + canvas.clientHeight/2;
+
+    let hit = null;
+    wwNodes.forEach((n, i) => {
+      const dx = n.x - mx, dy = n.y - my;
+      if (dx*dx + dy*dy < (n.r+8)*(n.r+8)) hit = i;
+    });
+
+    if (hit !== null) {
+      wwDrag = { node: wwNodes[hit], ox: wwNodes[hit].x - mx, oy: wwNodes[hit].y - my };
+    } else {
+      wwPanDrag = { sx: e.clientX, sy: e.clientY, ox: wwPan.x, oy: wwPan.y };
+    }
+  };
+
+  canvas.onmouseup = canvas.onmouseleave = () => {
+    wwDrag = null;
+    wwPanDrag = null;
+  };
+
+  canvas.onwheel = (e) => {
+    e.preventDefault();
+    wwScale = Math.max(0.4, Math.min(3, wwScale * (e.deltaY > 0 ? 0.9 : 1.1)));
+  };
+
+  // Touch support
+  canvas.ontouchstart = (e) => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const mx = (t.clientX - rect.left - canvas.clientWidth/2  - wwPan.x) / wwScale + canvas.clientWidth/2;
+    const my = (t.clientY - rect.top  - canvas.clientHeight/2 - wwPan.y) / wwScale + canvas.clientHeight/2;
+    let hit = null;
+    wwNodes.forEach((n, i) => {
+      const dx = n.x - mx, dy = n.y - my;
+      if (dx*dx + dy*dy < (n.r+12)*(n.r+12)) hit = i;
+    });
+    if (hit !== null) {
+      wwDrag = { node: wwNodes[hit], ox: wwNodes[hit].x - mx, oy: wwNodes[hit].y - my };
+    } else {
+      wwPanDrag = { sx: t.clientX, sy: t.clientY, ox: wwPan.x, oy: wwPan.y };
+    }
+  };
+  canvas.ontouchmove = (e) => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const mx = (t.clientX - rect.left - canvas.clientWidth/2  - wwPan.x) / wwScale + canvas.clientWidth/2;
+    const my = (t.clientY - rect.top  - canvas.clientHeight/2 - wwPan.y) / wwScale + canvas.clientHeight/2;
+    if (wwDrag) {
+      wwDrag.node.x = mx + wwDrag.ox;
+      wwDrag.node.y = my + wwDrag.oy;
+    } else if (wwPanDrag) {
+      wwPan.x = wwPanDrag.ox + (t.clientX - wwPanDrag.sx);
+      wwPan.y = wwPanDrag.oy + (t.clientY - wwPanDrag.sy);
+    }
+  };
+  canvas.ontouchend = () => { wwDrag = null; wwPanDrag = null; };
 }
 </script>
 </body>
