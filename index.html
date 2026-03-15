@@ -849,7 +849,22 @@ const IDB = (() => {
   .screen { display:none; }
   .screen.active { display:block; }
   .packs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; margin-top:16px; }
+  @media(max-width:600px) {
+    .packs-grid { grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+  }
   .pack-card { background:var(--glass); border:1.5px solid var(--glass-border); border-radius:18px; padding:20px; cursor:pointer; transition:all 0.25s; position:relative; overflow:visible; }
+  @media(max-width:600px) {
+    .pack-card { padding:11px 10px; border-radius:13px; }
+    .pack-icon { font-size:1.3rem !important; margin-bottom:6px !important; }
+    .pack-name { font-size:0.78rem !important; margin-bottom:3px !important; }
+    .pack-meta { font-size:0.62rem !important; margin-bottom:7px !important; line-height:1.4 !important; }
+    .pack-progress-label { font-size:0.58rem !important; }
+    .pack-add-card { padding:14px 8px !important; border-radius:13px !important; }
+    .pack-add-icon { font-size:1.3rem !important; }
+    .pack-add-label { font-size:0.6rem !important; letter-spacing:0.08em !important; }
+    .pin-toggle-wrap { margin-top:6px !important; }
+    .pin-toggle-label { font-size:0.52rem !important; }
+  }
   .pack-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple)); opacity:0; transition:opacity 0.25s; border-radius:18px 18px 0 0; }
   .pack-card:hover { border-color:rgba(0,245,255,0.3); transform:translateY(-3px); background:rgba(255,255,255,0.06); }
   .pack-card:hover::before { opacity:1; }
@@ -1184,67 +1199,159 @@ const IDB = (() => {
   .profile-streak-count { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:var(--neon-yellow); }
   .profile-streak-label { font-size:0.7rem; color:rgba(255,255,255,0.35); }
   .profile-section-title { font-size:0.62rem; color:rgba(255,255,255,0.3); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
+
+  /* ── LOOP SIZE SETTING ── */
+  .loop-setting-card {
+    background: rgba(0,245,255,0.04);
+    border: 1px solid rgba(0,245,255,0.15);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .loop-setting-title {
+    font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--neon-cyan); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .loop-setting-desc {
+    font-size: 0.7rem; color: rgba(255,255,255,0.38); line-height: 1.6; margin-bottom: 12px;
+  }
+  .loop-size-btns {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .loop-size-btn {
+    flex: 1; min-width: 36px; padding: 8px 4px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; color: rgba(255,255,255,0.4);
+    font-family: 'Space Mono', monospace; font-size: 0.82rem; font-weight: 700;
+    cursor: pointer; transition: all 0.18s; text-align: center;
+  }
+  .loop-size-btn:hover { border-color: rgba(0,245,255,0.4); color: var(--neon-cyan); background: rgba(0,245,255,0.08); }
+  .loop-size-btn.active {
+    background: rgba(0,245,255,0.15); border-color: rgba(0,245,255,0.6);
+    color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0,245,255,0.2);
+  }
+  .loop-off-btn {
+    width: 100%; margin-top: 8px; padding: 7px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; color: rgba(255,255,255,0.3);
+    font-family: 'Space Mono', monospace; font-size: 0.68rem;
+    cursor: pointer; transition: all 0.18s; text-align: center;
+  }
+  .loop-off-btn:hover { border-color: rgba(255,0,110,0.3); color: rgba(255,0,110,0.6); }
+  .loop-off-btn.active { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); color: rgba(255,255,255,0.5); }
+  .loop-status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-top: 10px; font-size: 0.65rem; font-family: 'Space Mono', monospace;
+    color: rgba(0,245,255,0.55); letter-spacing: 0.05em;
+  }
+  .loop-status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-cyan); animation: pulse 2s infinite; }
   .profile-history { display:flex; flex-direction:column; gap:4px; margin-bottom:16px; }
   .profile-hist-row { display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--glass); border-radius:8px; font-size:0.72rem; }
   .profile-hist-date { color:rgba(255,255,255,0.4); }
   .profile-hist-val  { color:var(--neon-cyan); font-weight:700; }
 
-  /* ===== ADMIN PANEL ===== */
+  /* ===== ADMIN PANEL — redesigned ===== */
   .admin-overlay {
     display:none; position:fixed; inset:0; z-index:160;
-    background:rgba(0,0,0,0.8); backdrop-filter:blur(8px);
-    align-items:center; justify-content:center; padding:20px;
+    background:rgba(0,0,0,0.85); backdrop-filter:blur(10px);
+    align-items:flex-start; justify-content:center; padding:0;
+    overflow-y:auto;
   }
   .admin-overlay.show { display:flex; }
   .admin-panel {
-    background:var(--dark2); border:1px solid rgba(255,230,0,0.2);
-    border-radius:24px; padding:32px; width:100%; max-width:720px; max-height:88vh;
-    display:flex; flex-direction:column; animation:fadeUp 0.3s ease;
+    background:var(--dark2); border-left:1px solid rgba(255,230,0,0.15);
+    border-right:1px solid rgba(255,230,0,0.15);
+    width:100%; max-width:1000px; min-height:100vh;
+    display:flex; flex-direction:column; margin:0 auto;
+    padding:0 0 60px;
   }
-  .admin-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  /* Top bar */
+  .admin-topbar {
+    position:sticky; top:0; z-index:10;
+    background:rgba(13,13,31,0.97); backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(255,230,0,0.12);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px;
+  }
   .admin-title {
-    font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; letter-spacing:0.08em;
+    font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; letter-spacing:0.1em;
     background:linear-gradient(90deg, var(--neon-yellow), var(--neon-pink));
     -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
   }
   .admin-close {
     background:rgba(255,255,255,0.06); border:1px solid var(--glass-border);
-    border-radius:10px; padding:7px 14px; color:rgba(255,255,255,0.4);
-    font-size:0.8rem; cursor:pointer; font-family:'Syne',sans-serif; font-weight:700; transition:all 0.2s;
+    border-radius:10px; padding:8px 18px; color:rgba(255,255,255,0.5);
+    font-size:0.78rem; cursor:pointer; font-family:'Syne',sans-serif; font-weight:700; transition:all 0.2s;
   }
   .admin-close:hover { background:rgba(255,0,110,0.1); color:var(--neon-pink); border-color:rgba(255,0,110,0.25); }
-  .admin-stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:24px; }
-  @media(max-width:520px) { .admin-stats-row { grid-template-columns:1fr 1fr; } }
-  .admin-stat { background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; padding:14px; text-align:center; }
-  .admin-stat-val { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; }
-  .admin-stat-lbl { font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-top:4px; }
+  /* Main tabs */
+  .admin-main-tabs {
+    display:flex; gap:2px; padding:0 32px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    background:rgba(0,0,0,0.2);
+  }
+  .admin-main-tab {
+    padding:14px 22px; background:transparent; border:none; border-bottom:2px solid transparent;
+    color:rgba(255,255,255,0.35); font-family:'Syne',sans-serif; font-size:0.72rem;
+    font-weight:700; letter-spacing:0.08em; cursor:pointer; transition:all 0.2s;
+    text-transform:uppercase; margin-bottom:-1px;
+  }
+  .admin-main-tab:hover { color:rgba(255,255,255,0.6); }
+  .admin-main-tab.active { color:var(--neon-yellow); border-bottom-color:var(--neon-yellow); }
+  /* Tab panels */
+  .admin-tab-panel { display:none; padding:28px 32px; }
+  .admin-tab-panel.active { display:block; }
+  /* Stats row */
+  .admin-stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
+  @media(max-width:600px) { .admin-stats-row { grid-template-columns:1fr 1fr; } }
+  .admin-stat { background:var(--glass); border:1px solid var(--glass-border); border-radius:16px; padding:18px 16px; text-align:center; }
+  .admin-stat-val { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; }
+  .admin-stat-lbl { font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-top:5px; }
   .admin-stat:nth-child(1) .admin-stat-val { color:var(--neon-cyan); }
   .admin-stat:nth-child(2) .admin-stat-val { color:var(--neon-green); }
   .admin-stat:nth-child(3) .admin-stat-val { color:var(--neon-yellow); }
   .admin-stat:nth-child(4) .admin-stat-val { color:var(--neon-pink); }
+  /* Section label */
+  .admin-section-lbl { font-family:'Syne',sans-serif; font-size:0.62rem; letter-spacing:0.25em; text-transform:uppercase; color:rgba(255,255,255,0.25); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .admin-section-lbl::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
+  /* Users list */
   .admin-users-title { font-family:'Syne',sans-serif; font-size:0.7rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--neon-yellow); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
   .admin-users-title::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(255,230,0,0.3),transparent); }
-  .admin-users-list { flex:1; overflow-y:auto; border:1px solid var(--glass-border); border-radius:14px; }
+  .admin-users-list { border:1px solid var(--glass-border); border-radius:16px; overflow:hidden; }
   .admin-users-list::-webkit-scrollbar { width:4px; }
   .admin-users-list::-webkit-scrollbar-thumb { background:rgba(255,230,0,0.2); border-radius:4px; }
-  .admin-user-row { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); transition:background 0.15s; }
+  .admin-user-row { display:flex; align-items:center; gap:14px; padding:14px 20px; border-bottom:1px solid rgba(255,255,255,0.04); transition:background 0.15s; }
   .admin-user-row:last-child { border-bottom:none; }
   .admin-user-row:hover { background:rgba(255,255,255,0.02); }
-  .admin-user-ava { width:34px; height:34px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.1); flex-shrink:0; }
-  .admin-user-ava-ph { width:34px; height:34px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple)); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800; color:#000; font-family:'Syne',sans-serif; }
+  .admin-user-ava { width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.1); flex-shrink:0; }
+  .admin-user-ava-ph { width:38px; height:38px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple)); display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:800; color:#000; font-family:'Syne',sans-serif; }
   .admin-user-info { flex:1; min-width:0; }
-  .admin-user-name { font-size:0.8rem; font-weight:700; color:#fff; font-family:'Syne',sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .admin-user-email { font-size:0.65rem; color:rgba(255,255,255,0.35); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .admin-user-stats { font-size:0.65rem; color:rgba(255,255,255,0.3); text-align:right; white-space:nowrap; }
+  .admin-user-name { font-size:0.85rem; font-weight:700; color:#fff; font-family:'Syne',sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .admin-user-email { font-size:0.68rem; color:rgba(255,255,255,0.35); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+  .admin-user-stats { font-size:0.68rem; color:rgba(255,255,255,0.3); text-align:right; white-space:nowrap; line-height:1.8; }
   .admin-user-stats span { color:var(--neon-cyan); font-weight:700; }
-  .admin-del-btn { background:none; border:1px solid rgba(255,0,110,0.2); border-radius:8px; color:rgba(255,0,110,0.5); padding:5px 9px; font-size:0.65rem; cursor:pointer; transition:all 0.15s; font-family:'Syne',sans-serif; white-space:nowrap; }
+  .admin-del-btn { background:none; border:1px solid rgba(255,0,110,0.2); border-radius:8px; color:rgba(255,0,110,0.5); padding:6px 10px; font-size:0.65rem; cursor:pointer; transition:all 0.15s; font-family:'Syne',sans-serif; white-space:nowrap; }
   .admin-del-btn:hover { background:rgba(255,0,110,0.15); color:var(--neon-pink); border-color:rgba(255,0,110,0.4); }
   .admin-btn-admin { background:rgba(255,230,0,0.08); border:1px solid rgba(255,230,0,0.2); border-radius:30px; padding:5px 14px; color:var(--neon-yellow); font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700; cursor:pointer; transition:all 0.2s; letter-spacing:0.05em; display:flex; align-items:center; gap:6px; }
   .admin-btn-admin:hover { background:rgba(255,230,0,0.15); }
-  .admin-loading { text-align:center; padding:30px; color:rgba(255,255,255,0.3); font-size:0.82rem; }
-  .admin-search { width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); border-radius:10px; padding:10px 14px; color:#fff; font-family:'Inter',sans-serif; font-size:0.85rem; outline:none; margin-bottom:12px; transition:border-color 0.2s; }
+  .admin-loading { text-align:center; padding:40px; color:rgba(255,255,255,0.3); font-size:0.82rem; }
+  .admin-search { width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); border-radius:12px; padding:12px 16px; color:#fff; font-family:'Inter',sans-serif; font-size:0.88rem; outline:none; margin-bottom:16px; transition:border-color 0.2s; }
   .admin-search:focus { border-color:rgba(255,230,0,0.4); }
   .admin-search::placeholder { color:rgba(255,255,255,0.2); }
+  /* Settings tab */
+  .admin-settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media(max-width:600px) { .admin-settings-grid { grid-template-columns:1fr; } }
+  .admin-settings-card { background:var(--glass); border:1px solid var(--glass-border); border-radius:16px; padding:22px 24px; }
+  .admin-settings-card-title { font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:800; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+  .admin-settings-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .admin-settings-row:last-child { border-bottom:none; padding-bottom:0; }
+  .admin-settings-label { font-size:0.8rem; color:rgba(255,255,255,0.65); }
+  .admin-settings-sub { font-size:0.62rem; color:rgba(255,255,255,0.25); margin-top:2px; }
+  .admin-xp-input { width:70px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:6px 10px; color:var(--neon-cyan); font-family:'Space Mono',monospace; font-size:0.85rem; font-weight:700; text-align:center; outline:none; transition:border-color 0.2s; }
+  .admin-xp-input:focus { border-color:rgba(0,245,255,0.4); }
+  .admin-save-btn { margin-top:20px; width:100%; padding:12px; background:rgba(255,230,0,0.1); border:1px solid rgba(255,230,0,0.3); border-radius:10px; color:var(--neon-yellow); font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:800; letter-spacing:0.1em; cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
+  .admin-save-btn:hover { background:rgba(255,230,0,0.18); }
+  .admin-save-btn.saved { background:rgba(57,255,20,0.1); border-color:rgba(57,255,20,0.3); color:var(--neon-green); }
 
   /* ===== ADMIN USER DETAIL ===== */
   .admin-detail-overlay {
@@ -1313,6 +1420,242 @@ const IDB = (() => {
   .admin-history-row { display:flex; justify-content:space-between; padding:7px 12px; background:var(--glass); border-radius:8px; font-size:0.73rem; margin-bottom:4px; }
   .admin-hist-date { color:rgba(255,255,255,0.4); }
   .admin-hist-val { color:var(--neon-cyan); font-weight:700; }
+
+  /* ===== DEEP LEARNING MODE ===== */
+  /* Toggle button replacing "Tự đọc" */
+  .dl-toggle-btn {
+    display:inline-flex; align-items:center; gap:7px;
+    padding:5px 13px; border-radius:20px; cursor:pointer;
+    font-family:'Space Mono',monospace; font-size:0.65rem; font-weight:700;
+    letter-spacing:0.08em; text-transform:uppercase; transition:all 0.25s;
+    border:1px solid rgba(191,0,255,0.3); background:rgba(191,0,255,0.08); color:rgba(191,0,255,0.7);
+    user-select:none;
+  }
+  .dl-toggle-btn:hover { border-color:rgba(191,0,255,0.6); background:rgba(191,0,255,0.14); color:var(--neon-purple); }
+  .dl-toggle-btn.active {
+    border-color:var(--neon-purple); background:rgba(191,0,255,0.2);
+    color:var(--neon-purple); box-shadow:0 0 14px rgba(191,0,255,0.3);
+    animation:dlPulse 2.5s ease infinite;
+  }
+  .dl-toggle-dot {
+    width:6px; height:6px; border-radius:50%; background:rgba(191,0,255,0.5); transition:all 0.25s;
+  }
+  .dl-toggle-btn.active .dl-toggle-dot { background:var(--neon-purple); box-shadow:0 0 6px var(--neon-purple); animation:pulse 1.5s infinite; }
+  @keyframes dlPulse { 0%,100%{box-shadow:0 0 10px rgba(191,0,255,0.25)} 50%{box-shadow:0 0 22px rgba(191,0,255,0.5)} }
+
+  /* Overlay full screen */
+  .dl-overlay {
+    display:none; position:fixed; inset:0; z-index:300;
+    background:rgba(3,3,15,0.97); backdrop-filter:blur(12px);
+    flex-direction:column; align-items:center; justify-content:center;
+    padding:24px 20px;
+  }
+  .dl-overlay.show { display:flex; }
+
+  /* ── Intro screen ── */
+  .dl-intro {
+    max-width:440px; width:100%; text-align:center;
+    animation:fadeUp 0.4s ease;
+  }
+  .dl-intro-icon { font-size:3rem; display:block; margin-bottom:16px; }
+  .dl-intro-title {
+    font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; letter-spacing:0.05em;
+    background:linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    margin-bottom:8px;
+  }
+  .dl-intro-badge {
+    display:inline-block; font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase;
+    color:rgba(191,0,255,0.7); border:1px solid rgba(191,0,255,0.3); border-radius:20px;
+    padding:3px 12px; margin-bottom:20px; font-family:'Space Mono',monospace;
+  }
+  .dl-intro-msg {
+    font-size:0.88rem; color:rgba(255,255,255,0.6); line-height:1.85;
+    background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+    border-radius:16px; padding:20px 24px; margin-bottom:24px; text-align:left;
+  }
+  .dl-intro-msg strong { color:#fff; }
+  /* Duration selector */
+  .dl-duration-row {
+    display:flex; gap:10px; justify-content:center; margin-bottom:24px;
+  }
+  .dl-dur-btn {
+    flex:1; max-width:90px; padding:10px 0; border-radius:12px; cursor:pointer;
+    font-family:'Space Mono',monospace; font-size:0.88rem; font-weight:700; transition:all 0.18s;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.4);
+  }
+  .dl-dur-btn:hover { border-color:rgba(191,0,255,0.4); color:var(--neon-purple); }
+  .dl-dur-btn.active { background:rgba(191,0,255,0.15); border-color:var(--neon-purple); color:var(--neon-purple); box-shadow:0 0 10px rgba(191,0,255,0.2); }
+  .dl-dur-btn span { display:block; font-size:0.58rem; font-weight:400; opacity:0.5; margin-top:2px; letter-spacing:0.05em; }
+  .dl-start-btn {
+    width:100%; padding:15px; border-radius:14px; border:none; cursor:pointer;
+    font-family:'Syne',sans-serif; font-size:1rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase;
+    background:linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color:#000;
+    transition:all 0.2s;
+  }
+  .dl-start-btn:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(191,0,255,0.4); }
+
+  /* ── Countdown screen ── */
+  .dl-countdown {
+    text-align:center; animation:fadeUp 0.3s ease;
+  }
+  .dl-countdown-num {
+    font-family:'Syne',sans-serif; font-size:8rem; font-weight:800; line-height:1;
+    background:linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    animation:countPop 0.5s ease;
+  }
+  @keyframes countPop { 0%{transform:scale(1.5);opacity:0} 100%{transform:scale(1);opacity:1} }
+  .dl-countdown-label { font-size:0.8rem; color:rgba(255,255,255,0.3); letter-spacing:0.3em; text-transform:uppercase; margin-top:10px; }
+
+  /* ── Session screen ── */
+  .dl-session { width:100%; max-width:540px; display:flex; flex-direction:column; gap:0; }
+
+  /* Timer bar */
+  .dl-timer-bar-wrap {
+    display:flex; align-items:center; gap:12px; margin-bottom:20px;
+  }
+  .dl-timer-track {
+    flex:1; height:3px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;
+  }
+  .dl-timer-fill {
+    height:100%; background:linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+    border-radius:3px; transition:width 1s linear; box-shadow:0 0 6px rgba(0,245,255,0.4);
+  }
+  .dl-timer-clock {
+    font-family:'Space Mono',monospace; font-size:0.65rem; color:rgba(255,255,255,0.18);
+    letter-spacing:0.05em; min-width:36px; text-align:right;
+  }
+
+  /* Word display */
+  .dl-word-card {
+    background:linear-gradient(135deg, rgba(191,0,255,0.06), rgba(0,245,255,0.06));
+    border:1px solid rgba(191,0,255,0.2); border-radius:20px;
+    padding:28px 24px 22px; text-align:center; margin-bottom:16px;
+    position:relative; overflow:hidden;
+  }
+  .dl-word-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+  }
+  .dl-card-progress {
+    font-family:'Space Mono',monospace; font-size:0.6rem; color:rgba(255,255,255,0.25);
+    letter-spacing:0.08em; margin-bottom:14px;
+  }
+  .dl-card-word {
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:2.2rem; font-weight:800;
+    background:linear-gradient(135deg,#fff,rgba(191,0,255,0.8));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    margin-bottom:6px; line-height:1.2;
+  }
+  .dl-card-phonetic { font-size:0.85rem; color:var(--neon-cyan); opacity:0.8; margin-bottom:4px; }
+  .dl-card-meaning { font-size:0.92rem; color:rgba(255,255,255,0.65); margin-top:8px; line-height:1.5; }
+
+  /* Write area */
+  .dl-write-area { margin-bottom:14px; }
+  .dl-write-label {
+    font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase;
+    color:rgba(255,255,255,0.25); margin-bottom:8px; font-family:'Space Mono',monospace;
+  }
+  /* Canvas (mobile) */
+  .dl-canvas-wrap {
+    position:relative; border-radius:14px; overflow:hidden;
+    border:1px solid rgba(191,0,255,0.25); background:rgba(0,0,0,0.4);
+  }
+  #dlCanvas {
+    display:block; width:100%; height:110px; cursor:crosshair; touch-action:none;
+  }
+  .dl-canvas-clear {
+    position:absolute; top:8px; right:10px; background:rgba(255,255,255,0.08);
+    border:none; border-radius:8px; color:rgba(255,255,255,0.4); font-size:0.7rem;
+    padding:3px 8px; cursor:pointer; transition:all 0.15s;
+  }
+  .dl-canvas-clear:hover { background:rgba(255,0,110,0.15); color:var(--neon-pink); }
+  /* Input (desktop) */
+  .dl-input-wrap { position:relative; }
+  .dl-input {
+    width:100%; padding:13px 50px 13px 16px; border-radius:12px;
+    background:rgba(0,0,0,0.5); border:1px solid rgba(191,0,255,0.3);
+    color:#fff; font-family:'Space Mono',monospace; font-size:1rem;
+    outline:none; transition:border-color 0.2s; letter-spacing:0.06em;
+  }
+  .dl-input:focus { border-color:var(--neon-purple); box-shadow:0 0 16px rgba(191,0,255,0.2); }
+  .dl-input.correct { border-color:var(--neon-green); background:rgba(57,255,20,0.06); animation:correctFlash 0.4s ease; }
+  .dl-input.wrong   { border-color:var(--neon-pink);  background:rgba(255,0,110,0.06); animation:shake 0.35s ease; }
+  @keyframes correctFlash { 0%{box-shadow:0 0 0 rgba(57,255,20,0)} 40%{box-shadow:0 0 30px rgba(57,255,20,0.5)} 100%{box-shadow:0 0 0 rgba(57,255,20,0)} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+  .dl-input-hint {
+    position:absolute; right:14px; top:50%; transform:translateY(-50%);
+    font-size:0.6rem; color:rgba(255,255,255,0.2); font-family:'Space Mono',monospace;
+    pointer-events:none;
+  }
+
+  /* Action buttons */
+  .dl-actions { display:flex; gap:10px; margin-bottom:14px; }
+  .dl-btn-next {
+    flex:1; padding:13px; border-radius:12px; border:none; cursor:pointer;
+    font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;
+    background:linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color:#000; transition:all 0.2s;
+  }
+  .dl-btn-next:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(191,0,255,0.35); }
+  .dl-btn-skip {
+    padding:13px 18px; border-radius:12px; cursor:pointer; font-family:'Syne',sans-serif;
+    font-size:0.82rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.4); transition:all 0.2s;
+  }
+  .dl-btn-skip:hover { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7); }
+
+  /* Motivational message */
+  .dl-motivate {
+    text-align:center; font-size:0.78rem; color:rgba(255,255,255,0.35);
+    font-family:'Space Mono',monospace; letter-spacing:0.03em; min-height:20px;
+    transition:opacity 0.3s;
+  }
+  .dl-motivate.pop { animation:motivatePop 0.4s ease; color:var(--neon-cyan); }
+  @keyframes motivatePop { 0%{transform:scale(0.9);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+
+  /* Checkpoint celebration */
+  .dl-checkpoint {
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    z-index:400; pointer-events:none; text-align:center;
+    animation:checkpointAnim 1.8s ease forwards;
+    opacity:0;
+  }
+  .dl-checkpoint-inner {
+    background:rgba(10,10,30,0.95); border:2px solid var(--neon-purple);
+    border-radius:20px; padding:22px 36px; box-shadow:0 0 40px rgba(191,0,255,0.4);
+  }
+  .dl-checkpoint-emoji { font-size:2.5rem; display:block; margin-bottom:6px; }
+  .dl-checkpoint-text { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; color:#fff; }
+  .dl-checkpoint-sub { font-size:0.72rem; color:rgba(191,0,255,0.8); margin-top:3px; }
+  @keyframes checkpointAnim {
+    0%   { opacity:0; transform:translate(-50%,-50%) scale(0.7); }
+    15%  { opacity:1; transform:translate(-50%,-50%) scale(1.05); }
+    30%  { transform:translate(-50%,-50%) scale(1); }
+    70%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
+    100% { opacity:0; transform:translate(-50%,-58%) scale(0.95); }
+  }
+
+  /* Confetti particles */
+  .dl-confetti-dot {
+    position:fixed; width:7px; height:7px; border-radius:50%;
+    pointer-events:none; z-index:399; animation:confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0%   { transform:translateY(0) rotate(0deg) scale(1); opacity:1; }
+    100% { transform:translateY(180px) rotate(540deg) scale(0.3); opacity:0; }
+  }
+
+  /* Exit button */
+  .dl-exit-btn {
+    position:fixed; top:16px; right:16px; z-index:310;
+    display:none; align-items:center; gap:6px; padding:7px 14px;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+    border-radius:20px; color:rgba(255,255,255,0.3); font-size:0.68rem;
+    font-family:'Space Mono',monospace; cursor:pointer; transition:all 0.2s;
+  }
+  .dl-exit-btn.show { display:flex; }
+  .dl-exit-btn:hover { border-color:rgba(255,0,110,0.4); color:rgba(255,0,110,0.7); }
 </style>
 </head>
 <body>
@@ -1380,6 +1723,23 @@ const IDB = (() => {
         <span>⬇</span><span>Tải cloud xuống</span>
       </button>
     </div>
+    <!-- ── LOOP SETTING ── -->
+    <div class="loop-setting-card">
+      <div class="loop-setting-title">🔁 Vòng lặp học từ</div>
+      <div class="loop-setting-desc">Học N từ rồi lặp lại từ đầu. Khi thuộc 1 từ, tự động thêm từ tiếp vào vòng.</div>
+      <div class="loop-size-btns" id="loopSizeBtns">
+        <button class="loop-size-btn" onclick="setLoopSize(5)">5</button>
+        <button class="loop-size-btn" onclick="setLoopSize(6)">6</button>
+        <button class="loop-size-btn" onclick="setLoopSize(7)">7</button>
+        <button class="loop-size-btn" onclick="setLoopSize(8)">8</button>
+        <button class="loop-size-btn" onclick="setLoopSize(9)">9</button>
+        <button class="loop-size-btn" onclick="setLoopSize(10)">10</button>
+      </div>
+      <button class="loop-off-btn" id="loopOffBtn" onclick="setLoopSize(0)">✕ Tắt vòng lặp</button>
+      <div class="loop-status-badge" id="loopStatusBadge" style="display:none">
+        <span class="dot"></span><span id="loopStatusText"></span>
+      </div>
+    </div>
     <div class="profile-section-title">Lịch sử học gần đây</div>
     <div class="profile-history" id="profileHistory"></div>
     <button class="btn-signout" style="width:100%;justify-content:center;margin-top:4px" onclick="handleSignOut()">⊖ Đăng xuất</button>
@@ -1387,23 +1747,97 @@ const IDB = (() => {
 </div>
 
 <!-- ===== ADMIN PANEL ===== -->
-<div class="admin-overlay" id="adminOverlay" onclick="closeAdmin(event)">
+<div class="admin-overlay" id="adminOverlay">
   <div class="admin-panel">
-    <div class="admin-header">
-      <div class="admin-title">⬡ ADMIN PANEL</div>
+    <!-- Top bar -->
+    <div class="admin-topbar">
+      <div class="admin-title">⬡ LEXON ADMIN</div>
       <button class="admin-close" onclick="closeAdminPanel()">✕ Đóng</button>
     </div>
-    <div class="admin-stats-row" id="adminStatsRow">
-      <div class="admin-stat"><div class="admin-stat-val" id="astatUsers">—</div><div class="admin-stat-lbl">Người dùng</div></div>
-      <div class="admin-stat"><div class="admin-stat-val" id="astatPending" style="color:var(--neon-yellow)">—</div><div class="admin-stat-lbl">Chờ duyệt</div></div>
-      <div class="admin-stat"><div class="admin-stat-val" id="astatWords">—</div><div class="admin-stat-lbl">Tổng từ</div></div>
-      <div class="admin-stat"><div class="admin-stat-val" id="astatMastered">—</div><div class="admin-stat-lbl">Đã thuộc</div></div>
+    <!-- Main tabs -->
+    <div class="admin-main-tabs">
+      <button class="admin-main-tab active" id="adminTab-users" onclick="switchAdminTab('users')">◈ Người dùng</button>
+      <button class="admin-main-tab" id="adminTab-settings" onclick="switchAdminTab('settings')">⚙ Cài đặt</button>
     </div>
-    <div class="admin-users-title">◈ Danh sách người dùng</div>
-    <input class="admin-search" id="adminSearch" placeholder="🔍  Tìm theo tên hoặc email..." oninput="filterAdminUsers()">
-    <div class="admin-users-list" id="adminUsersList">
-      <div class="admin-loading">⟳ Đang tải dữ liệu...</div>
+
+    <!-- TAB: Người dùng -->
+    <div class="admin-tab-panel active" id="adminPanel-users">
+      <div class="admin-stats-row" id="adminStatsRow">
+        <div class="admin-stat"><div class="admin-stat-val" id="astatUsers">—</div><div class="admin-stat-lbl">Người dùng</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" id="astatPending" style="color:var(--neon-yellow)">—</div><div class="admin-stat-lbl">Chờ duyệt</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" id="astatWords">—</div><div class="admin-stat-lbl">Tổng từ</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" id="astatMastered">—</div><div class="admin-stat-lbl">Đã thuộc</div></div>
+      </div>
+      <div class="admin-users-title">◈ Danh sách người dùng</div>
+      <input class="admin-search" id="adminSearch" placeholder="🔍  Tìm theo tên hoặc email..." oninput="filterAdminUsers()">
+      <div class="admin-users-list" id="adminUsersList">
+        <div class="admin-loading">⟳ Đang tải dữ liệu...</div>
+      </div>
     </div>
+
+    <!-- TAB: Cài đặt -->
+    <div class="admin-tab-panel" id="adminPanel-settings">
+      <div class="admin-settings-grid">
+
+        <!-- Card 1: XP Values -->
+        <div class="admin-settings-card">
+          <div class="admin-settings-card-title">✦ Điểm XP mỗi hành động</div>
+          <div class="admin-settings-row">
+            <div><div class="admin-settings-label">Đăng nhập hàng ngày</div><div class="admin-settings-sub">Mỗi lần login mới trong ngày</div></div>
+            <input class="admin-xp-input" id="xpSet-LOGIN_DAILY" type="number" min="0" max="100" value="5">
+          </div>
+          <div class="admin-settings-row">
+            <div><div class="admin-settings-label">Bấm "Đã thuộc"</div><div class="admin-settings-sub">Mỗi lần mark mastered</div></div>
+            <input class="admin-xp-input" id="xpSet-MASTERED" type="number" min="0" max="100" value="10">
+          </div>
+          <div class="admin-settings-row">
+            <div><div class="admin-settings-label">10 phút active</div><div class="admin-settings-sub">Mỗi 10 phút tương tác thật</div></div>
+            <input class="admin-xp-input" id="xpSet-ACTIVE_10MIN" type="number" min="0" max="100" value="8">
+          </div>
+          <div class="admin-settings-row">
+            <div><div class="admin-settings-label">Mở article context</div><div class="admin-settings-sub">Đọc ngữ cảnh bài báo</div></div>
+            <input class="admin-xp-input" id="xpSet-ARTICLE_OPEN" type="number" min="0" max="100" value="5">
+          </div>
+          <div class="admin-settings-row">
+            <div><div class="admin-settings-label">Vào học (mở pack)</div><div class="admin-settings-sub">1 lần/ngày/pack</div></div>
+            <input class="admin-xp-input" id="xpSet-OPEN_PACK" type="number" min="0" max="100" value="3">
+          </div>
+          <button class="admin-save-btn" id="adminSaveXP" onclick="adminSaveXPValues()">✓ Lưu cài đặt XP</button>
+        </div>
+
+        <!-- Card 2: Chúc mừng theo từ đã thuộc -->
+        <div class="admin-settings-card">
+          <div class="admin-settings-card-title">🎉 Chúc mừng theo từ đã thuộc</div>
+          <div class="admin-settings-row">
+            <div><div class="admin-settings-label">Cứ mỗi N từ đã thuộc</div><div class="admin-settings-sub">Hiện hiệu ứng chúc mừng</div></div>
+            <input class="admin-xp-input" id="xpSet-CELEBRATE_EVERY" type="number" min="1" max="50" value="5">
+          </div>
+          <div style="margin-top:16px;padding:12px 14px;background:rgba(0,0,0,0.25);border-radius:10px;font-size:0.72rem;color:rgba(255,255,255,0.4);line-height:1.8">
+            Ví dụ: đặt <strong style="color:var(--neon-cyan)">5</strong> → hiện thông báo khi thuộc được 5, 10, 15, 20... từ<br>
+            Thông báo: <em style="color:rgba(255,255,255,0.55)">"Chúc mừng! Bạn đã thuộc thêm 5 từ 🎉"</em>
+          </div>
+          <div class="admin-settings-row" style="margin-top:8px">
+            <div><div class="admin-settings-label">Streak bonus — 3 ngày</div></div>
+            <input class="admin-xp-input" id="xpSet-STREAK_3" type="number" min="0" max="50" value="2">
+          </div>
+          <div class="admin-settings-row">
+            <div><div class="admin-settings-label">Streak bonus — 7 ngày</div></div>
+            <input class="admin-xp-input" id="xpSet-STREAK_7" type="number" min="0" max="50" value="5">
+          </div>
+          <div class="admin-settings-row">
+            <div><div class="admin-settings-label">Streak bonus — 14 ngày</div></div>
+            <input class="admin-xp-input" id="xpSet-STREAK_14" type="number" min="0" max="50" value="10">
+          </div>
+          <div class="admin-settings-row">
+            <div><div class="admin-settings-label">Streak bonus — 21 ngày</div></div>
+            <input class="admin-xp-input" id="xpSet-STREAK_21" type="number" min="0" max="50" value="20">
+          </div>
+          <button class="admin-save-btn" id="adminSaveCelebrate" onclick="adminSaveCelebrateSettings()">✓ Lưu cài đặt chúc mừng</button>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1500,8 +1934,12 @@ const IDB = (() => {
   </div>
 
   <!-- ===== STATS BAR ===== -->
-  <div id="statsBar" style="display:none;text-align:center;margin-bottom:14px">
+  <div id="statsBar" style="display:none;text-align:center;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap">
     <span id="statHoursVal" style="font-family:'Space Mono',monospace;font-size:0.65rem;color:rgba(255,255,255,0.25);letter-spacing:0.08em">⏱ 0p học</span>
+    <span style="color:rgba(255,255,255,0.1)">·</span>
+    <button onclick="showStudyHistory()" style="font-family:'Space Mono',monospace;font-size:0.65rem;letter-spacing:0.08em;color:rgba(255,255,255,0.25);background:none;border:none;padding:0;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.5)'" onmouseout="this.style.color='rgba(255,255,255,0.25)'">lịch sử</button>
+    <span style="color:rgba(255,255,255,0.1)">·</span>
+    <button onclick="showDailySummary()" style="font-family:'Space Mono',monospace;font-size:0.65rem;letter-spacing:0.08em;color:rgba(255,255,255,0.25);background:none;border:none;padding:0;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.5)'" onmouseout="this.style.color='rgba(255,255,255,0.25)'">hôm nay</button>
   </div>
 
   <!-- ===== MAIN NAV ===== -->
@@ -1703,6 +2141,12 @@ let currentIndex = 0;
 let isFlipped = false;
 let correctStreak = 0;
 let listFilter = 'all';
+
+// ── LOOP SIZE ── (0 = tắt, 5-10 = bật)
+let loopSize = parseInt(localStorage.getItem('lexon_loop_size') || '0');
+// loopWindow: mảng chỉ số trong studyQueue đang trong vòng lặp
+let loopWindow = [];
+let loopWindowIndex = 0;
 
 // ============================================================
 //  FIREBASE HELPERS
@@ -1954,7 +2398,7 @@ async function renderPacksGrid() {
         <div class="pack-name">${h(pack.name)}</div>
         <div class="pack-meta">${pack.desc ? h(pack.desc) + '<br>' : ''}${total} từ · ${mastered} đã thuộc</div>
         <div class="pack-progress-bar"><div class="pack-progress-fill" style="width:${pct}%"></div></div>
-        <div class="pack-progress-label" style="margin-bottom:10px">${pct}% hoàn thành</div>
+        
         <button class="btn-publish ${isPublished ? 'published' : ''}" onclick="togglePublish('${pack.id}',event)">
           ${isPublished ? '🌐 Đang public · Bấm để ẩn' : '📤 Publish cho học viên'}
         </button>
@@ -1963,7 +2407,7 @@ async function renderPacksGrid() {
             <input type="checkbox" ${isPinned ? 'checked' : ''} onchange="togglePin('${pack.id}',this)">
             <span class="pin-toggle-track"></span>
           </label>
-          <span class="pin-toggle-label">Ghim lên đầu</span>
+          <span class="pin-toggle-label">PIN</span>
         </div>
         <div class="pack-sort-wrap" onclick="event.stopPropagation()">
           <span class="pack-sort-label">STT</span>
@@ -1987,11 +2431,7 @@ async function renderPacksGrid() {
 
     loadAdminPacks().then(async adminPacks => {
       if (!adminPacks.length) return;
-      const label = document.createElement('div');
-      label.className = 'shared-section-label';
-      label.style.cssText = 'grid-column:1/-1';
-      label.innerHTML = '⬡ Giáo trình';
-      grid.insertBefore(label, grid.firstChild);
+      // (section label removed)
 
       for (let i = 0; i < adminPacks.length; i++) {
         const pack = adminPacks[i];
@@ -2022,15 +2462,15 @@ async function renderPacksGrid() {
           <div class="pack-meta">${pack.desc ? h(pack.desc) + '<br>' : ''}${total} từ · ${mastered} đã thuộc</div>
           <div class="pack-progress-bar"><div class="pack-progress-fill" style="width:${pct}%"></div></div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
-            <div class="pack-progress-label" style="margin-top:0">${pct}% hoàn thành</div>
-            <div class="pack-admin-badge">⬡ giáo trình</div>
+            
+            
           </div>
           <div class="pin-toggle-wrap${isPinned ? ' active' : ''}" onclick="event.stopPropagation()">
             <label class="pin-toggle">
               <input type="checkbox" ${isPinned ? 'checked' : ''} onchange="toggleAdminPackPin('${pack.id}',this)">
               <span class="pin-toggle-track"></span>
             </label>
-            <span class="pin-toggle-label">Ghim lên đầu</span>
+            <span class="pin-toggle-label">PIN</span>
           </div>
         `;
         card.addEventListener('click', (e) => {
@@ -2043,11 +2483,7 @@ async function renderPacksGrid() {
 
     // Pack riêng của user
     if (packs.length) {
-      const myLabel = document.createElement('div');
-      myLabel.className = 'shared-section-label';
-      myLabel.style.cssText = 'grid-column:1/-1;margin-top:8px';
-      myLabel.innerHTML = '◈ Gói của tôi';
-      grid.appendChild(myLabel);
+      // (section label removed)
     }
 
     const addCard = document.createElement('div');
@@ -2074,13 +2510,13 @@ async function renderPacksGrid() {
         <div class="pack-name">${h(pack.name)}</div>
         <div class="pack-meta">${pack.desc ? h(pack.desc) + '<br>' : ''}${total} từ · ${mastered} đã thuộc</div>
         <div class="pack-progress-bar"><div class="pack-progress-fill" style="width:${pct}%"></div></div>
-        <div class="pack-progress-label">${pct}% hoàn thành</div>
+        
         <div class="pin-toggle-wrap${isPinned ? ' active' : ''}" onclick="event.stopPropagation()">
           <label class="pin-toggle">
             <input type="checkbox" ${isPinned ? 'checked' : ''} onchange="togglePin('${pack.id}',this)">
             <span class="pin-toggle-track"></span>
           </label>
-          <span class="pin-toggle-label">Ghim lên đầu</span>
+          <span class="pin-toggle-label">PIN</span>
         </div>
       `;
       card.addEventListener('click', (e) => {
@@ -2098,6 +2534,7 @@ async function openPack(pack) {
   document.getElementById('screen-packs').classList.remove('active');
   document.getElementById('screen-study').classList.add('active');
   statsStartSession();
+  xpRecordOpenPack(pack.id); // ✦ XP vào học
   switchTab('input');
   words = [];
 
@@ -2470,6 +2907,8 @@ function speakFallback(word, accent, btnId) {
 
 function autoSpeakCurrent() {
   if (!autoPlay) return;
+  // Chế độ đảo ngược: mặt trước là tiếng Việt → KHÔNG đọc khi load thẻ mới
+  if (reversedMode) return;
   const c = studyQueue[currentIndex];
   if (c) setTimeout(() => speakWord(c.word, 'en-US', 'btnUS'), 500);
 }
@@ -2486,7 +2925,80 @@ function buildQueue() {
   studyQueue = pool.map(w=>({...w}));
   for (let i=studyQueue.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [studyQueue[i],studyQueue[j]]=[studyQueue[j],studyQueue[i]]; }
   currentIndex=0; isFlipped=false; correctStreak=0;
+  // Init loop window
+  _initLoopWindow();
 }
+
+// ── LOOP WINDOW HELPERS ──
+function _initLoopWindow() {
+  if (!loopSize || studyQueue.length === 0) { loopWindow = []; loopWindowIndex = 0; return; }
+  // Lấy min(loopSize, studyQueue.length) từ đầu queue
+  loopWindow = studyQueue.slice(0, Math.min(loopSize, studyQueue.length)).map((_, i) => i);
+  loopWindowIndex = 0;
+  currentIndex = loopWindow[0];
+}
+
+function _loopNextCard() {
+  if (!loopSize || !loopWindow.length) return false; // fallback to normal
+  loopWindowIndex = (loopWindowIndex + 1) % loopWindow.length;
+  currentIndex = loopWindow[loopWindowIndex];
+  return true;
+}
+
+function _loopOnMastered(masteredQueueIdx) {
+  if (!loopSize || !loopWindow.length) return;
+  // Xóa từ đã thuộc khỏi loopWindow
+  loopWindow = loopWindow.filter(i => i !== masteredQueueIdx);
+  // Thêm từ tiếp theo vào loopWindow nếu có
+  const nextIdx = loopSize + (studyQueue.length - studyQueue.filter((_, i) => loopWindow.includes(i) || i === masteredQueueIdx).length);
+  // Cách đơn giản: tìm từ chưa có trong loopWindow, lấy cái đầu tiên sau max của loopWindow
+  const inWindow = new Set(loopWindow);
+  const candidates = studyQueue.map((_, i) => i).filter(i => !inWindow.has(i) && i !== masteredQueueIdx);
+  if (candidates.length) {
+    loopWindow.push(candidates[0]);
+  }
+  // Clamp loopWindowIndex
+  if (loopWindow.length === 0) { loopWindowIndex = 0; return; }
+  loopWindowIndex = loopWindowIndex % loopWindow.length;
+  currentIndex = loopWindow[loopWindowIndex];
+}
+
+// ── SET LOOP SIZE (từ profile) ──
+function setLoopSize(n) {
+  loopSize = n;
+  localStorage.setItem('lexon_loop_size', n);
+  _updateLoopUI();
+  // Rebuild queue với loop mode mới
+  if (studyQueue.length) {
+    if (loopSize) _initLoopWindow();
+    else { currentIndex = 0; loopWindow = []; }
+    const panel = document.getElementById('panel-flashcard');
+    if (panel && panel.classList.contains('active')) renderFlashcard();
+  }
+}
+
+function _updateLoopUI() {
+  // Cập nhật buttons trong profile
+  document.querySelectorAll('.loop-size-btn').forEach((btn, i) => {
+    const val = i + 5;
+    btn.classList.toggle('active', loopSize === val);
+  });
+  const offBtn = document.getElementById('loopOffBtn');
+  if (offBtn) offBtn.classList.toggle('active', loopSize === 0);
+  const badge = document.getElementById('loopStatusBadge');
+  const badgeText = document.getElementById('loopStatusText');
+  if (badge && badgeText) {
+    if (loopSize > 0) {
+      badge.style.display = 'inline-flex';
+      badgeText.textContent = `Đang bật vòng ${loopSize} từ`;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+}
+
+// Gọi khi mở profile để sync UI
+function _syncLoopUIOnOpen() { _updateLoopUI(); }
 
 // ============================================================
 //  FLASHCARD
@@ -2509,13 +3021,9 @@ function renderFlashcard() {
     ].join('');
     el.innerHTML = `
       <div class="fc-controls" style="margin-bottom:20px">
-        <div class="autoplay-toggle">
-          <label class="toggle-switch">
-            <input type="checkbox" id="autoPlayToggle" ${autoPlay?'checked':''} onchange="autoPlay=this.checked">
-            <span class="toggle-track"></span>
-          </label>
-          <span class="toggle-label">Tự đọc</span>
-        </div>
+        <button class="dl-toggle-btn" onclick="dlOpen()">
+          <span class="dl-toggle-dot"></span>DEEP LEARNING
+        </button>
         <div class="autoplay-toggle">
           <label class="toggle-switch">
             <input type="checkbox" id="reversedToggle" ${reversedMode?'checked':''} onchange="reversedMode=this.checked;isFlipped=false;renderFlashcard()">
@@ -2545,16 +3053,21 @@ function renderFlashcard() {
       <div class="stat-card"><div class="stat-value">${m}</div><div class="stat-label">Đã thuộc</div></div>
       <div class="stat-card"><div class="stat-value">${correctStreak}</div><div class="stat-label">Streak 🔥</div></div>
     </div>
+    ${loopSize && loopWindow.length ? `
+    <div style="text-align:center;margin-bottom:10px">
+      <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(0,245,255,0.07);border:1px solid rgba(0,245,255,0.2);border-radius:20px;font-size:0.68rem;font-family:'Space Mono',monospace;color:var(--neon-cyan);letter-spacing:0.04em">
+        <span style="opacity:0.6">🔁 Vòng</span>
+        <span style="font-weight:700">${loopWindowIndex + 1} / ${loopWindow.length}</span>
+        <span style="opacity:0.4">·</span>
+        <span style="opacity:0.6">Tổng window: ${loopWindow.length} từ</span>
+      </div>
+    </div>` : ''}
     <div class="fc-controls">
       <div class="prog-info"><strong>${currentIndex+1}</strong> / ${studyQueue.length}</div>
       <div class="prog-wrap"><div class="prog-bar" style="width:${prog}%"></div></div>
-      <div class="autoplay-toggle">
-        <label class="toggle-switch">
-          <input type="checkbox" id="autoPlayToggle" ${autoPlay?'checked':''} onchange="autoPlay=this.checked">
-          <span class="toggle-track"></span>
-        </label>
-        <span class="toggle-label">Tự đọc</span>
-      </div>
+      <button class="dl-toggle-btn" id="dlToggleBtn" onclick="dlOpen()">
+        <span class="dl-toggle-dot"></span>DEEP LEARNING
+      </button>
       <div class="autoplay-toggle">
         <label class="toggle-switch">
           <input type="checkbox" id="reversedToggle" ${reversedMode?'checked':''} onchange="reversedMode=this.checked;isFlipped=false;renderFlashcard()">
@@ -2640,8 +3153,8 @@ function renderFlashcard() {
       <button class="btn btn-mastered" onclick="markMastered()">✓ Đã Thuộc!</button>
     </div>
     <div class="arrow-nav">
-      <button class="btn-arrow" onclick="prevCard()" ${currentIndex===0?'disabled':''} title="Quay lại (←)">←</button>
-      <span class="arrow-nav-hint">Phím ← → để điều hướng &nbsp;·&nbsp; Space để lật</span>
+      <button class="btn-arrow" onclick="prevCard()" ${(!loopSize && currentIndex===0)?'disabled':''} title="Quay lại (←)">←</button>
+      <span class="arrow-nav-hint">Phím ← → &nbsp;·&nbsp; Vuốt trái/phải &nbsp;·&nbsp; Space lật</span>
       <button class="btn-arrow" onclick="skipWord()" title="Tiếp theo (→)">→</button>
     </div>
   `;
@@ -2655,8 +3168,14 @@ function flipCard() {
   const wasFlipped = isFlipped;
   isFlipped=!isFlipped;
   c.classList.toggle('flipped',isFlipped);
-  // Only count as "seen" when flipping to reveal the back for the first time per card
   if (!wasFlipped) { statsRecordFlip(); }
+  xpOnFlashcardAction(); // ✦ XP active time
+
+  // Chế độ đảo ngược: đọc từ khi lật sang mặt tiếng Anh (isFlipped = true)
+  if (reversedMode && autoPlay && isFlipped) {
+    const cur = studyQueue[currentIndex];
+    if (cur) setTimeout(() => speakWord(cur.word, 'en-US', 'btnUS2'), 300);
+  }
 }
 
 function handleKey(e) {
@@ -2677,18 +3196,89 @@ document.addEventListener('keydown', function(e) {
   if(e.key===' '||e.key==='ArrowUp'||e.key==='ArrowDown'){ e.preventDefault(); flipCard(); }
 });
 
-function skipWord()    { correctStreak=0; nextCard(); }
-function nextCard()    { currentIndex++; if(currentIndex>=studyQueue.length) buildQueue(); isFlipped=false; renderFlashcard(); }
-function prevCard()    { if(currentIndex>0){ currentIndex--; isFlipped=false; renderFlashcard(); } }
+// ── SWIPE SUPPORT (mobile) ──
+(function() {
+  let swipeStartX = 0, swipeStartY = 0, swipeStartTime = 0;
+  const MIN_SWIPE = 50, MAX_VERTICAL_RATIO = 0.7, MAX_TIME = 400;
+
+  document.addEventListener('touchstart', function(e) {
+    const t = e.touches[0];
+    swipeStartX = t.clientX;
+    swipeStartY = t.clientY;
+    swipeStartTime = Date.now();
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    const isFlashcardPanel = document.getElementById('panel-flashcard')?.classList.contains('active');
+    if (!isFlashcardPanel) return;
+    // Ignore if overlay is open
+    if (document.querySelector('.art-overlay.open')) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - swipeStartX;
+    const dy = t.clientY - swipeStartY;
+    const dt = Date.now() - swipeStartTime;
+    if (dt > MAX_TIME) return;
+    if (Math.abs(dx) < MIN_SWIPE) return;
+    if (Math.abs(dy) / Math.abs(dx) > MAX_VERTICAL_RATIO) return;
+    if (dx < 0) {
+      skipWord();
+    } else {
+      prevCard();
+    }
+  }, { passive: true });
+})();
+
+function skipWord()    { correctStreak=0; xpOnFlashcardAction(); nextCard(); } // ✦ XP
+function nextCard() {
+  if (loopSize && loopWindow.length) {
+    // Loop mode: xoay vòng trong window
+    loopWindowIndex = (loopWindowIndex + 1) % loopWindow.length;
+    currentIndex = loopWindow[loopWindowIndex];
+  } else {
+    currentIndex++;
+    if(currentIndex>=studyQueue.length) buildQueue();
+  }
+  isFlipped=false; renderFlashcard();
+}
+function prevCard() {
+  if (loopSize && loopWindow.length) {
+    loopWindowIndex = (loopWindowIndex - 1 + loopWindow.length) % loopWindow.length;
+    currentIndex = loopWindow[loopWindowIndex];
+    isFlipped=false; renderFlashcard();
+  } else {
+    if(currentIndex>0){ currentIndex--; isFlipped=false; renderFlashcard(); }
+  }
+}
 
 function markMastered() {
   if(!studyQueue[currentIndex])return;
   const w=studyQueue[currentIndex].word;
   const i=words.findIndex(x=>x.word===w);
   if(i>=0){words[i].mastered=true; saveData(); recordStudyActivity(1); refreshStatsBar(); challengeRecordStudyDay();}
+  // ✦ XP
+  const masteredBtn = document.querySelector('.btn-mastered');
+  xpOnMastered(masteredBtn);
+
+  const masteredIdx = currentIndex;
   studyQueue.splice(currentIndex,1);
-  if(currentIndex>=studyQueue.length) currentIndex=0;
-  if(!studyQueue.length) buildQueue();
+
+  if (loopSize && loopWindow.length) {
+    // Update loopWindow: xóa idx cũ, thêm từ mới vào nếu có
+    // Sau splice, các idx > masteredIdx giảm đi 1
+    loopWindow = loopWindow
+      .filter(idx => idx !== masteredIdx)
+      .map(idx => idx > masteredIdx ? idx - 1 : idx);
+    // Thêm từ tiếp theo chưa có trong window
+    const inWindow = new Set(loopWindow);
+    const candidates = studyQueue.map((_, i) => i).filter(i => !inWindow.has(i));
+    if (candidates.length) loopWindow.push(candidates[0]);
+    if (loopWindow.length === 0) { buildQueue(); return; }
+    loopWindowIndex = loopWindowIndex % loopWindow.length;
+    currentIndex = loopWindow[loopWindowIndex];
+  } else {
+    if(currentIndex>=studyQueue.length) currentIndex=0;
+    if(!studyQueue.length) buildQueue();
+  }
   isFlipped=false; renderFlashcard(); updateStudyBadge();
 }
 
@@ -3022,6 +3612,7 @@ async function openProfile() {
   document.getElementById('profileEmail').textContent = u.email;
 
   document.getElementById('profileOverlay').classList.add('show');
+  _syncLoopUIOnOpen();
 
   try {
     const snap = await window._getDoc(userDoc());
@@ -3369,6 +3960,56 @@ async function statsStopSession() {
   } catch(e) {}
 }
 
+// ============================================================
+//  ACTIVE TIME TRACKER — idle detection 2 phút
+//  Lưu vào Firestore: activeMinutesByDay: { 'YYYY-MM-DD': minutes }
+// ============================================================
+let _activeLastInteraction = 0;
+let _activeAccumSec = 0;          // giây active tích lũy trong ngày (chưa flush)
+let _activeTickTimer = null;
+const ACTIVE_IDLE_SECS = 120;     // 2 phút không tương tác = idle
+
+function activeTimeRecordInteraction() {
+  const now = Date.now();
+  if (_activeLastInteraction > 0) {
+    const gap = (now - _activeLastInteraction) / 1000;
+    if (gap < ACTIVE_IDLE_SECS) {
+      _activeAccumSec += gap;  // khoảng thời gian này là active
+    }
+    // gap >= 2 phút → bỏ qua, không tính
+  }
+  _activeLastInteraction = now;
+
+  // Flush mỗi 60 giây tích lũy
+  if (_activeAccumSec >= 60) {
+    const mins = Math.floor(_activeAccumSec / 60);
+    _activeAccumSec -= mins * 60;
+    _activeTimeFlush(mins);
+  }
+}
+
+async function _activeTimeFlush(mins) {
+  if (!isLoggedIn() || mins < 1) return;
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    const ref = window._doc(window._db, 'users', getUID(), 'xp', 'data');
+    const snap = await window._getDoc(ref).catch(() => null);
+    const d = snap && snap.exists() ? snap.data() : {};
+    const byDay = d.activeMinutesByDay || {};
+    byDay[today] = (byDay[today] || 0) + mins;
+    await window._setDoc(ref, { activeMinutesByDay: byDay }, { merge: true });
+  } catch(e) { console.warn('[ActiveTime] flush error', e); }
+}
+
+// Flush khi rời trang / ẩn tab
+async function activeTimeFlushOnExit() {
+  if (_activeLastInteraction > 0 && _activeAccumSec > 0) {
+    const mins = Math.floor(_activeAccumSec / 60);
+    _activeAccumSec = 0;
+    await _activeTimeFlush(mins);
+  }
+}
+
 // Record a word flip (word seen)
 async function statsRecordFlip() {
   if (!isLoggedIn()) return;
@@ -3572,7 +4213,9 @@ let _allUsersData = [];
 async function openAdminPanel() {
   if (!isAdmin()) return;
   document.getElementById('adminOverlay').classList.add('show');
+  switchAdminTab('users');
   await loadAdminData();
+  _adminLoadSettingsUI();
 }
 
 function closeAdminPanel() {
@@ -3581,6 +4224,76 @@ function closeAdminPanel() {
 
 function closeAdmin(e) {
   if (e.target === document.getElementById('adminOverlay')) closeAdminPanel();
+}
+
+function switchAdminTab(tab) {
+  ['users','settings'].forEach(t => {
+    document.getElementById('adminTab-' + t)?.classList.toggle('active', t === tab);
+    document.getElementById('adminPanel-' + t)?.classList.toggle('active', t === tab);
+  });
+}
+
+function _adminLoadSettingsUI() {
+  // Load current XP values vào inputs
+  const v = XP_VALUES;
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+  set('xpSet-LOGIN_DAILY',   v.LOGIN_DAILY);
+  set('xpSet-MASTERED',      v.MASTERED);
+  set('xpSet-ACTIVE_10MIN',  v.ACTIVE_10MIN);
+  set('xpSet-ARTICLE_OPEN',  v.ARTICLE_OPEN);
+  set('xpSet-OPEN_PACK',     v.OPEN_PACK);
+  set('xpSet-CELEBRATE_EVERY', CELEBRATE_EVERY);
+  set('xpSet-STREAK_3',  v.STREAK_BONUS[3]  || 2);
+  set('xpSet-STREAK_7',  v.STREAK_BONUS[7]  || 5);
+  set('xpSet-STREAK_14', v.STREAK_BONUS[14] || 10);
+  set('xpSet-STREAK_21', v.STREAK_BONUS[21] || 20);
+}
+
+async function adminSaveXPValues() {
+  if (!isAdmin()) return;
+  const get = id => parseInt(document.getElementById(id)?.value) || 0;
+  XP_VALUES.LOGIN_DAILY  = get('xpSet-LOGIN_DAILY');
+  XP_VALUES.MASTERED     = get('xpSet-MASTERED');
+  XP_VALUES.ACTIVE_10MIN = get('xpSet-ACTIVE_10MIN');
+  XP_VALUES.ARTICLE_OPEN = get('xpSet-ARTICLE_OPEN');
+  XP_VALUES.OPEN_PACK    = get('xpSet-OPEN_PACK');
+  try {
+    await window._setDoc(
+      window._doc(window._db, 'appConfig', 'scoring'),
+      { xpValues: {
+          LOGIN_DAILY:  XP_VALUES.LOGIN_DAILY,
+          MASTERED:     XP_VALUES.MASTERED,
+          ACTIVE_10MIN: XP_VALUES.ACTIVE_10MIN,
+          ARTICLE_OPEN: XP_VALUES.ARTICLE_OPEN,
+          OPEN_PACK:    XP_VALUES.OPEN_PACK,
+        }
+      }, { merge: true }
+    );
+    const btn = document.getElementById('adminSaveXP');
+    if (btn) { btn.textContent = '✓ Đã lưu!'; btn.classList.add('saved'); setTimeout(() => { btn.textContent = '✓ Lưu cài đặt XP'; btn.classList.remove('saved'); }, 2000); }
+  } catch(e) { alert('Lỗi lưu: ' + e.message); }
+}
+
+async function adminSaveCelebrateSettings() {
+  if (!isAdmin()) return;
+  const get = id => parseInt(document.getElementById(id)?.value) || 0;
+  CELEBRATE_EVERY = get('xpSet-CELEBRATE_EVERY') || 5;
+  XP_VALUES.STREAK_BONUS = {
+    3:  get('xpSet-STREAK_3'),
+    7:  get('xpSet-STREAK_7'),
+    14: get('xpSet-STREAK_14'),
+    21: get('xpSet-STREAK_21'),
+  };
+  try {
+    await window._setDoc(
+      window._doc(window._db, 'appConfig', 'scoring'),
+      { celebrateEvery: CELEBRATE_EVERY,
+        xpValues: { STREAK_BONUS: XP_VALUES.STREAK_BONUS }
+      }, { merge: true }
+    );
+    const btn = document.getElementById('adminSaveCelebrate');
+    if (btn) { btn.textContent = '✓ Đã lưu!'; btn.classList.add('saved'); setTimeout(() => { btn.textContent = '✓ Lưu cài đặt chúc mừng'; btn.classList.remove('saved'); }, 2000); }
+  } catch(e) { alert('Lỗi lưu: ' + e.message); }
 }
 
 async function loadAdminData() {
@@ -3910,6 +4623,7 @@ function closeAdminDetail() {
 function initApp() {
   initTTS();
   updateAuthBar();
+  xpInit(); // ✦ XP engine start
   runInitialDownload(); // tải IndexedDB trước, xong gọi showPacksScreen
 }
 
@@ -4127,8 +4841,8 @@ async function _loadMetaFromCache() {
 
 
 // Save study time when user leaves or hides the page
-document.addEventListener('visibilitychange', () => { if (document.hidden) statsStopSession(); });
-window.addEventListener('beforeunload', () => statsStopSession());
+document.addEventListener('visibilitychange', () => { if (document.hidden) { statsStopSession(); activeTimeFlushOnExit(); } });
+window.addEventListener('beforeunload', () => { statsStopSession(); activeTimeFlushOnExit(); });
 
 async function handleAuthChange(user) {
   updateAuthBar();
@@ -4241,6 +4955,609 @@ if ('serviceWorker' in navigator) {
     .catch(e => console.warn('[SW] Failed:', e));
 }
 
+// ============================================================
+//  ✦ XP SCORING ENGINE
+//  Firestore path: /users/{uid}/xp { total, log[], lastLoginDate,
+//                                    activeMinutes, sessionStart }
+//  Milestones hardcoded: 10,20,50 rồi cứ +50
+// ============================================================
+
+const XP_VALUES = {
+  LOGIN_DAILY:   5,   // đăng nhập mỗi ngày
+  MASTERED:      10,  // bấm "Đã thuộc"
+  ACTIVE_10MIN:  8,   // mỗi 10 phút active
+  ARTICLE_OPEN:  5,   // mở article context
+  OPEN_PACK:     3,   // vào học một gói bất kỳ
+  STREAK_BONUS: { 3:2, 7:5, 14:10, 21:20 }, // bonus ngày streak liên tiếp
+};
+
+// Milestones XP (vẫn giữ để dùng trong history chart)
+function _getMilestones() {
+  const ms = [10, 20, 50];
+  for (let i = 100; i <= 9950; i += 50) ms.push(i);
+  return ms;
+}
+const XP_MILESTONES = _getMilestones();
+
+// Celebrate config — load từ Firestore appConfig, fallback về default
+let CELEBRATE_EVERY = 5;  // cứ N từ đã thuộc → chúc mừng
+let _totalMasteredSession = 0; // đếm tổng từ đã thuộc trong session (kể cả reset)
+
+async function _loadAppConfig() {
+  try {
+    const ref = window._doc(window._db, 'appConfig', 'scoring');
+    const snap = await window._getDoc(ref);
+    if (snap.exists()) {
+      const d = snap.data();
+      if (d.xpValues) {
+        if (d.xpValues.LOGIN_DAILY  !== undefined) XP_VALUES.LOGIN_DAILY  = d.xpValues.LOGIN_DAILY;
+        if (d.xpValues.MASTERED     !== undefined) XP_VALUES.MASTERED     = d.xpValues.MASTERED;
+        if (d.xpValues.ACTIVE_10MIN !== undefined) XP_VALUES.ACTIVE_10MIN = d.xpValues.ACTIVE_10MIN;
+        if (d.xpValues.ARTICLE_OPEN !== undefined) XP_VALUES.ARTICLE_OPEN = d.xpValues.ARTICLE_OPEN;
+        if (d.xpValues.OPEN_PACK    !== undefined) XP_VALUES.OPEN_PACK    = d.xpValues.OPEN_PACK;
+        if (d.xpValues.STREAK_BONUS !== undefined) XP_VALUES.STREAK_BONUS = d.xpValues.STREAK_BONUS;
+      }
+      if (d.celebrateEvery !== undefined) CELEBRATE_EVERY = d.celebrateEvery;
+    }
+  } catch(e) { console.warn('[AppConfig] load error', e); }
+}
+
+// State
+let _xpSession = {
+  total: 0,          // tổng XP hiện tại (load từ Firestore)
+  todayXP: 0,        // XP kiếm được hôm nay
+  todayMastered: 0,
+  todayArticles: 0,
+  todayActiveMin: 0,
+  loginStreakDays: 0,
+  loaded: false,
+};
+
+let _activeTimer = null;
+let _activeSeconds = 0;
+let _lastInteraction = 0;
+const ACTIVE_IDLE_THRESHOLD = 60; // giây không tương tác → dừng đếm
+
+// ── Load XP từ Firestore ──
+async function xpLoad() {
+  if (!isLoggedIn()) return;
+  try {
+    const ref = window._doc(window._db, 'users', getUID(), 'xp', 'data');
+    const snap = await window._getDoc(ref);
+    if (snap.exists()) {
+      const d = snap.data();
+      _xpSession.total = d.total || 0;
+      _xpSession.loginStreakDays = d.loginStreakDays || 0;
+    }
+    _xpSession.loaded = true;
+  } catch(e) { console.warn('[XP] load error', e); }
+}
+
+// ── Lưu XP lên Firestore (debounced) ──
+let _xpSaveTimer = null;
+function _xpScheduleSave() {
+  clearTimeout(_xpSaveTimer);
+  _xpSaveTimer = setTimeout(_xpSave, 3000);
+}
+async function _xpSave() {
+  if (!isLoggedIn()) return;
+  try {
+    const ref = window._doc(window._db, 'users', getUID(), 'xp', 'data');
+    const today = new Date().toISOString().slice(0,10);
+    await window._setDoc(ref, {
+      total: _xpSession.total,
+      loginStreakDays: _xpSession.loginStreakDays,
+      lastUpdated: Date.now(),
+      ['day_' + today]: (_xpSession.todayXP),
+    }, { merge: true });
+  } catch(e) { console.warn('[XP] save error', e); }
+}
+
+// ── Core: cộng điểm ──
+function xpAdd(amount, reason) {
+  if (!isLoggedIn() || amount <= 0) return;
+  const prev = _xpSession.total;
+  _xpSession.total += amount;
+  _xpSession.todayXP += amount;
+  _xpScheduleSave();
+
+  // XP milestone tracking (dùng cho history chart)
+  // Celebration theo từ được xử lý riêng trong xpOnMastered
+}
+
+// ── Celebration theo từ đã thuộc ──
+function _fireMasteredCelebration(total, every) {
+  const el = document.createElement('div');
+  el.id = 'xp-milestone-toast';
+  el.innerHTML = `
+    <div style="
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.8);
+      z-index:99999; text-align:center;
+      background:rgba(5,5,15,0.95);
+      border:1.5px solid rgba(57,255,20,0.5);
+      border-radius:20px; padding:28px 40px;
+      font-family:'Syne',sans-serif;
+      box-shadow:0 0 60px rgba(57,255,20,0.15);
+      animation: xpMilestoneIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+    ">
+      <div style="font-size:2.2rem;margin-bottom:8px">🎉</div>
+      <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(57,255,20,0.7);margin-bottom:8px">Chúc mừng!</div>
+      <div style="font-size:1rem;font-weight:800;color:#fff;line-height:1.4">Bạn đã thuộc thêm</div>
+      <div style="font-size:3rem;font-weight:800;color:var(--neon-green);line-height:1.1">${every}</div>
+      <div style="font-size:1rem;font-weight:800;color:#fff">từ vựng</div>
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.3);margin-top:8px">Tổng đã thuộc hôm nay: ${total} từ</div>
+    </div>
+  `;
+  document.body.appendChild(el);
+
+  // Thêm keyframe nếu chưa có
+  if (!document.getElementById('xp-milestone-style')) {
+    const s = document.createElement('style');
+    s.id = 'xp-milestone-style';
+    s.textContent = `
+      @keyframes xpMilestoneIn {
+        0%   { opacity:0; transform:translate(-50%,-50%) scale(0.7); }
+        100% { opacity:1; transform:translate(-50%,-50%) scale(1); }
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  setTimeout(() => {
+    el.querySelector('div').style.transition = 'opacity 0.5s, transform 0.5s';
+    el.querySelector('div').style.opacity = '0';
+    el.querySelector('div').style.transform = 'translate(-50%,-60%) scale(0.9)';
+    setTimeout(() => el.remove(), 600);
+  }, 2200);
+}
+
+// ── Micro XP badge (nổi lên tại điểm tương tác) ──
+function _xpFloatBadge(amount, sourceEl) {
+  const badge = document.createElement('div');
+  badge.textContent = '+' + amount + ' XP';
+  badge.style.cssText = `
+    position:fixed; z-index:9998; pointer-events:none;
+    font-family:'Space Mono',monospace; font-size:0.72rem; font-weight:700;
+    color:var(--neon-yellow); text-shadow:0 0 8px rgba(255,230,0,0.6);
+    animation: xpFloat 0.9s ease-out forwards;
+  `;
+  if (!document.getElementById('xp-float-style')) {
+    const s = document.createElement('style');
+    s.id = 'xp-float-style';
+    s.textContent = `
+      @keyframes xpFloat {
+        0%   { opacity:1; transform:translateY(0); }
+        100% { opacity:0; transform:translateY(-36px); }
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  // Đặt vị trí gần element nếu có, không thì giữa màn hình
+  if (sourceEl) {
+    const r = sourceEl.getBoundingClientRect();
+    badge.style.left = (r.left + r.width/2 - 20) + 'px';
+    badge.style.top  = (r.top - 8) + 'px';
+  } else {
+    badge.style.left = '50%';
+    badge.style.top  = '40%';
+    badge.style.transform = 'translateX(-50%)';
+  }
+  document.body.appendChild(badge);
+  setTimeout(() => badge.remove(), 950);
+}
+
+// ── Active time tracker ──
+function xpRecordInteraction() {
+  _lastInteraction = Date.now();
+  if (!_activeTimer) {
+    _activeTimer = setInterval(() => {
+      const now = Date.now();
+      if ((now - _lastInteraction) / 1000 > ACTIVE_IDLE_THRESHOLD) {
+        // Idle quá lâu → dừng timer
+        clearInterval(_activeTimer);
+        _activeTimer = null;
+        return;
+      }
+      _activeSeconds++;
+      if (_activeSeconds > 0 && _activeSeconds % 600 === 0) {
+        // Mỗi 10 phút active → cộng điểm
+        _xpSession.todayActiveMin += 10;
+        xpAdd(XP_VALUES.ACTIVE_10MIN, 'active_10min');
+        showToast('success', `⏱ +${XP_VALUES.ACTIVE_10MIN} XP — 10 phút học tập!`);
+      }
+    }, 1000);
+  }
+}
+
+// ── Điểm đăng nhập hàng ngày + streak ──
+async function xpRecordDailyLogin() {
+  if (!isLoggedIn()) return;
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    const ref = window._doc(window._db, 'users', getUID(), 'xp', 'data');
+    const snap = await window._getDoc(ref);
+    const d = snap.exists() ? snap.data() : {};
+
+    if (d.lastLoginDate === today) return; // đã tính hôm nay rồi
+
+    // Tính streak
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    let streak = (d.lastLoginDate === yesterday) ? (d.loginStreakDays || 0) + 1 : 1;
+    _xpSession.loginStreakDays = streak;
+
+    let xp = XP_VALUES.LOGIN_DAILY;
+    // Bonus streak
+    const bonusKeys = Object.keys(XP_VALUES.STREAK_BONUS).map(Number).sort((a,b)=>b-a);
+    for (const k of bonusKeys) {
+      if (streak >= k) { xp += XP_VALUES.STREAK_BONUS[k]; break; }
+    }
+
+    await window._setDoc(ref, {
+      lastLoginDate: today,
+      loginStreakDays: streak,
+    }, { merge: true });
+
+    xpAdd(xp, 'daily_login');
+
+    if (streak > 1) {
+      showToast('success', `🔥 Streak ${streak} ngày! +${xp} XP`);
+    }
+  } catch(e) { console.warn('[XP] daily login error', e); }
+}
+
+// ── Điểm vào học pack (1 lần/ngày/pack) ──
+const _xpOpenedPacksToday = new Set();
+function xpRecordOpenPack(packId) {
+  const key = new Date().toISOString().slice(0,10) + '::' + packId;
+  if (_xpOpenedPacksToday.has(key)) return;
+  _xpOpenedPacksToday.add(key);
+  xpAdd(XP_VALUES.OPEN_PACK, 'open_pack');
+}
+
+// ── Public API cho các action ──
+function xpOnMastered(btnEl) {
+  _xpSession.todayMastered++;
+  _totalMasteredSession++;
+  xpAdd(XP_VALUES.MASTERED, 'mastered');
+  _xpFloatBadge(XP_VALUES.MASTERED, btnEl);
+  xpRecordInteraction();
+  activeTimeRecordInteraction(); // ✦ active time
+
+  // Chúc mừng mỗi CELEBRATE_EVERY từ đã thuộc
+  if (CELEBRATE_EVERY > 0 && _totalMasteredSession % CELEBRATE_EVERY === 0) {
+    _fireMasteredCelebration(_totalMasteredSession, CELEBRATE_EVERY);
+  }
+}
+
+function xpOnArticleOpen() {
+  _xpSession.todayArticles++;
+  xpAdd(XP_VALUES.ARTICLE_OPEN, 'article_open');
+  xpRecordInteraction();
+  activeTimeRecordInteraction(); // ✦ active time
+}
+
+function xpOnFlashcardAction() {
+  xpRecordInteraction();
+  activeTimeRecordInteraction(); // ✦ active time
+}
+
+// ── Tổng kết hôm nay ──
+function showDailySummary() {
+  const s = _xpSession;
+  const streak = s.loginStreakDays;
+  const total  = s.total;
+
+  // Tìm milestone tiếp theo
+  const nextMs = XP_MILESTONES.find(m => m > total) || null;
+  const toNext  = nextMs ? nextMs - total : 0;
+  const fromPrev = nextMs
+    ? (XP_MILESTONES[XP_MILESTONES.indexOf(nextMs) - 1] || 0)
+    : (XP_MILESTONES[XP_MILESTONES.length - 1]);
+  const pct = nextMs
+    ? Math.round(((total - fromPrev) / (nextMs - fromPrev)) * 100)
+    : 100;
+
+  const html = `
+    <div id="dailySummaryOverlay" onclick="if(event.target===this)closeDailySummary()" style="
+      position:fixed;inset:0;z-index:10000;
+      background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);
+      display:flex;align-items:center;justify-content:center;padding:20px;
+    ">
+      <div style="
+        background:#0d0d1f;border:1px solid rgba(0,245,255,0.2);
+        border-radius:24px;padding:32px 28px;max-width:400px;width:100%;
+        font-family:'Inter',sans-serif;
+        box-shadow:0 0 80px rgba(0,245,255,0.06);
+      ">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-family:'Space Mono',monospace;margin-bottom:8px">Tổng kết hôm nay</div>
+          <div style="font-size:3rem;font-weight:800;font-family:'Syne',sans-serif;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">+${s.todayXP}</div>
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.35)">XP kiếm được hôm nay</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+          ${_summaryCard('Đã thuộc', s.todayMastered + ' từ', 'var(--neon-green)')}
+          ${_summaryCard('Thời gian active', s.todayActiveMin + ' phút', 'var(--neon-cyan)')}
+          ${_summaryCard('Bài báo đã đọc', s.todayArticles + ' bài', 'var(--neon-purple)')}
+          ${_summaryCard('Streak', streak + ' ngày 🔥', 'var(--neon-yellow)')}
+        </div>
+
+        <div style="margin-bottom:20px">
+          <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:rgba(255,255,255,0.4);margin-bottom:6px">
+            <span>Tổng điểm: <strong style="color:#fff">${total}</strong></span>
+            ${nextMs ? `<span>Mốc tiếp theo: <strong style="color:var(--neon-yellow)">${nextMs}</strong> (còn ${toNext})</span>` : '<span style="color:var(--neon-green)">✦ Đã đạt tất cả mốc!</span>'}
+          </div>
+          <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple));border-radius:3px;transition:width 0.6s ease"></div>
+          </div>
+        </div>
+
+        <button onclick="closeDailySummary()" style="
+          width:100%;padding:14px;border:none;border-radius:12px;
+          background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(191,0,255,0.15));
+          border:1px solid rgba(0,245,255,0.3);
+          color:var(--neon-cyan);font-family:'Syne',sans-serif;font-size:0.85rem;
+          font-weight:800;letter-spacing:0.08em;cursor:pointer;
+          text-transform:uppercase;transition:all 0.2s;
+        " onmouseover="this.style.background='linear-gradient(135deg,rgba(0,245,255,0.25),rgba(191,0,255,0.25))'"
+           onmouseout="this.style.background='linear-gradient(135deg,rgba(0,245,255,0.15),rgba(191,0,255,0.15))'">
+          ✓ Đóng
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function _summaryCard(label, val, color) {
+  return `
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 14px">
+      <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-family:'Space Mono',monospace;margin-bottom:4px">${label}</div>
+      <div style="font-size:1rem;font-weight:700;font-family:'Syne',sans-serif;color:${color}">${val}</div>
+    </div>
+  `;
+}
+
+function closeDailySummary() {
+  const el = document.getElementById('dailySummaryOverlay');
+  if (el) el.remove();
+}
+
+// ── Khởi động engine khi login xong ──
+async function xpInit() {
+  await _loadAppConfig(); // load XP values và celebrate config từ Firestore
+  await xpLoad();
+  await xpRecordDailyLogin();
+}
+
+// ============================================================
+//  ◈ LỊCH SỬ HỌC — popup thống kê toàn bộ + biểu đồ
+// ============================================================
+async function showStudyHistory() {
+  if (!isLoggedIn()) return;
+
+  // Render skeleton trước, load data sau
+  const overlay = document.createElement('div');
+  overlay.id = 'studyHistoryOverlay';
+  overlay.onclick = e => { if (e.target === overlay) closeStudyHistory(); };
+  overlay.style.cssText = `
+    position:fixed;inset:0;z-index:10000;
+    background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;padding:16px;
+    overflow-y:auto;
+  `;
+  overlay.innerHTML = `
+    <div id="studyHistoryBox" style="
+      background:#0d0d1f;border:1px solid rgba(0,245,255,0.15);
+      border-radius:24px;padding:28px 24px;width:100%;max-width:560px;
+      font-family:'Inter',sans-serif;position:relative;
+    ">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <div>
+          <div style="font-size:0.55rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.25);font-family:'Space Mono',monospace;margin-bottom:4px">Thống kê học tập</div>
+          <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:#fff">Lịch sử của bạn</div>
+        </div>
+        <button onclick="closeStudyHistory()" style="
+          width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);
+          border:none;color:rgba(255,255,255,0.4);font-size:1rem;cursor:pointer;
+          display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;
+        " onmouseover="this.style.background='rgba(255,0,110,0.15)';this.style.color='var(--neon-pink)'"
+           onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='rgba(255,255,255,0.4)'">✕</button>
+      </div>
+
+      <!-- Stat cards -->
+      <div id="shStatCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px;text-align:center">
+          <div style="font-size:1.5rem;font-weight:800;font-family:'Syne',sans-serif;color:var(--neon-cyan)">—</div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;font-family:'Space Mono',monospace;margin-top:3px">Tổng XP</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px;text-align:center">
+          <div style="font-size:1.5rem;font-weight:800;font-family:'Syne',sans-serif;color:var(--neon-green)">—</div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;font-family:'Space Mono',monospace;margin-top:3px">Từ đã thuộc</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px;text-align:center">
+          <div style="font-size:1.5rem;font-weight:800;font-family:'Syne',sans-serif;color:var(--neon-yellow)">—</div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;font-family:'Space Mono',monospace;margin-top:3px">Streak 🔥</div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);font-family:'Space Mono',monospace;margin-bottom:10px">Thời gian active — 30 ngày gần nhất (phút)</div>
+        <div style="position:relative;height:140px"><canvas id="shChart"></canvas></div>
+      </div>
+
+      <!-- XP milestone progress -->
+      <div id="shMilestone" style="margin-bottom:20px"></div>
+
+      <!-- Lịch sử ngày -->
+      <div>
+        <div style="font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);font-family:'Space Mono',monospace;margin-bottom:10px">Lịch sử từng ngày</div>
+        <div id="shDayList" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
+          <div style="color:rgba(255,255,255,0.25);font-size:0.78rem;text-align:center;padding:20px">Đang tải...</div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // Load Chart.js nếu chưa có
+  if (!window.Chart) {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  // Load data
+  try {
+    const snap = await window._getDoc(userDoc());
+    const d = snap.exists() ? snap.data() : {};
+    const studyHistory = d.studyHistory || {};   // { 'YYYY-MM-DD': wordCount }
+    const totalMins    = d.totalStudyMinutes || 0;
+
+    // XP data
+    const xpRef  = window._doc(window._db, 'users', getUID(), 'xp', 'data');
+    const xpSnap = await window._getDoc(xpRef);
+    const xpData = xpSnap.exists() ? xpSnap.data() : {};
+    const totalXP = xpData.total || _xpSession.total || 0;
+    const streak  = xpData.loginStreakDays || _xpSession.loginStreakDays || 0;
+
+    // Tổng từ đang ở trạng thái mastered=true hiện tại
+    // Đọc từ IDB theo đúng các pack user đang có, không scan toàn bộ
+    let totalMastered = 0;
+    try {
+      // 1. Own packs
+      for (const pack of (packs || [])) {
+        const cached = await IDB.get(pack.id).catch(() => null);
+        if (!cached) continue;
+        const ws = cached.words || [];
+        totalMastered += ws.filter(w => w.mastered && !w.hidden).length;
+      }
+      // 2. Admin packs — _progress phản ánh trạng thái hiện tại
+      //    saveData() rebuild prog từ words.mastered nên reset là sạch
+      const allKeys = await IDB.getAllKeys();
+      for (const key of allKeys.filter(k => k.startsWith('ap::'))) {
+        const cached = await IDB.get(key).catch(() => null);
+        if (!cached) continue;
+        const prog = cached._progress || {};
+        totalMastered += Object.keys(prog).length;
+      }
+    } catch(e) {
+      if (packs && packs.length) {
+        totalMastered = packs.reduce((s, p) => s + (p._masteredCount || 0), 0);
+      }
+    }
+
+    // Update stat cards
+    const cards = document.querySelectorAll('#shStatCards > div > div:first-child');
+    if (cards[0]) cards[0].textContent = totalXP;
+    if (cards[1]) cards[1].textContent = totalMastered;
+    if (cards[2]) cards[2].textContent = streak + ' ngày';
+
+    // activeMinutesByDay từ xpData (lưu trong /users/{uid}/xp/data)
+    const activeByDay = xpData.activeMinutesByDay || {};
+
+    // Build 30 ngày gần nhất
+    const labels = [], dataMin = [];
+    for (let i = 29; i >= 0; i--) {
+      const d2 = new Date(Date.now() - i * 86400000);
+      const key = d2.toISOString().slice(0,10);
+      const shortLabel = (d2.getMonth()+1) + '/' + d2.getDate();
+      labels.push(shortLabel);
+      dataMin.push(activeByDay[key] || 0);
+    }
+
+    // Vẽ chart
+    const ctx = document.getElementById('shChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          data: dataMin,
+          backgroundColor: dataMin.map(v => v > 0 ? 'rgba(0,245,255,0.55)' : 'rgba(255,255,255,0.05)'),
+          borderColor:      dataMin.map(v => v > 0 ? 'rgba(0,245,255,0.9)' : 'rgba(255,255,255,0.08)'),
+          borderWidth: 1,
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: {
+          backgroundColor: 'rgba(5,5,15,0.95)',
+          titleColor: 'rgba(255,255,255,0.4)',
+          bodyColor: '#00f5ff',
+          borderColor: 'rgba(0,245,255,0.2)',
+          borderWidth: 1,
+          callbacks: { label: ctx => ctx.raw + ' phút active' }
+        }},
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.2)', font: { size: 9 }, maxTicksLimit: 10 } },
+          y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.2)', font: { size: 9 } }, beginAtZero: true }
+        }
+      }
+    });
+
+    // Milestone progress
+    const nextMs  = XP_MILESTONES.find(m => m > totalXP) || null;
+    const prevMs  = nextMs ? (XP_MILESTONES[XP_MILESTONES.indexOf(nextMs) - 1] || 0) : XP_MILESTONES[XP_MILESTONES.length-1];
+    const pct     = nextMs ? Math.round(((totalXP - prevMs) / (nextMs - prevMs)) * 100) : 100;
+    const msEl = document.getElementById('shMilestone');
+    if (msEl) msEl.innerHTML = `
+      <div style="font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);font-family:'Space Mono',monospace;margin-bottom:8px">Tiến độ đến mốc tiếp theo</div>
+      <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:rgba(255,255,255,0.35);margin-bottom:6px">
+        <span>Hiện tại: <strong style="color:var(--neon-cyan)">${totalXP} XP</strong></span>
+        ${nextMs ? `<span>Mốc: <strong style="color:var(--neon-yellow)">${nextMs} XP</strong> (còn ${nextMs - totalXP})</span>` : `<span style="color:var(--neon-green)">✦ Đã đạt tất cả mốc!</span>`}
+      </div>
+      <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple));border-radius:4px;transition:width 0.8s ease"></div>
+      </div>
+    `;
+
+    // Danh sách ngày gần nhất
+    const dayListEl = document.getElementById('shDayList');
+    const allDays = Object.keys(studyHistory).sort().reverse();
+    if (!allDays.length) {
+      dayListEl.innerHTML = '<div style="color:rgba(255,255,255,0.2);font-size:0.78rem;text-align:center;padding:20px">Chưa có lịch sử học tập.</div>';
+    } else {
+      dayListEl.innerHTML = allDays.slice(0,30).map(day => {
+        const wc = studyHistory[day];
+        const dayXP = xpData['day_' + day] || 0;
+        const isToday = day === new Date().toISOString().slice(0,10);
+        return `
+          <div style="display:flex;align-items:center;justify-content:space-between;
+            background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);
+            border-radius:8px;padding:8px 12px;
+            ${isToday ? 'border-color:rgba(0,245,255,0.2);' : ''}">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-family:'Space Mono',monospace;font-size:0.7rem;color:${isToday?'var(--neon-cyan)':'rgba(255,255,255,0.35)'}">
+                ${isToday ? '▶ Hôm nay' : day}
+              </span>
+            </div>
+            <div style="display:flex;gap:12px;font-size:0.68rem;font-family:'Space Mono',monospace">
+              <span style="color:rgba(57,255,20,0.7)">${wc} từ</span>
+              ${dayXP ? `<span style="color:rgba(255,230,0,0.6)">+${dayXP} XP</span>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+  } catch(e) {
+    console.warn('[StudyHistory] error', e);
+    const box = document.getElementById('shDayList');
+    if (box) box.innerHTML = `<div style="color:var(--neon-pink);font-size:0.78rem;text-align:center;padding:20px">Không tải được dữ liệu.</div>`;
+  }
+}
+
+function closeStudyHistory() {
+  const el = document.getElementById('studyHistoryOverlay');
+  if (el) el.remove();
+}
+
 // ── Offline/online banner ──
 function _showOfflineBanner(show) {
   let el = document.getElementById('offlineBanner');
@@ -4265,6 +5582,68 @@ window.addEventListener('online',  () => _showOfflineBanner(false));
 window.addEventListener('offline', () => _showOfflineBanner(true));
 if (!navigator.onLine) _showOfflineBanner(true);
 </script>
+  <!-- ===== DEEP LEARNING OVERLAY ===== -->
+  <button class="dl-exit-btn" id="dlExitBtn" onclick="dlExit()">✕ Thoát</button>
+  <div class="dl-overlay" id="dlOverlay">
+
+    <!-- INTRO SCREEN -->
+    <div class="dl-intro" id="dlIntro">
+      <span class="dl-intro-icon">🧠</span>
+      <div class="dl-intro-title">DEEP LEARNING</div>
+      <div class="dl-intro-badge">Chế độ học tập tích cực</div>
+      <div class="dl-intro-msg">
+        Bạn đang bước vào <strong>chế độ tập trung sâu</strong>. Trong khoảng thời gian này, bạn sẽ luyện viết lại từng từ để ghi nhớ thật sâu.<br><br>
+        Hãy <strong>ngồi xuống</strong>, uống một ngụm nước, ăn miếng bánh nhỏ và chuẩn bị tinh thần. Không có điểm số, không có áp lực — chỉ có bạn và những từ vựng. 🍵
+      </div>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;font-family:'Space Mono',monospace">Chọn thời gian học</div>
+      <div class="dl-duration-row">
+        <button class="dl-dur-btn" data-min="10" onclick="dlSetDuration(10,this)">10<span>phút</span></button>
+        <button class="dl-dur-btn active" data-min="15" onclick="dlSetDuration(15,this)">15<span>phút</span></button>
+        <button class="dl-dur-btn" data-min="20" onclick="dlSetDuration(20,this)">20<span>phút</span></button>
+      </div>
+      <button class="dl-start-btn" onclick="dlStartCountdown()">Bắt đầu →</button>
+    </div>
+
+    <!-- COUNTDOWN SCREEN -->
+    <div class="dl-countdown" id="dlCountdown" style="display:none">
+      <div class="dl-countdown-num" id="dlCountNum">3</div>
+      <div class="dl-countdown-label">Chuẩn bị...</div>
+    </div>
+
+    <!-- SESSION SCREEN -->
+    <div class="dl-session" id="dlSession" style="display:none">
+      <div class="dl-timer-bar-wrap">
+        <div class="dl-timer-track"><div class="dl-timer-fill" id="dlTimerFill" style="width:100%"></div></div>
+        <div class="dl-timer-clock" id="dlTimerClock">—</div>
+      </div>
+      <div class="dl-word-card" id="dlWordCard">
+        <div class="dl-card-progress" id="dlCardProgress">1 / ?</div>
+        <div class="dl-card-word" id="dlCardWord">—</div>
+        <div class="dl-card-phonetic" id="dlCardPhonetic"></div>
+        <div class="dl-card-meaning" id="dlCardMeaning"></div>
+      </div>
+      <div class="dl-write-area">
+        <div class="dl-write-label" id="dlWriteLabel">Viết lại từ trên đây</div>
+        <!-- Canvas (mobile) -->
+        <div class="dl-canvas-wrap" id="dlCanvasWrap" style="display:none">
+          <canvas id="dlCanvas"></canvas>
+          <button class="dl-canvas-clear" onclick="dlClearCanvas()">Xóa</button>
+        </div>
+        <!-- Input (desktop) -->
+        <div class="dl-input-wrap" id="dlInputWrap">
+          <input class="dl-input" id="dlInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Gõ lại từ..." onkeydown="if(event.key==='Enter')dlCheckInput()">
+          <span class="dl-input-hint">Enter ↵</span>
+        </div>
+      </div>
+      <div class="dl-actions">
+        <button class="dl-btn-next" id="dlBtnNext" onclick="dlNext()">Tiếp theo →</button>
+        <button class="dl-btn-skip" onclick="dlSkip()">Bỏ qua</button>
+      </div>
+      <div class="dl-motivate" id="dlMotivate"></div>
+    </div>
+
+  </div>
+
   <!-- ARTICLE DRAWER -->
   <div class="art-overlay" id="artOverlay" onclick="if(event.target===this)closeArtDrawer()">
     <div class="art-drawer">
@@ -4294,6 +5673,7 @@ function hlWord(text, word) {
 }
 function openArtDrawer(w) {
   const arts = parseArticles(w);
+  xpOnArticleOpen(); // ✦ XP article
   document.getElementById('artWord').textContent = w.word;
   const body = document.getElementById('artBody');
   if (!arts.length) {
@@ -4441,6 +5821,286 @@ async function processCtxFile(file) {
     }
   };
   reader.readAsArrayBuffer(file);
+}
+</script>
+
+<script>
+// ============================================================
+//  DEEP LEARNING MODE
+// ============================================================
+let dlDuration    = 15;   // minutes chosen
+let dlQueue       = [];   // words for this session
+let dlIndex       = 0;    // current position
+let dlWordsCount  = 0;    // total shown this session
+let dlTimerEnd    = 0;    // timestamp when session ends
+let dlTimerRAF    = null; // requestAnimationFrame id
+let dlIsTouch     = ('ontouchstart' in window);
+let dlCanvas      = null;
+let dlCtx         = null;
+let dlDrawing     = false;
+
+const DL_MOTIVATE = [
+  '🔥 Giữ đà đó!',
+  '✨ Tuyệt vời, tiếp tục!',
+  '💪 Bạn đang làm rất tốt!',
+  '🧠 Não đang ghi nhớ đây!',
+  '⚡ Thêm một từ nữa nào!',
+  '🌟 Không dừng lại nhé!',
+  '🎯 Tập trung thêm chút nữa!',
+  '🚀 Đang bay cao đây!',
+];
+
+const DL_CHECKPOINT = [
+  { n:5,  emoji:'🌱', text:'5 từ xong rồi!',  sub:'Bạn đang khởi động tốt' },
+  { n:10, emoji:'🔥', text:'10 từ! Tuyệt!',   sub:'Não đang ghi nhớ sâu hơn rồi' },
+  { n:15, emoji:'⚡', text:'15 từ! Đỉnh!',    sub:'Bạn đang trong flow state' },
+  { n:20, emoji:'🏆', text:'20 từ! Xuất sắc!',sub:'Trí nhớ cơ bắp đang hình thành' },
+  { n:30, emoji:'🌟', text:'30 từ! Phi thường!',sub:'Bạn là một học máy rồi đây' },
+];
+
+// ── Open: show intro ──
+function dlOpen() {
+  if (!words.length) { showToast('error','⚠ Chưa có từ vựng.'); return; }
+  // Show intro, hide others
+  document.getElementById('dlIntro').style.display    = '';
+  document.getElementById('dlCountdown').style.display = 'none';
+  document.getElementById('dlSession').style.display   = 'none';
+  document.getElementById('dlOverlay').classList.add('show');
+  document.getElementById('dlExitBtn').classList.remove('show');
+}
+
+// ── Duration select ──
+function dlSetDuration(min, btn) {
+  dlDuration = min;
+  document.querySelectorAll('.dl-dur-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── Start countdown ──
+function dlStartCountdown() {
+  document.getElementById('dlIntro').style.display     = 'none';
+  document.getElementById('dlCountdown').style.display = '';
+  let n = 3;
+  const numEl = document.getElementById('dlCountNum');
+  numEl.textContent = n;
+
+  const tick = () => {
+    n--;
+    if (n > 0) {
+      numEl.style.animation = 'none';
+      void numEl.offsetWidth; // reflow
+      numEl.style.animation  = '';
+      numEl.textContent = n;
+      setTimeout(tick, 900);
+    } else {
+      dlBeginSession();
+    }
+  };
+  setTimeout(tick, 900);
+}
+
+// ── Begin session ──
+function dlBeginSession() {
+  // Build queue from current studyQueue (respects shuffle setting)
+  dlQueue = [...studyQueue];
+  if (!dlQueue.length) dlQueue = words.filter(w=>!w.hidden).map(w=>({...w}));
+  dlIndex = 0; dlWordsCount = 0;
+
+  document.getElementById('dlCountdown').style.display = 'none';
+  document.getElementById('dlSession').style.display   = '';
+  document.getElementById('dlExitBtn').classList.add('show');
+
+  // Timer setup
+  dlTimerEnd = Date.now() + dlDuration * 60 * 1000;
+  dlTickTimer();
+
+  // Setup input mode
+  const isTouch = ('ontouchstart' in window) && window.innerWidth < 768;
+  if (isTouch) {
+    document.getElementById('dlCanvasWrap').style.display = '';
+    document.getElementById('dlInputWrap').style.display  = 'none';
+    dlInitCanvas();
+  } else {
+    document.getElementById('dlCanvasWrap').style.display = 'none';
+    document.getElementById('dlInputWrap').style.display  = '';
+    setTimeout(() => document.getElementById('dlInput')?.focus(), 100);
+  }
+
+  dlRenderCard();
+}
+
+// ── Timer tick ──
+function dlTickTimer() {
+  const remaining = dlTimerEnd - Date.now();
+  if (remaining <= 0) { dlFinish(); return; }
+
+  const totalMs   = dlDuration * 60 * 1000;
+  const pct       = (remaining / totalMs) * 100;
+  const mins      = Math.floor(remaining / 60000);
+  const secs      = Math.floor((remaining % 60000) / 1000);
+
+  const fill  = document.getElementById('dlTimerFill');
+  const clock = document.getElementById('dlTimerClock');
+  if (fill)  fill.style.width = pct + '%';
+  if (clock) clock.textContent = `${mins}:${secs.toString().padStart(2,'0')}`;
+
+  dlTimerRAF = setTimeout(dlTickTimer, 500);
+}
+
+// ── Render current card ──
+function dlRenderCard() {
+  if (!dlQueue.length) return;
+  if (dlIndex >= dlQueue.length) dlIndex = 0; // loop
+  const w = dlQueue[dlIndex];
+
+  document.getElementById('dlCardProgress').textContent = `${dlWordsCount + 1} từ`;
+  document.getElementById('dlCardWord').textContent     = w.word || '';
+  document.getElementById('dlCardPhonetic').textContent = w.phonetics ? `/${w.phonetics}/` : '';
+  document.getElementById('dlCardMeaning').textContent  = w.meaning || '';
+
+  // Reset input
+  const inp = document.getElementById('dlInput');
+  if (inp) { inp.value = ''; inp.className = 'dl-input'; inp.focus(); }
+  // Reset canvas
+  dlClearCanvas();
+
+  // Motivate occasionally
+  if (dlWordsCount > 0 && dlWordsCount % 3 === 0) dlShowMotivate();
+  else document.getElementById('dlMotivate').textContent = '';
+
+  // Animate card in
+  const card = document.getElementById('dlWordCard');
+  if (card) { card.style.animation = 'none'; void card.offsetWidth; card.style.animation = 'fadeUp 0.3s ease'; }
+}
+
+// ── Check desktop input ──
+function dlCheckInput() {
+  const inp  = document.getElementById('dlInput');
+  if (!inp) return;
+  const val  = inp.value.trim().toLowerCase();
+  const word = (dlQueue[dlIndex]?.word || '').toLowerCase().trim();
+  if (!val) return;
+
+  if (val === word) {
+    inp.classList.add('correct');
+    dlConfetti(inp);
+    setTimeout(dlNext, 600);
+  } else {
+    inp.classList.add('wrong');
+    setTimeout(() => { inp.classList.remove('wrong'); inp.value = ''; }, 800);
+  }
+}
+
+// ── Next word ──
+function dlNext() {
+  dlWordsCount++;
+  dlIndex++;
+  if (dlIndex >= dlQueue.length) dlIndex = 0;
+
+  // Check checkpoint
+  const cp = DL_CHECKPOINT.find(c => c.n === dlWordsCount);
+  if (cp) dlShowCheckpoint(cp);
+
+  dlRenderCard();
+}
+
+// ── Skip ──
+function dlSkip() {
+  dlIndex++;
+  if (dlIndex >= dlQueue.length) dlIndex = 0;
+  dlRenderCard();
+  document.getElementById('dlMotivate').textContent = '';
+}
+
+// ── Motivate ──
+function dlShowMotivate() {
+  const el  = document.getElementById('dlMotivate');
+  const msg = DL_MOTIVATE[Math.floor(Math.random() * DL_MOTIVATE.length)];
+  el.textContent = msg;
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+}
+
+// ── Checkpoint ──
+function dlShowCheckpoint(cp) {
+  const el = document.createElement('div');
+  el.className = 'dl-checkpoint';
+  el.innerHTML = `<div class="dl-checkpoint-inner">
+    <span class="dl-checkpoint-emoji">${cp.emoji}</span>
+    <div class="dl-checkpoint-text">${cp.text}</div>
+    <div class="dl-checkpoint-sub">${cp.sub}</div>
+  </div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2000);
+}
+
+// ── Confetti ──
+function dlConfetti(anchor) {
+  const colors = ['#bf00ff','#00f5ff','#39ff14','#ffe600','#ff006e'];
+  const rect   = anchor ? anchor.getBoundingClientRect() : { left: window.innerWidth/2, top: window.innerHeight/2, width: 0 };
+  for (let i = 0; i < 14; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dl-confetti-dot';
+    dot.style.cssText = `
+      left:${rect.left + rect.width/2 + (Math.random()-0.5)*120}px;
+      top:${rect.top}px;
+      background:${colors[i % colors.length]};
+      animation-duration:${0.6 + Math.random()*0.6}s;
+      animation-delay:${Math.random()*0.15}s;
+    `;
+    document.body.appendChild(dot);
+    setTimeout(() => dot.remove(), 1400);
+  }
+}
+
+// ── Canvas (mobile) ──
+function dlInitCanvas() {
+  dlCanvas = document.getElementById('dlCanvas');
+  if (!dlCanvas) return;
+  // Size canvas to its CSS size
+  const w = dlCanvas.offsetWidth || 320;
+  dlCanvas.width  = w * (window.devicePixelRatio || 1);
+  dlCanvas.height = 110 * (window.devicePixelRatio || 1);
+  dlCtx = dlCanvas.getContext('2d');
+  dlCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+  dlCtx.strokeStyle = '#bf80ff';
+  dlCtx.lineWidth   = 2.5;
+  dlCtx.lineCap     = 'round';
+  dlCtx.lineJoin    = 'round';
+
+  const getPos = (e) => {
+    const r = dlCanvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX - r.left, y: t.clientY - r.top };
+  };
+
+  dlCanvas.addEventListener('mousedown',  e => { dlDrawing=true; const p=getPos(e); dlCtx.beginPath(); dlCtx.moveTo(p.x,p.y); });
+  dlCanvas.addEventListener('mousemove',  e => { if(!dlDrawing)return; const p=getPos(e); dlCtx.lineTo(p.x,p.y); dlCtx.stroke(); });
+  dlCanvas.addEventListener('mouseup',    () => dlDrawing=false);
+  dlCanvas.addEventListener('touchstart', e => { e.preventDefault(); dlDrawing=true; const p=getPos(e); dlCtx.beginPath(); dlCtx.moveTo(p.x,p.y); }, {passive:false});
+  dlCanvas.addEventListener('touchmove',  e => { e.preventDefault(); if(!dlDrawing)return; const p=getPos(e); dlCtx.lineTo(p.x,p.y); dlCtx.stroke(); }, {passive:false});
+  dlCanvas.addEventListener('touchend',   () => dlDrawing=false);
+}
+
+function dlClearCanvas() {
+  if (!dlCtx || !dlCanvas) return;
+  dlCtx.clearRect(0, 0, dlCanvas.width, dlCanvas.height);
+}
+
+// ── Finish / Exit ──
+function dlFinish() {
+  clearTimeout(dlTimerRAF);
+  dlExit();
+  showToast('success', `✓ Hoàn thành ${dlWordsCount} từ trong ${dlDuration} phút! 🧠`);
+}
+
+function dlExit() {
+  clearTimeout(dlTimerRAF);
+  document.getElementById('dlOverlay').classList.remove('show');
+  document.getElementById('dlExitBtn').classList.remove('show');
+  // Reset screens
+  document.getElementById('dlIntro').style.display     = '';
+  document.getElementById('dlCountdown').style.display = 'none';
+  document.getElementById('dlSession').style.display   = 'none';
 }
 </script>
 </body>
