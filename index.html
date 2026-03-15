@@ -1443,121 +1443,6 @@ const IDB = (() => {
   .dl-toggle-btn.active .dl-toggle-dot { background:var(--neon-purple); box-shadow:0 0 6px var(--neon-purple); animation:pulse 1.5s infinite; }
   @keyframes dlPulse { 0%,100%{box-shadow:0 0 10px rgba(191,0,255,0.25)} 50%{box-shadow:0 0 22px rgba(191,0,255,0.5)} }
 
-  /* ═══════════════════════════════════════════
-     WORD WEB DRAWER
-  ═══════════════════════════════════════════ */
-  .ww-toggle-btn {
-    display:inline-flex; align-items:center; gap:7px;
-    padding:5px 13px; border-radius:20px; cursor:pointer;
-    font-family:'Space Mono',monospace; font-size:0.65rem; font-weight:700;
-    letter-spacing:0.08em; text-transform:uppercase; transition:all 0.25s;
-    border:1px solid rgba(0,245,255,0.3); background:rgba(0,245,255,0.06); color:rgba(0,245,255,0.7);
-    user-select:none;
-  }
-  .ww-toggle-btn:hover { border-color:rgba(0,245,255,0.6); background:rgba(0,245,255,0.12); color:var(--neon-cyan); box-shadow:0 0 14px rgba(0,245,255,0.2); }
-  .ww-toggle-dot { width:6px; height:6px; border-radius:50%; background:rgba(0,245,255,0.5); transition:all 0.25s; }
-
-  /* Drawer */
-  .ww-drawer {
-    position:fixed; top:0; right:0; bottom:0;
-    width:min(520px, 100vw);
-    background:rgba(5,5,20,0.97);
-    border-left:1px solid rgba(0,245,255,0.12);
-    z-index:400;
-    display:flex; flex-direction:column;
-    transform:translateX(100%);
-    transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
-    backdrop-filter:blur(20px);
-  }
-  .ww-drawer.open { transform:translateX(0); }
-  .ww-backdrop {
-    position:fixed; inset:0; z-index:399;
-    background:rgba(0,0,0,0.5); backdrop-filter:blur(2px);
-    opacity:0; pointer-events:none; transition:opacity 0.3s;
-  }
-  .ww-backdrop.show { opacity:1; pointer-events:all; }
-
-  /* Drawer header */
-  .ww-header {
-    display:flex; align-items:center; gap:12px;
-    padding:16px 18px 14px;
-    border-bottom:1px solid rgba(0,245,255,0.08);
-    flex-shrink:0;
-  }
-  .ww-header-icon { font-size:1.2rem; line-height:1; }
-  .ww-header-title {
-    font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:800;
-    color:var(--neon-cyan); letter-spacing:0.06em; text-transform:uppercase; flex:1;
-  }
-  .ww-header-sub { font-size:0.62rem; color:rgba(255,255,255,0.3); font-family:'Space Mono',monospace; letter-spacing:0.08em; }
-  .ww-close {
-    width:30px; height:30px; border-radius:50%; border:1px solid rgba(255,255,255,0.1);
-    background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.4);
-    cursor:pointer; font-size:0.8rem; transition:all 0.2s;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .ww-close:hover { background:rgba(255,0,110,0.15); border-color:rgba(255,0,110,0.4); color:var(--neon-pink); }
-
-  /* Filter bar */
-  .ww-filters {
-    display:flex; gap:6px; padding:10px 18px;
-    border-bottom:1px solid rgba(255,255,255,0.05);
-    flex-wrap:wrap; flex-shrink:0;
-  }
-  .ww-filter-btn {
-    padding:4px 11px; border-radius:20px; border:1px solid rgba(255,255,255,0.1);
-    background:transparent; color:rgba(255,255,255,0.35);
-    font-family:'Space Mono',monospace; font-size:0.6rem; letter-spacing:0.06em;
-    cursor:pointer; transition:all 0.18s;
-  }
-  .ww-filter-btn:hover { border-color:rgba(255,255,255,0.25); color:rgba(255,255,255,0.6); }
-  .ww-filter-btn.active-all    { border-color:rgba(0,245,255,0.5);  background:rgba(0,245,255,0.1);  color:var(--neon-cyan); }
-  .ww-filter-btn.active-done   { border-color:rgba(57,255,20,0.5);  background:rgba(57,255,20,0.1);  color:var(--neon-green); }
-  .ww-filter-btn.active-learn  { border-color:rgba(191,0,255,0.5);  background:rgba(191,0,255,0.1);  color:var(--neon-purple); }
-  .ww-filter-btn.active-hard   { border-color:rgba(255,140,0,0.5);  background:rgba(255,140,0,0.1);  color:#ff8c00; }
-
-  /* Canvas area */
-  .ww-canvas-wrap {
-    flex:1; position:relative; overflow:hidden;
-  }
-  #wwCanvas { width:100%; height:100%; display:block; cursor:grab; }
-  #wwCanvas:active { cursor:grabbing; }
-
-  /* Tooltip */
-  .ww-tooltip {
-    position:absolute; pointer-events:none;
-    background:rgba(5,5,20,0.96); border:1px solid rgba(0,245,255,0.25);
-    border-radius:12px; padding:10px 14px; max-width:200px;
-    opacity:0; transform:translateY(6px); transition:opacity 0.2s, transform 0.2s;
-    z-index:10;
-  }
-  .ww-tooltip.show { opacity:1; transform:translateY(0); }
-  .ww-tt-word { font-family:'Syne',sans-serif; font-weight:800; font-size:0.9rem; color:#fff; margin-bottom:3px; }
-  .ww-tt-phonetic { font-size:0.68rem; color:var(--neon-cyan); margin-bottom:4px; }
-  .ww-tt-meaning { font-size:0.72rem; color:rgba(255,255,255,0.6); line-height:1.4; }
-  .ww-tt-badge {
-    display:inline-block; margin-top:6px; padding:2px 8px; border-radius:20px;
-    font-size:0.58rem; font-family:'Space Mono',monospace; letter-spacing:0.08em; font-weight:700;
-  }
-  .ww-tt-badge.mastered { background:rgba(57,255,20,0.15); color:var(--neon-green); border:1px solid rgba(57,255,20,0.3); }
-  .ww-tt-badge.learning { background:rgba(191,0,255,0.15); color:var(--neon-purple); border:1px solid rgba(191,0,255,0.3); }
-  .ww-tt-badge.hard     { background:rgba(255,140,0,0.15); color:#ff8c00; border:1px solid rgba(255,140,0,0.3); }
-
-  /* Legend footer */
-  .ww-legend {
-    display:flex; gap:14px; align-items:center; flex-wrap:wrap;
-    padding:10px 18px; border-top:1px solid rgba(255,255,255,0.05);
-    flex-shrink:0;
-  }
-  .ww-legend-item { display:flex; align-items:center; gap:5px; font-size:0.6rem; color:rgba(255,255,255,0.35); font-family:'Space Mono',monospace; }
-  .ww-legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-  .ww-empty {
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    height:100%; gap:12px; color:rgba(255,255,255,0.25);
-    font-family:'Space Mono',monospace; font-size:0.75rem; text-align:center; padding:30px;
-  }
-  .ww-empty-icon { font-size:2.5rem; opacity:0.4; }
-
   /* Overlay full screen */
   .dl-overlay {
     display:none; position:fixed; inset:0; z-index:300;
@@ -1704,6 +1589,23 @@ const IDB = (() => {
     font-size:0.6rem; color:rgba(255,255,255,0.2); font-family:'Space Mono',monospace;
     pointer-events:none;
   }
+  /* ── Char-diff overlay (hiện sau khi check sai) ── */
+  .dl-char-diff {
+    display:none; align-items:center; gap:1px; flex-wrap:wrap;
+    margin-top:8px; padding:8px 14px;
+    background:rgba(255,0,110,0.06); border:1px solid rgba(255,0,110,0.2);
+    border-radius:10px; font-family:'Space Mono',monospace; font-size:1rem;
+    letter-spacing:0.06em; line-height:1;
+  }
+  .dl-char-diff.show { display:flex; }
+  .dl-char-diff .dc-ok  { color:var(--neon-green); }
+  .dl-char-diff .dc-err { color:var(--neon-pink); text-decoration:underline wavy var(--neon-pink); }
+  .dl-char-diff .dc-mis { color:rgba(255,0,110,0.45); font-style:italic; }
+  .dl-char-diff-label {
+    display:none; font-size:0.6rem; color:rgba(255,255,255,0.3);
+    font-family:'Space Mono',monospace; letter-spacing:0.1em; margin-top:4px;
+  }
+  .dl-char-diff-label.show { display:block; }
 
   /* Action buttons */
   .dl-actions { display:flex; gap:10px; margin-bottom:14px; }
@@ -1956,6 +1858,98 @@ const IDB = (() => {
     font-size:0.58rem; letter-spacing:0.15em; text-transform:uppercase;
     color:rgba(255,255,255,0.3); margin-top:5px; font-family:'Space Mono',monospace;
   }
+
+  /* ── Source Link Banner (hiện khi vào pack có link) ── */
+  .source-banner {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 12px;
+    padding: 10px 16px;
+    background: rgba(0,245,255,0.05);
+    border: 1px solid rgba(0,245,255,0.18);
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.55);
+    animation: bannerFadeIn 0.4s ease;
+  }
+  .source-banner.show { display: flex; }
+  @keyframes bannerFadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+  .source-banner-icon { font-size: 1rem; flex-shrink: 0; }
+  .source-banner-text { flex: 1; line-height: 1.4; }
+  .source-banner-text strong { color: rgba(0,245,255,0.8); font-weight: 600; }
+  .source-banner-link {
+    flex-shrink: 0;
+    padding: 5px 14px;
+    background: rgba(0,245,255,0.1);
+    border: 1px solid rgba(0,245,255,0.3);
+    border-radius: 20px;
+    color: var(--neon-cyan);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .source-banner-link:hover { background: rgba(0,245,255,0.2); }
+  .source-banner-close {
+    background: none; border: none; color: rgba(255,255,255,0.2);
+    cursor: pointer; font-size: 1rem; padding: 0 0 0 4px;
+    transition: color 0.15s; flex-shrink: 0;
+  }
+  .source-banner-close:hover { color: rgba(255,255,255,0.5); }
+
+  /* ── Article Modal (hiện sau khi thuộc hết) ── */
+  .article-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  .article-modal-overlay.show { display: flex; }
+  .article-modal {
+    background: #0d0d1f;
+    border: 1px solid rgba(0,245,255,0.2);
+    border-radius: 24px;
+    padding: 36px 32px;
+    max-width: 420px; width: 100%;
+    text-align: center;
+    animation: modalPop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes modalPop { from { opacity:0; transform:scale(0.88); } to { opacity:1; transform:scale(1); } }
+  .article-modal-emoji { font-size: 3rem; margin-bottom: 16px; display: block; }
+  .article-modal-title {
+    font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 10px;
+  }
+  .article-modal-sub {
+    font-size: 0.82rem; color: rgba(255,255,255,0.45);
+    line-height: 1.6; margin-bottom: 24px;
+  }
+  .article-modal-sub strong { color: rgba(0,245,255,0.7); font-weight: 600; }
+  .article-modal-btns { display: flex; flex-direction: column; gap: 10px; }
+  .article-modal-btn-yes {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 24px;
+    background: linear-gradient(135deg, rgba(0,245,255,0.15), rgba(57,255,20,0.1));
+    border: 1px solid rgba(0,245,255,0.35);
+    border-radius: 12px; color: var(--neon-cyan);
+    font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 800;
+    letter-spacing: 0.08em; text-decoration: none;
+    transition: all 0.2s; cursor: pointer;
+  }
+  .article-modal-btn-yes:hover { background: linear-gradient(135deg, rgba(0,245,255,0.25), rgba(57,255,20,0.18)); transform: translateY(-1px); }
+  .article-modal-btn-no {
+    padding: 11px 24px;
+    background: none; border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; color: rgba(255,255,255,0.3);
+    font-family: 'Space Mono', monospace; font-size: 0.72rem;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.04em;
+  }
+  .article-modal-btn-no:hover { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
 </style>
 </head>
 <body>
@@ -2211,6 +2205,7 @@ const IDB = (() => {
     <div class="pack-modal-title" id="packModalTitle">✦ Tạo gói từ vựng mới</div>
     <input type="text" id="packNameInput" placeholder="Tên gói, VD: IELTS, Business English..." maxlength="50">
     <input type="text" id="packDescInput" placeholder="Mô tả ngắn (tùy chọn)" maxlength="80">
+    <input type="text" id="packSourceLink" placeholder="🔗 Link bài viết gốc (tùy chọn)" maxlength="500" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 14px;color:#fff;font-family:'Inter',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;margin-bottom:14px;" onfocus="this.style.borderColor='rgba(0,245,255,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
     <div class="pack-modal-actions">
       <button class="btn-primary" style="flex:1;justify-content:center" onclick="savePackModal()">✓ Lưu</button>
       <button class="btn-danger" style="justify-content:center" onclick="closePackModal()">✕ Hủy</button>
@@ -2273,6 +2268,13 @@ const IDB = (() => {
           <div class="pack-study-badge" id="studyPackBadge"></div>
           <div id="cloudBadge" style="font-size:0.68rem;color:rgba(255,255,255,0.3);letter-spacing:0.05em;margin-top:2px">☁ Chưa lưu</div>
         </div>
+      </div>
+      <!-- Source Link Banner -->
+      <div class="source-banner" id="sourceBanner">
+        <span class="source-banner-icon">🔗</span>
+        <span class="source-banner-text">Bộ từ này được tạo từ <strong id="sourceBannerLabel">một bài viết</strong>. Bạn có muốn xem bài viết gốc không?</span>
+        <a href="#" id="sourceBannerLink" class="source-banner-link" target="_blank" rel="noopener">Xem bài viết</a>
+        <button class="source-banner-close" onclick="document.getElementById('sourceBanner').classList.remove('show')" title="Đóng">×</button>
       </div>
       <div class="tabs" style="margin-bottom:0">
         <button class="tab-btn active" id="tabInput" onclick="switchTab('input')">✦ Nhập Từ</button>
@@ -2850,6 +2852,7 @@ async function openPack(pack) {
   }
 
   buildQueue(); renderList(); updateStudyBadge();
+  _showSourceBanner(pack.sourceLink || '');
 }
 
 function updateStudyBadge() {
@@ -2857,7 +2860,10 @@ function updateStudyBadge() {
   document.getElementById('studyPackBadge').textContent = `${words.length} từ · ${m} đã thuộc`;
 }
 
-function backToPacks() { showPacksScreen(); }
+function backToPacks() {
+  _showSourceBanner(''); // ẩn banner khi thoát
+  showPacksScreen();
+}
 
 // ============================================================
 //  PACK MODAL
@@ -2867,6 +2873,7 @@ function openPackModal(packId) {
   document.getElementById('packModalTitle').textContent = packId ? '✎ Đổi tên gói' : '✦ Tạo gói từ vựng mới';
   document.getElementById('packNameInput').value = packId ? (packs.find(p=>p.id===packId)?.name||'') : '';
   document.getElementById('packDescInput').value = packId ? (packs.find(p=>p.id===packId)?.desc||'') : '';
+  document.getElementById('packSourceLink').value = packId ? (packs.find(p=>p.id===packId)?.sourceLink||'') : '';
   document.getElementById('packModal').classList.add('show');
   setTimeout(() => document.getElementById('packNameInput').focus(), 100);
 }
@@ -2878,11 +2885,12 @@ async function savePackModal() {
   const name = document.getElementById('packNameInput').value.trim();
   if (!name) { showToast('error', '⚠ Vui lòng nhập tên gói!'); return; }
   const desc = document.getElementById('packDescInput').value.trim();
+  const sourceLink = document.getElementById('packSourceLink').value.trim();
   if (editingPackId) {
     const p = packs.find(p => p.id === editingPackId);
-    if (p) { p.name = name; p.desc = desc; }
+    if (p) { p.name = name; p.desc = desc; p.sourceLink = sourceLink; }
   } else {
-    packs.push({ id: 'pack_' + Date.now(), name, desc, createdAt: Date.now() });
+    packs.push({ id: 'pack_' + Date.now(), name, desc, sourceLink, createdAt: Date.now() });
   }
   await savePacks();
   closePackModal();
@@ -3308,7 +3316,14 @@ function renderFlashcard() {
   if (!words.length) { el.innerHTML='<div class="warn-box">⚠ Chưa có từ vựng. Vào tab "Nhập Từ" để thêm!</div>'; return; }
   const rem = words.filter(w=>!w.mastered && !w.hidden);
   if (!rem.length) {
-    el.innerHTML=`<div class="card celebration"><span class="celebration-icon">🎉</span><h2>Xuất Sắc!</h2><p>Bạn đã thuộc hết <strong style="color:var(--neon-green)">${words.length}</strong> từ vựng!</p><button class="btn-restart" onclick="resetMastered()">↺ Học Lại</button></div>`;
+    const _sl = currentPack?.sourceLink || '';
+    if (_sl) {
+      // Có link → dùng modal hỏi xem bài viết
+      el.innerHTML=`<div class="card celebration"><span class="celebration-icon">🎉</span><h2>Xuất Sắc!</h2><p>Bạn đã thuộc hết <strong style="color:var(--neon-green)">${words.length}</strong> từ vựng!</p><button class="btn-restart" onclick="resetMastered()">↺ Học Lại</button></div>`;
+      _showArticleModal(_sl, currentPack?.name || 'bài viết');
+    } else {
+      el.innerHTML=`<div class="card celebration"><span class="celebration-icon">🎉</span><h2>Xuất Sắc!</h2><p>Bạn đã thuộc hết <strong style="color:var(--neon-green)">${words.length}</strong> từ vựng!</p><button class="btn-restart" onclick="resetMastered()">↺ Học Lại</button></div>`;
+    }
     return;
   }
   if (!studyQueue.length||currentIndex>=studyQueue.length) buildQueue();
@@ -3323,9 +3338,6 @@ function renderFlashcard() {
       <div class="fc-controls" style="margin-bottom:20px">
         <button class="dl-toggle-btn" onclick="dlOpen()">
           <span class="dl-toggle-dot"></span>DEEP LEARNING
-        </button>
-        <button class="ww-toggle-btn" onclick="wwOpen()">
-          <span class="ww-toggle-dot"></span>🕸 WORD WEB
         </button>
         <div class="autoplay-toggle">
           <label class="toggle-switch">
@@ -3370,9 +3382,6 @@ function renderFlashcard() {
       <div class="prog-wrap"><div class="prog-bar" style="width:${prog}%"></div></div>
       <button class="dl-toggle-btn" id="dlToggleBtn" onclick="dlOpen()">
         <span class="dl-toggle-dot"></span>DEEP LEARNING
-      </button>
-      <button class="ww-toggle-btn" onclick="wwOpen()">
-        <span class="ww-toggle-dot"></span>🕸 WORD WEB
       </button>
       <div class="autoplay-toggle">
         <label class="toggle-switch">
@@ -4509,6 +4518,7 @@ async function openAdminPack(pack) {
   }
 
   buildQueue(); renderFlashcard(); renderList(); updateStudyBadge();
+  _showSourceBanner(pack.sourceLink || '');
 }
 
 
@@ -6027,10 +6037,13 @@ if (!navigator.onLine) _showOfflineBanner(true);
               inputmode="search" enterkeyhint="go"
               placeholder="Gõ lại từ..."
               onkeydown="if(event.key==='Enter')dlCheckInput()"
+              oninput="dlClearCharDiff()"
               onsearch="dlCheckInput()">
           </div>
           <button class="dl-check-btn" id="dlCheckBtn" onclick="dlCheckInput()">✓</button>
         </div>
+        <div class="dl-char-diff" id="dlCharDiff"></div>
+        <div class="dl-char-diff-label" id="dlCharDiffLabel">Các ký tự sai được gạch chân đỏ</div>
         <!-- Virtual keyboard (mobile) -->
         <div class="dl-vkb" id="dlVkb">
           <div class="dl-vkb-display" id="dlVkbDisplay">
@@ -6401,6 +6414,7 @@ function dlRenderCard() {
 
   const inp = document.getElementById('dlInput');
   if (inp) { inp.value = ''; inp.className = 'dl-input'; if (window.innerWidth > 768) inp.focus(); }
+  dlClearCharDiff();
   dlVkbReset();
 
   // Sync hard word button
@@ -6445,6 +6459,7 @@ function dlCheckInput() {
   if (!val) return;
 
   if (val === word) {
+    dlClearCharDiff();
     inp.classList.add('correct');
     dlConfetti(inp);
     xpOnFlashcardAction(); // active time
@@ -6452,8 +6467,49 @@ function dlCheckInput() {
   } else {
     dlCorrectMap[word] = 0;
     inp.classList.add('wrong');
+    dlShowCharDiff(val, word);
     setTimeout(() => { inp.classList.remove('wrong'); inp.value = ''; inp.focus(); }, 800);
   }
+}
+
+// ── Hiển thị diff từng ký tự ──
+function dlShowCharDiff(typed, correct) {
+  const el    = document.getElementById('dlCharDiff');
+  const label = document.getElementById('dlCharDiffLabel');
+  if (!el) return;
+
+  let html = '';
+  const len = Math.max(typed.length, correct.length);
+  for (let i = 0; i < len; i++) {
+    const tc = typed[i];
+    const cc = correct[i];
+    if (!cc) {
+      // Gõ thừa ký tự
+      html += `<span class="dc-err">${_esc(tc)}</span>`;
+    } else if (!tc) {
+      // Thiếu ký tự
+      html += `<span class="dc-mis">${_esc(cc)}</span>`;
+    } else if (tc === cc) {
+      html += `<span class="dc-ok">${_esc(tc)}</span>`;
+    } else {
+      html += `<span class="dc-err">${_esc(tc)}</span>`;
+    }
+  }
+  el.innerHTML = html;
+  el.classList.add('show');
+  if (label) label.classList.add('show');
+}
+
+// ── Xóa diff khi bắt đầu gõ lại ──
+function dlClearCharDiff() {
+  const el    = document.getElementById('dlCharDiff');
+  const label = document.getElementById('dlCharDiffLabel');
+  if (el)    { el.classList.remove('show'); el.innerHTML = ''; }
+  if (label) label.classList.remove('show');
+}
+
+function _esc(c) {
+  return c === ' ' ? '&nbsp;' : c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ── Next ── (gọi sau khi gõ đúng — truyền word vừa đúng)
@@ -6973,6 +7029,62 @@ function dlVkbReset() {
   if (disp) disp.className = 'dl-vkb-display';
 }
 
+
+// ══════════════════════════════════════════════════════
+// SOURCE LINK — banner + article modal helpers
+// ══════════════════════════════════════════════════════
+
+function _showSourceBanner(link) {
+  const banner = document.getElementById('sourceBanner');
+  const linkEl  = document.getElementById('sourceBannerLink');
+  const labelEl = document.getElementById('sourceBannerLabel');
+  if (!banner) return;
+  if (!link) {
+    banner.classList.remove('show');
+    return;
+  }
+  // Detect nguồn để hiện tên đẹp hơn
+  let sourceName = 'bài viết gốc';
+  if (link.includes('ted.com'))       sourceName = 'TED Talk';
+  else if (link.includes('bbc.'))     sourceName = 'BBC';
+  else if (link.includes('nytimes'))  sourceName = 'New York Times';
+  else if (link.includes('guardian')) sourceName = 'The Guardian';
+  else if (link.includes('cnn.'))     sourceName = 'CNN';
+
+  if (labelEl) labelEl.textContent = sourceName;
+  if (linkEl)  { linkEl.href = link; linkEl.textContent = 'Xem ' + sourceName; }
+  banner.classList.add('show');
+}
+
+function _showArticleModal(link, packName) {
+  const overlay  = document.getElementById('articleModal');
+  const linkEl   = document.getElementById('articleModalLink');
+  const labelEl  = document.getElementById('articleModalLabel');
+  if (!overlay) return;
+
+  let sourceName = 'bài viết gốc';
+  if (link.includes('ted.com'))       sourceName = 'TED Talk';
+  else if (link.includes('bbc.'))     sourceName = 'bài viết BBC';
+  else if (link.includes('nytimes'))  sourceName = 'bài viết NYT';
+  else if (link.includes('guardian')) sourceName = 'bài The Guardian';
+  else if (link.includes('cnn.'))     sourceName = 'bài CNN';
+
+  if (labelEl) labelEl.textContent = sourceName;
+  if (linkEl)  linkEl.href = link;
+
+  // Nhỏ delay để celebration render trước
+  setTimeout(() => overlay.classList.add('show'), 400);
+}
+
+function closeArticleModal() {
+  document.getElementById('articleModal')?.classList.remove('show');
+}
+
+function articleModalStudyAgain() {
+  closeArticleModal();
+  resetMastered();
+}
+
 // ── Exit button smart handler ──
 function dlExitOrSummary() {
   const session = document.getElementById('dlSession');
@@ -6983,392 +7095,24 @@ function dlExitOrSummary() {
     dlExit();
   }
 }
-</script>
-  <!-- ===== WORD WEB DRAWER ===== -->
-  <div class="ww-backdrop" id="wwBackdrop" onclick="wwClose()"></div>
-  <div class="ww-drawer" id="wwDrawer">
-    <div class="ww-header">
-      <span class="ww-header-icon">🕸</span>
-      <div>
-        <div class="ww-header-title">Word Web</div>
-        <div class="ww-header-sub" id="wwHeaderSub">Mạng lưới từ vựng</div>
-      </div>
-      <button class="ww-close" onclick="wwClose()">✕</button>
+
+<!-- ── Article Link Modal (sau khi thuộc hết) ── -->
+<div class="article-modal-overlay" id="articleModal">
+  <div class="article-modal">
+    <span class="article-modal-emoji">🎉</span>
+    <div class="article-modal-title">Xuất Sắc!</div>
+    <div class="article-modal-sub">
+      Bạn đã thuộc hết tất cả từ vựng!<br>
+      Bạn có muốn đọc <strong id="articleModalLabel">bài viết gốc</strong> chứa bộ từ này không?
     </div>
-    <div class="ww-filters">
-      <button class="ww-filter-btn active-all" id="wwF-all"    onclick="wwSetFilter('all')">✦ Tất cả</button>
-      <button class="ww-filter-btn"            id="wwF-done"   onclick="wwSetFilter('done')">● Đã thuộc</button>
-      <button class="ww-filter-btn"            id="wwF-learn"  onclick="wwSetFilter('learn')">○ Đang học</button>
-      <button class="ww-filter-btn"            id="wwF-hard"   onclick="wwSetFilter('hard')">⚑ Từ khó</button>
-    </div>
-    <div class="ww-canvas-wrap">
-      <canvas id="wwCanvas"></canvas>
-      <div class="ww-tooltip" id="wwTooltip">
-        <div class="ww-tt-word" id="wwTtWord"></div>
-        <div class="ww-tt-phonetic" id="wwTtPhonetic"></div>
-        <div class="ww-tt-meaning" id="wwTtMeaning"></div>
-        <div id="wwTtBadge"></div>
-      </div>
-    </div>
-    <div class="ww-legend">
-      <div class="ww-legend-item"><div class="ww-legend-dot" style="background:var(--neon-green);box-shadow:0 0 6px var(--neon-green)"></div>Đã thuộc</div>
-      <div class="ww-legend-item"><div class="ww-legend-dot" style="background:var(--neon-purple);box-shadow:0 0 6px var(--neon-purple)"></div>Đang học</div>
-      <div class="ww-legend-item"><div class="ww-legend-dot" style="background:#ff8c00;box-shadow:0 0 6px #ff8c00"></div>Từ khó</div>
-      <div class="ww-legend-item"><div class="ww-legend-dot" style="background:rgba(255,255,255,0.15)"></div>Ẩn</div>
-      <div style="margin-left:auto;font-size:0.58rem;color:rgba(255,255,255,0.2);font-family:'Space Mono',monospace">Kéo để xoay · Click để xem nghĩa</div>
+    <div class="article-modal-btns">
+      <a href="#" id="articleModalLink" class="article-modal-btn-yes" target="_blank" rel="noopener" onclick="closeArticleModal()">
+        🔗 Xem bài viết gốc
+      </a>
+      <button class="article-modal-btn-no" onclick="articleModalStudyAgain()">↺ Học lại · Đóng</button>
     </div>
   </div>
-
-<script>
-// ══════════════════════════════════════════════════
-//  WORD WEB  —  force-directed graph on canvas
-// ══════════════════════════════════════════════════
-let wwFilter = 'all';
-let wwNodes  = [];
-let wwEdges  = [];
-let wwAnim   = null;
-let wwDrag   = null;     // { node, ox, oy }
-let wwPan    = { x:0, y:0 };
-let wwPanDrag= null;     // { sx, sy, ox, oy }
-let wwScale  = 1;
-let wwHover  = null;
-
-const WW_COLORS = {
-  done  : { fill:'#39ff14', glow:'rgba(57,255,20,0.55)',  stroke:'rgba(57,255,20,0.9)' },
-  learn : { fill:'#bf00ff', glow:'rgba(191,0,255,0.55)', stroke:'rgba(191,0,255,0.9)' },
-  hard  : { fill:'#ff8c00', glow:'rgba(255,140,0,0.55)', stroke:'rgba(255,140,0,0.9)' },
-  hidden: { fill:'rgba(255,255,255,0.1)', glow:'transparent', stroke:'rgba(255,255,255,0.15)' },
-};
-
-function wwGetStatus(w) {
-  if (w.hidden)   return 'hidden';
-  if (w.mastered) return 'done';
-  if (dlHardWords && dlHardWords.some(x => x.word === w.word)) return 'hard';
-  return 'learn';
-}
-
-function wwOpen() {
-  if (!words || !words.length) { showToast && showToast('error','✕ Chưa có từ vựng nào'); return; }
-  document.getElementById('wwDrawer').classList.add('open');
-  document.getElementById('wwBackdrop').classList.add('show');
-  wwBuild();
-}
-
-function wwClose() {
-  document.getElementById('wwDrawer').classList.remove('open');
-  document.getElementById('wwBackdrop').classList.remove('show');
-  if (wwAnim) { cancelAnimationFrame(wwAnim); wwAnim = null; }
-}
-
-function wwSetFilter(f) {
-  wwFilter = f;
-  ['all','done','learn','hard'].forEach(k => {
-    const b = document.getElementById('wwF-' + k);
-    if (!b) return;
-    b.className = 'ww-filter-btn' + (k === f ? ' active-' + f : '');
-  });
-  // fix active class name for 'all'
-  if (f === 'all') document.getElementById('wwF-all').className = 'ww-filter-btn active-all';
-  wwBuild();
-}
-
-function wwBuild() {
-  const canvas = document.getElementById('wwCanvas');
-  if (!canvas) return;
-
-  // Resize canvas to wrapper
-  const wrap = canvas.parentElement;
-  canvas.width  = wrap.clientWidth  * window.devicePixelRatio;
-  canvas.height = wrap.clientHeight * window.devicePixelRatio;
-  canvas.style.width  = wrap.clientWidth  + 'px';
-  canvas.style.height = wrap.clientHeight + 'px';
-
-  const W = wrap.clientWidth, H = wrap.clientHeight;
-
-  // Filter words
-  const pool = words.filter(w => {
-    if (w.hidden && wwFilter !== 'all') return false;
-    if (wwFilter === 'done')  return w.mastered && !w.hidden;
-    if (wwFilter === 'learn') return !w.mastered && !w.hidden;
-    if (wwFilter === 'hard')  return dlHardWords && dlHardWords.some(x => x.word === w.word);
-    return true; // 'all'
-  });
-
-  const sub = document.getElementById('wwHeaderSub');
-  if (sub) sub.textContent = pool.length + ' từ · kéo để khám phá';
-
-  if (!pool.length) {
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    ctx.fillStyle = 'rgba(255,255,255,0.18)';
-    ctx.font = '2.5rem sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('🕸', W/2, H/2 - 24);
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.font = '500 13px Space Mono, monospace';
-    ctx.fillText('Không có từ nào ở bộ lọc này', W/2, H/2 + 16);
-    ctx.restore();
-    return;
-  }
-
-  // Build nodes
-  const CX = W / 2, CY = H / 2;
-  const R  = Math.min(W, H) * 0.35;
-  wwNodes = pool.map((w, i) => {
-    const angle = (i / pool.length) * Math.PI * 2;
-    const r2 = R * (0.4 + Math.random() * 0.6);
-    return {
-      word: w,
-      x: CX + Math.cos(angle) * r2,
-      y: CY + Math.sin(angle) * r2,
-      vx: 0, vy: 0,
-      r: w.mastered ? 18 : 13,
-      status: wwGetStatus(w),
-    };
-  });
-
-  // Build edges: connect words that share same level or first letter
-  wwEdges = [];
-  for (let i = 0; i < wwNodes.length; i++) {
-    for (let j = i + 1; j < wwNodes.length; j++) {
-      const a = wwNodes[i].word, b = wwNodes[j].word;
-      const sameLevel   = a.level && b.level && a.level === b.level;
-      const sameLetter  = a.word && b.word && a.word[0].toLowerCase() === b.word[0].toLowerCase();
-      const sameMeaning = a.meaning && b.meaning &&
-        a.meaning.split(' ').some(t => t.length > 3 && b.meaning.includes(t));
-      if (sameLevel || sameLetter || sameMeaning) {
-        wwEdges.push({ a: i, b: j,
-          type: sameLevel ? 'level' : sameMeaning ? 'meaning' : 'letter' });
-      }
-    }
-  }
-
-  wwPan   = { x: 0, y: 0 };
-  wwScale = 1;
-  wwHover = null;
-
-  if (wwAnim) cancelAnimationFrame(wwAnim);
-  wwTick(canvas, W, H, 0);
-  wwBindEvents(canvas);
-}
-
-function wwTick(canvas, W, H, frame) {
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ctx.save();
-  ctx.scale(dpr, dpr);
-  ctx.translate(W/2 + wwPan.x, H/2 + wwPan.y);
-  ctx.scale(wwScale, wwScale);
-  ctx.translate(-W/2, -H/2);
-
-  // ── Force-directed physics (only first 180 frames) ──
-  if (frame < 180) {
-    const k = 80, ideal = 110, repulse = 3200;
-    wwNodes.forEach(n => { n.vx *= 0.82; n.vy *= 0.82; });
-
-    // Repulsion
-    for (let i = 0; i < wwNodes.length; i++) {
-      for (let j = i+1; j < wwNodes.length; j++) {
-        const dx = wwNodes[j].x - wwNodes[i].x;
-        const dy = wwNodes[j].y - wwNodes[i].y;
-        const d2 = dx*dx + dy*dy + 1;
-        const f  = repulse / d2;
-        wwNodes[i].vx -= f * dx; wwNodes[i].vy -= f * dy;
-        wwNodes[j].vx += f * dx; wwNodes[j].vy += f * dy;
-      }
-    }
-    // Spring along edges
-    wwEdges.forEach(e => {
-      const a = wwNodes[e.a], b = wwNodes[e.b];
-      const dx = b.x - a.x, dy = b.y - a.y;
-      const d  = Math.sqrt(dx*dx + dy*dy) || 1;
-      const f  = (d - ideal) * 0.04;
-      a.vx += f*(dx/d); a.vy += f*(dy/d);
-      b.vx -= f*(dx/d); b.vy -= f*(dy/d);
-    });
-    // Center gravity
-    wwNodes.forEach(n => {
-      n.vx += (W/2 - n.x) * 0.008;
-      n.vy += (H/2 - n.y) * 0.008;
-      n.x  += n.vx;
-      n.y  += n.vy;
-    });
-  }
-
-  // ── Draw edges ──
-  wwEdges.forEach(e => {
-    const a = wwNodes[e.a], b = wwNodes[e.b];
-    const col = e.type === 'level'   ? 'rgba(0,245,255,0.12)'
-              : e.type === 'meaning' ? 'rgba(191,0,255,0.14)'
-              :                        'rgba(255,255,255,0.06)';
-    ctx.beginPath();
-    ctx.moveTo(a.x, a.y);
-    ctx.lineTo(b.x, b.y);
-    ctx.strokeStyle = col;
-    ctx.lineWidth = e.type === 'level' ? 1.2 : 0.7;
-    ctx.stroke();
-  });
-
-  // ── Draw nodes ──
-  wwNodes.forEach((n, i) => {
-    const col = WW_COLORS[n.status] || WW_COLORS.learn;
-    const isHovered = wwHover === i;
-    const r = isHovered ? n.r * 1.3 : n.r;
-
-    // Glow
-    if (n.status !== 'hidden') {
-      const grad = ctx.createRadialGradient(n.x, n.y, r*0.2, n.x, n.y, r*2.8);
-      grad.addColorStop(0, col.glow);
-      grad.addColorStop(1, 'transparent');
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, r*2.8, 0, Math.PI*2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-    }
-
-    // Circle
-    ctx.beginPath();
-    ctx.arc(n.x, n.y, r, 0, Math.PI*2);
-    ctx.fillStyle = n.status === 'hidden'
-      ? 'rgba(255,255,255,0.04)'
-      : col.fill + (isHovered ? 'ff' : '33');
-    ctx.fill();
-    ctx.strokeStyle = col.stroke;
-    ctx.lineWidth   = isHovered ? 2 : 1;
-    ctx.stroke();
-
-    // Label
-    const fs = isHovered ? 11 : (n.status === 'done' ? 10 : 8.5);
-    ctx.fillStyle = n.status === 'hidden' ? 'rgba(255,255,255,0.2)' : '#fff';
-    ctx.font = `${n.status === 'done' ? '700' : '400'} ${fs}px "Space Mono", monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    // Clip long words
-    const label = n.word.word.length > 12 ? n.word.word.slice(0,11)+'…' : n.word.word;
-    ctx.fillText(label, n.x, n.y);
-  });
-
-  ctx.restore();
-
-  wwAnim = requestAnimationFrame(() => {
-    if (!document.getElementById('wwDrawer').classList.contains('open')) return;
-    wwTick(canvas, W, H, frame + 1);
-  });
-}
-
-// ── Events ──
-function wwBindEvents(canvas) {
-  // Remove old listeners by replacing canvas (simple approach)
-  canvas.onmousemove = (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const mx = (e.clientX - rect.left - canvas.clientWidth/2  - wwPan.x) / wwScale + canvas.clientWidth/2;
-    const my = (e.clientY - rect.top  - canvas.clientHeight/2 - wwPan.y) / wwScale + canvas.clientHeight/2;
-
-    if (wwDrag) {
-      wwDrag.node.x = mx + wwDrag.ox;
-      wwDrag.node.y = my + wwDrag.oy;
-      return;
-    }
-    if (wwPanDrag) {
-      wwPan.x = wwPanDrag.ox + (e.clientX - wwPanDrag.sx);
-      wwPan.y = wwPanDrag.oy + (e.clientY - wwPanDrag.sy);
-      return;
-    }
-
-    let found = null;
-    wwNodes.forEach((n, i) => {
-      const dx = n.x - mx, dy = n.y - my;
-      if (dx*dx + dy*dy < (n.r+8)*(n.r+8)) found = i;
-    });
-    wwHover = found;
-    canvas.style.cursor = found !== null ? 'pointer' : 'grab';
-
-    const tt = document.getElementById('wwTooltip');
-    if (found !== null) {
-      const n = wwNodes[found];
-      document.getElementById('wwTtWord').textContent     = n.word.word    || '';
-      document.getElementById('wwTtPhonetic').textContent = n.word.phonetics ? `/${n.word.phonetics}/` : '';
-      document.getElementById('wwTtMeaning').textContent  = n.word.meaning  || '';
-      const badge = document.getElementById('wwTtBadge');
-      badge.className = 'ww-tt-badge ' + n.status;
-      badge.textContent = n.status === 'done' ? '✓ Đã thuộc' : n.status === 'hard' ? '⚑ Từ khó' : '○ Đang học';
-      // Position tooltip
-      const tx = Math.min(e.clientX - rect.left + 14, canvas.clientWidth  - 220);
-      const ty = Math.max(e.clientY - rect.top  - 20,  10);
-      tt.style.left = tx + 'px';
-      tt.style.top  = ty + 'px';
-      tt.classList.add('show');
-    } else {
-      tt.classList.remove('show');
-    }
-  };
-
-  canvas.onmousedown = (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const mx = (e.clientX - rect.left - canvas.clientWidth/2  - wwPan.x) / wwScale + canvas.clientWidth/2;
-    const my = (e.clientY - rect.top  - canvas.clientHeight/2 - wwPan.y) / wwScale + canvas.clientHeight/2;
-
-    let hit = null;
-    wwNodes.forEach((n, i) => {
-      const dx = n.x - mx, dy = n.y - my;
-      if (dx*dx + dy*dy < (n.r+8)*(n.r+8)) hit = i;
-    });
-
-    if (hit !== null) {
-      wwDrag = { node: wwNodes[hit], ox: wwNodes[hit].x - mx, oy: wwNodes[hit].y - my };
-    } else {
-      wwPanDrag = { sx: e.clientX, sy: e.clientY, ox: wwPan.x, oy: wwPan.y };
-    }
-  };
-
-  canvas.onmouseup = canvas.onmouseleave = () => {
-    wwDrag = null;
-    wwPanDrag = null;
-  };
-
-  canvas.onwheel = (e) => {
-    e.preventDefault();
-    wwScale = Math.max(0.4, Math.min(3, wwScale * (e.deltaY > 0 ? 0.9 : 1.1)));
-  };
-
-  // Touch support
-  canvas.ontouchstart = (e) => {
-    e.preventDefault();
-    const t = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    const mx = (t.clientX - rect.left - canvas.clientWidth/2  - wwPan.x) / wwScale + canvas.clientWidth/2;
-    const my = (t.clientY - rect.top  - canvas.clientHeight/2 - wwPan.y) / wwScale + canvas.clientHeight/2;
-    let hit = null;
-    wwNodes.forEach((n, i) => {
-      const dx = n.x - mx, dy = n.y - my;
-      if (dx*dx + dy*dy < (n.r+12)*(n.r+12)) hit = i;
-    });
-    if (hit !== null) {
-      wwDrag = { node: wwNodes[hit], ox: wwNodes[hit].x - mx, oy: wwNodes[hit].y - my };
-    } else {
-      wwPanDrag = { sx: t.clientX, sy: t.clientY, ox: wwPan.x, oy: wwPan.y };
-    }
-  };
-  canvas.ontouchmove = (e) => {
-    e.preventDefault();
-    const t = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    const mx = (t.clientX - rect.left - canvas.clientWidth/2  - wwPan.x) / wwScale + canvas.clientWidth/2;
-    const my = (t.clientY - rect.top  - canvas.clientHeight/2 - wwPan.y) / wwScale + canvas.clientHeight/2;
-    if (wwDrag) {
-      wwDrag.node.x = mx + wwDrag.ox;
-      wwDrag.node.y = my + wwDrag.oy;
-    } else if (wwPanDrag) {
-      wwPan.x = wwPanDrag.ox + (t.clientX - wwPanDrag.sx);
-      wwPan.y = wwPanDrag.oy + (t.clientY - wwPanDrag.sy);
-    }
-  };
-  canvas.ontouchend = () => { wwDrag = null; wwPanDrag = null; };
-}
+</div>
 </script>
 </body>
 </html>
