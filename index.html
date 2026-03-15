@@ -1485,38 +1485,52 @@ const IDB = (() => {
   .ra-mode-btn.active { color:var(--neon-cyan); border-bottom-color:var(--neon-cyan); background:rgba(0,245,255,0.04); }
 
   /* Flashcard pane */
+  /* Reading flashcard — clone từ flashcard chính */
   .ra-fc-pane { flex:1; overflow-y:auto; padding:20px; display:none; }
   .ra-fc-pane.active { display:block; }
-  .ra-fc-progress { text-align:center; font-family:'Space Mono',monospace; font-size:0.65rem;
-    color:rgba(255,255,255,0.3); margin-bottom:16px; }
-  .ra-fc-card {
-    background:linear-gradient(135deg,rgba(0,245,255,0.07),rgba(191,0,255,0.07));
-    border:1px solid rgba(0,245,255,0.2); border-radius:20px; padding:32px 24px;
-    text-align:center; margin-bottom:16px; cursor:pointer; transition:all 0.3s;
-    min-height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+
+  /* Tái dùng stats-row, fc-scene, fc-face, fc-word, fc-phonetic... từ flashcard chính */
+  .ra-fc-wrap { max-width:540px; margin:0 auto; }
+
+  /* Progress bar giống flashcard chính */
+  .ra-fc-controls {
+    display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap;
   }
-  .ra-fc-card:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,245,255,0.1); }
-  .ra-fc-word { font-family:'Plus Jakarta Sans',sans-serif; font-size:2rem; font-weight:800;
-    background:linear-gradient(135deg,#fff,rgba(0,245,255,0.8));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-    margin-bottom:6px; }
-  .ra-fc-phonetic { font-size:0.85rem; color:var(--neon-cyan); opacity:0.8; margin-bottom:8px; }
-  .ra-fc-type { font-size:0.72rem; color:rgba(255,255,255,0.35); font-style:italic; margin-bottom:10px; }
-  .ra-fc-meaning { font-size:0.95rem; color:rgba(255,255,255,0.7); display:none; }
-  .ra-fc-card.flipped .ra-fc-meaning { display:block; }
-  .ra-fc-card.flipped .ra-fc-word { opacity:0.5; font-size:1.2rem; }
-  .ra-fc-hint { font-size:0.6rem; color:rgba(255,255,255,0.2); letter-spacing:0.15em;
-    text-transform:uppercase; margin-top:14px; }
-  .ra-fc-actions { display:flex; gap:10px; margin-bottom:14px; }
-  .ra-fc-btn-next { flex:1; padding:13px; border-radius:12px; border:none; cursor:pointer;
-    font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:800; letter-spacing:0.06em;
-    text-transform:uppercase; background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
-    color:#000; transition:all 0.2s; }
-  .ra-fc-btn-next:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,245,255,0.3); }
-  .ra-fc-btn-skip { padding:13px 18px; border-radius:12px; cursor:pointer;
-    font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700;
+  .ra-fc-prog-info { font-size:0.75rem; color:rgba(255,255,255,0.4); }
+  .ra-fc-prog-info strong { color:var(--neon-purple); font-size:1rem; }
+  .ra-fc-prog-wrap { flex:1; min-width:80px; height:4px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden; }
+  .ra-fc-prog-bar  { height:100%; background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple)); border-radius:4px; transition:width 0.4s; box-shadow:0 0 8px rgba(0,245,255,0.5); }
+
+  /* Card scene — dùng lại fc-scene, flashcard, fc-face */
+  .ra-fc-hint-text { font-size:0.6rem; color:rgba(255,255,255,0.2); letter-spacing:0.15em;
+    text-transform:uppercase; }
+
+  /* Action row giống flashcard chính */
+  .ra-fc-action-row {
+    display:flex; align-items:center; gap:8px; margin-top:12px; justify-content:center;
+  }
+  .ra-fc-btn-flip {
+    padding:10px 20px; border-radius:10px; border:1px solid rgba(0,245,255,0.3);
+    background:rgba(0,245,255,0.07); color:var(--neon-cyan); cursor:pointer;
+    font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700;
+    letter-spacing:0.06em; text-transform:uppercase; transition:all 0.18s;
+  }
+  .ra-fc-btn-flip:hover { background:rgba(0,245,255,0.14); }
+  .ra-fc-btn-next {
+    padding:10px 24px; border-radius:10px; border:none; cursor:pointer;
+    font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:800;
+    letter-spacing:0.06em; text-transform:uppercase;
+    background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
+    color:#000; transition:all 0.2s;
+  }
+  .ra-fc-btn-next:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,245,255,0.3); }
+  .ra-fc-btn-skip {
+    padding:10px 16px; border-radius:10px; cursor:pointer;
+    font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700;
     background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
-    color:rgba(255,255,255,0.4); transition:all 0.2s; }
+    color:rgba(255,255,255,0.4); transition:all 0.2s;
+  }
+  .ra-fc-btn-skip:hover { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.6); }
 
   /* Reading pane */
   .ra-read-pane { flex:1; overflow-y:auto; padding:20px 24px; display:none; max-width:680px; margin:0 auto; width:100%; }
@@ -5987,19 +6001,46 @@ if (!navigator.onLine) _showOfflineBanner(true);
       <button class="ra-mode-btn active" id="raModeFlash" onclick="raSwitchMode('flash')">📚 Từ vựng</button>
       <button class="ra-mode-btn" id="raModeRead" onclick="raSwitchMode('read')">📖 Đọc bài</button>
     </div>
-    <!-- Flashcard pane -->
+    <!-- Flashcard pane — dùng lại CSS của flashcard chính -->
     <div class="ra-fc-pane active" id="raFcPane">
-      <div class="ra-fc-progress" id="raFcProgress"></div>
-      <div class="ra-fc-card" id="raFcCard" onclick="raFcFlip()">
-        <div class="ra-fc-word" id="raFcWord">—</div>
-        <div class="ra-fc-phonetic" id="raFcPhonetic"></div>
-        <div class="ra-fc-type" id="raFcType"></div>
-        <div class="ra-fc-meaning" id="raFcMeaning"></div>
-        <div class="ra-fc-hint" id="raFcHint">Nhấn để xem nghĩa</div>
-      </div>
-      <div class="ra-fc-actions">
-        <button class="ra-fc-btn-next" onclick="raFcNext()">Tiếp theo →</button>
-        <button class="ra-fc-btn-skip" onclick="raFcSkip()">Bỏ qua</button>
+      <div class="ra-fc-wrap">
+        <!-- Stats row giống flashcard chính -->
+        <div class="stats-row" id="raStatsRow" style="margin-bottom:16px">
+          <div class="stat-card"><div class="stat-value" id="raStatRemain">—</div><div class="stat-label">Còn lại</div></div>
+          <div class="stat-card"><div class="stat-value" id="raStatDone" style="color:var(--neon-green)">0</div><div class="stat-label">Đã xem</div></div>
+          <div class="stat-card"><div class="stat-value" id="raStatTotal">—</div><div class="stat-label">Tổng từ</div></div>
+        </div>
+        <!-- Progress bar -->
+        <div class="ra-fc-controls">
+          <div class="ra-fc-prog-info"><strong id="raFcCurrent">1</strong> / <span id="raFcTotal">?</span></div>
+          <div class="ra-fc-prog-wrap"><div class="ra-fc-prog-bar" id="raFcProgBar" style="width:0%"></div></div>
+        </div>
+        <!-- Card — dùng lại fc-scene, flashcard, fc-face của flashcard chính -->
+        <div class="fc-scene">
+          <div class="flashcard" id="raFcCard" onclick="raFcFlip()">
+            <div class="fc-face fc-front">
+              <div class="fc-hint ra-fc-hint-text" id="raFcHint">Nhấn để xem nghĩa ↕</div>
+              <div class="fc-word" id="raFcWord">—</div>
+              <div class="fc-phonetic" id="raFcPhonetic"></div>
+              <div class="fc-type" id="raFcType"></div>
+            </div>
+            <div class="fc-face fc-back">
+              <div class="fc-hint ra-fc-hint-text">Nghĩa tiếng Việt</div>
+              <div class="fc-word" id="raFcMeaning" style="font-size:1.4rem"></div>
+            </div>
+            <!-- Sizer -->
+            <div class="fc-sizer" aria-hidden="true">
+              <div class="fc-hint" style="opacity:0">_</div>
+              <div class="fc-word" style="background:none;-webkit-text-fill-color:transparent">placeholder</div>
+            </div>
+          </div>
+        </div>
+        <!-- Actions -->
+        <div class="ra-fc-action-row">
+          <button class="ra-fc-btn-flip" onclick="raFcFlip()">↻ Lật thẻ</button>
+          <button class="ra-fc-btn-next" onclick="raFcNext()">Tiếp theo →</button>
+          <button class="ra-fc-btn-skip" onclick="raFcSkip()">Bỏ qua</button>
+        </div>
       </div>
     </div>
     <!-- Reading pane -->
@@ -6512,40 +6553,64 @@ function raSwitchMode(mode) {
 // ── Flashcard ──
 function raFcRender() {
   if (!raVocabQueue.length) return;
-  const total = raVocabQueue.length;
-  const w = raVocabQueue[raVocabIndex % total];
+  const total   = raVocabQueue.length;
+  const idx     = raVocabIndex % total;
+  const w       = raVocabQueue[idx];
+  const done    = Math.min(raVocabIndex, total);
+  const remain  = total - done;
   raVocabFlipped = false;
 
-  document.getElementById('raFcProgress').textContent = `${(raVocabIndex % total) + 1} / ${total}`;
-  document.getElementById('raFcWord').textContent = w.word || '';
-  document.getElementById('raFcPhonetic').textContent = w.phonetics ? `/${w.phonetics}/` : '';
-  document.getElementById('raFcType').textContent = w.type || '';
-  document.getElementById('raFcMeaning').textContent = w.meaning || '';
-  document.getElementById('raFcHint').textContent = 'Nhấn để xem nghĩa';
+  // Stats row
+  const setTxt = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  setTxt('raStatRemain', remain);
+  setTxt('raStatDone',   done);
+  setTxt('raStatTotal',  total);
+  setTxt('raFcCurrent',  idx + 1);
+  setTxt('raFcTotal',    total);
+  const bar = document.getElementById('raFcProgBar');
+  if (bar) bar.style.width = Math.round((done / total) * 100) + '%';
+
+  // Card content
+  setTxt('raFcWord',     w.word     || '');
+  setTxt('raFcPhonetic', w.phonetics ? `/${w.phonetics}/` : '');
+  setTxt('raFcType',     w.type     || '');
+  setTxt('raFcMeaning',  w.meaning  || '');
+  setTxt('raFcHint',     'Nhấn để xem nghĩa ↕');
 
   const card = document.getElementById('raFcCard');
-  card.classList.remove('flipped');
-  card.style.animation = 'none'; void card.offsetWidth; card.style.animation = 'fadeUp 0.3s ease';
+  if (card) {
+    card.classList.remove('flipped');
+    card.style.animation = 'none'; void card.offsetWidth; card.style.animation = 'fadeUp 0.3s ease';
+  }
 }
 
 function raFcFlip() {
   raVocabFlipped = !raVocabFlipped;
   const card = document.getElementById('raFcCard');
-  card.classList.toggle('flipped', raVocabFlipped);
-  document.getElementById('raFcHint').textContent = raVocabFlipped ? 'Nhấn để ẩn nghĩa' : 'Nhấn để xem nghĩa';
+  if (card) card.classList.toggle('flipped', raVocabFlipped);
+  const hint = document.getElementById('raFcHint');
+  if (hint) hint.textContent = raVocabFlipped ? 'Nhấn để ẩn nghĩa ↕' : 'Nhấn để xem nghĩa ↕';
 }
 
 function raFcNext() {
   raVocabIndex++;
   if (raVocabIndex >= raVocabQueue.length) {
-    // Hết vòng → gợi ý chuyển sang đọc bài
-    document.getElementById('raFcProgress').textContent = '✓ Đã xem hết từ vựng!';
-    document.getElementById('raFcCard').innerHTML = `
-      <div style="text-align:center;padding:10px">
-        <div style="font-size:2rem;margin-bottom:12px">🎉</div>
-        <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--neon-green);margin-bottom:8px">Xong rồi!</div>
-        <div style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:16px">Bạn đã xem qua tất cả từ vựng.<br>Sẵn sàng đọc bài chưa?</div>
-        <button onclick="raSwitchMode('read')" style="padding:12px 28px;border-radius:12px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));color:#000">📖 Đọc bài ngay →</button>
+    // Hết vòng → celebrate nhỏ rồi gợi ý đọc bài
+    const wrap = document.querySelector('.ra-fc-wrap');
+    if (wrap) wrap.innerHTML = `
+      <div style="text-align:center;padding:40px 20px">
+        <span style="font-size:3rem;display:block;margin-bottom:16px;animation:bounce 0.8s ease infinite alternate">🎉</span>
+        <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;
+          background:linear-gradient(135deg,var(--neon-green),var(--neon-cyan));
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+          margin-bottom:10px">Xong rồi!</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:24px;line-height:1.7">
+          Bạn đã xem qua tất cả <strong style="color:#fff">${raVocabQueue.length}</strong> từ vựng.<br>
+          Sẵn sàng đọc bài chưa?
+        </div>
+        <button onclick="raSwitchMode('read')" class="btn-primary" style="font-size:0.9rem">
+          📖 Đọc bài ngay →
+        </button>
       </div>`;
     return;
   }
