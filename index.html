@@ -1421,6 +1421,168 @@ const IDB = (() => {
   .admin-hist-date { color:rgba(255,255,255,0.4); }
   .admin-hist-val { color:var(--neon-cyan); font-weight:700; }
 
+  /* ===== READING ARTICLES ===== */
+  .ra-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; padding:4px 0; }
+  @media(max-width:600px){ .ra-grid { grid-template-columns:1fr; } }
+
+  .ra-card {
+    background:var(--glass); border:1.5px solid var(--glass-border);
+    border-radius:18px; padding:20px; cursor:pointer; transition:all 0.25s; position:relative; overflow:hidden;
+  }
+  .ra-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple)); opacity:0; transition:opacity 0.25s; border-radius:18px 18px 0 0; }
+  .ra-card:hover { border-color:rgba(0,245,255,0.3); transform:translateY(-3px); background:rgba(255,255,255,0.06); }
+  .ra-card:hover::before { opacity:1; }
+  .ra-card.done { border-color:rgba(57,255,20,0.3); }
+  .ra-card.done::before { opacity:1; background:linear-gradient(90deg,var(--neon-green),var(--neon-cyan)); }
+
+  .ra-card-num { font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase;
+    color:rgba(255,255,255,0.3); font-family:'Space Mono',monospace; margin-bottom:6px; }
+  .ra-card-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:#fff;
+    margin-bottom:6px; line-height:1.3; }
+  .ra-card-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .ra-badge { font-size:0.6rem; padding:2px 8px; border-radius:20px; letter-spacing:0.08em;
+    font-family:'Space Mono',monospace; }
+  .ra-badge-level { background:rgba(0,245,255,0.1); border:1px solid rgba(0,245,255,0.25); color:var(--neon-cyan); }
+  .ra-badge-topic { background:rgba(191,0,255,0.1); border:1px solid rgba(191,0,255,0.2); color:rgba(191,0,255,0.8); }
+  .ra-badge-words { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.5); }
+  .ra-card-done-badge { display:inline-flex; align-items:center; gap:4px; font-size:0.62rem;
+    color:var(--neon-green); font-family:'Space Mono',monospace; }
+
+  /* Reading overlay */
+  .ra-overlay {
+    display:none; position:fixed; inset:0; z-index:400;
+    background:rgba(3,3,15,0.98); backdrop-filter:blur(12px);
+    flex-direction:column; overflow:hidden;
+  }
+  .ra-overlay.show { display:flex; }
+
+  .ra-header {
+    display:flex; align-items:center; gap:12px; padding:14px 20px;
+    border-bottom:1px solid rgba(255,255,255,0.07); flex-shrink:0;
+  }
+  .ra-back-btn {
+    padding:7px 14px; border-radius:20px; background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.5);
+    font-size:0.72rem; cursor:pointer; font-family:'Syne',sans-serif; font-weight:700;
+    transition:all 0.15s;
+  }
+  .ra-back-btn:hover { border-color:rgba(0,245,255,0.3); color:var(--neon-cyan); }
+  .ra-header-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; color:#fff; flex:1; }
+  .ra-header-num { font-family:'Space Mono',monospace; font-size:0.65rem; color:rgba(255,255,255,0.3); }
+
+  /* Mode tabs inside overlay */
+  .ra-mode-tabs {
+    display:flex; gap:0; background:rgba(0,0,0,0.3);
+    border-bottom:1px solid rgba(255,255,255,0.07); flex-shrink:0;
+  }
+  .ra-mode-btn {
+    flex:1; padding:11px; border:none; background:transparent;
+    color:rgba(255,255,255,0.35); font-family:'Space Mono',monospace;
+    font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    cursor:pointer; transition:all 0.2s; border-bottom:2px solid transparent;
+  }
+  .ra-mode-btn.active { color:var(--neon-cyan); border-bottom-color:var(--neon-cyan); background:rgba(0,245,255,0.04); }
+
+  /* Flashcard pane */
+  .ra-fc-pane { flex:1; overflow-y:auto; padding:20px; display:none; }
+  .ra-fc-pane.active { display:block; }
+  .ra-fc-progress { text-align:center; font-family:'Space Mono',monospace; font-size:0.65rem;
+    color:rgba(255,255,255,0.3); margin-bottom:16px; }
+  .ra-fc-card {
+    background:linear-gradient(135deg,rgba(0,245,255,0.07),rgba(191,0,255,0.07));
+    border:1px solid rgba(0,245,255,0.2); border-radius:20px; padding:32px 24px;
+    text-align:center; margin-bottom:16px; cursor:pointer; transition:all 0.3s;
+    min-height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .ra-fc-card:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,245,255,0.1); }
+  .ra-fc-word { font-family:'Plus Jakarta Sans',sans-serif; font-size:2rem; font-weight:800;
+    background:linear-gradient(135deg,#fff,rgba(0,245,255,0.8));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    margin-bottom:6px; }
+  .ra-fc-phonetic { font-size:0.85rem; color:var(--neon-cyan); opacity:0.8; margin-bottom:8px; }
+  .ra-fc-type { font-size:0.72rem; color:rgba(255,255,255,0.35); font-style:italic; margin-bottom:10px; }
+  .ra-fc-meaning { font-size:0.95rem; color:rgba(255,255,255,0.7); display:none; }
+  .ra-fc-card.flipped .ra-fc-meaning { display:block; }
+  .ra-fc-card.flipped .ra-fc-word { opacity:0.5; font-size:1.2rem; }
+  .ra-fc-hint { font-size:0.6rem; color:rgba(255,255,255,0.2); letter-spacing:0.15em;
+    text-transform:uppercase; margin-top:14px; }
+  .ra-fc-actions { display:flex; gap:10px; margin-bottom:14px; }
+  .ra-fc-btn-next { flex:1; padding:13px; border-radius:12px; border:none; cursor:pointer;
+    font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:800; letter-spacing:0.06em;
+    text-transform:uppercase; background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
+    color:#000; transition:all 0.2s; }
+  .ra-fc-btn-next:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,245,255,0.3); }
+  .ra-fc-btn-skip { padding:13px 18px; border-radius:12px; cursor:pointer;
+    font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+    color:rgba(255,255,255,0.4); transition:all 0.2s; }
+
+  /* Reading pane */
+  .ra-read-pane { flex:1; overflow-y:auto; padding:20px 24px; display:none; max-width:680px; margin:0 auto; width:100%; }
+  .ra-read-pane.active { display:block; }
+  .ra-read-title { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:#fff;
+    margin-bottom:6px; line-height:1.3; }
+  .ra-read-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+  .ra-read-body { font-size:1rem; line-height:1.9; color:rgba(255,255,255,0.8);
+    font-family:'Inter',sans-serif; white-space:pre-wrap; }
+  .ra-done-bar {
+    padding:16px 20px; border-top:1px solid rgba(255,255,255,0.07);
+    display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+    background:rgba(0,0,0,0.3);
+  }
+  .ra-done-btn {
+    padding:12px 28px; border-radius:12px; border:none; cursor:pointer;
+    font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:800; letter-spacing:0.08em;
+    text-transform:uppercase; background:linear-gradient(135deg,var(--neon-green),var(--neon-cyan));
+    color:#000; transition:all 0.2s;
+  }
+  .ra-done-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(57,255,20,0.3); }
+  .ra-done-btn:disabled { opacity:0.4; cursor:default; transform:none; box-shadow:none; }
+  .ra-done-hint { font-size:0.7rem; color:rgba(255,255,255,0.3); font-family:'Space Mono',monospace; }
+
+  /* Admin reading list */
+  .ra-admin-card {
+    background:var(--glass); border:1px solid var(--glass-border); border-radius:14px;
+    padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; gap:12px;
+  }
+  .ra-admin-card-info { flex:1; }
+  .ra-admin-card-title { font-family:'Syne',sans-serif; font-weight:700; color:#fff; font-size:0.88rem; margin-bottom:3px; }
+  .ra-admin-card-meta { font-size:0.68rem; color:rgba(255,255,255,0.4); font-family:'Space Mono',monospace; }
+  .ra-admin-btns { display:flex; gap:6px; }
+
+  /* Create/Edit form overlay */
+  .ra-form-overlay {
+    display:none; position:fixed; inset:0; z-index:500;
+    background:rgba(0,0,0,0.85); backdrop-filter:blur(6px);
+    align-items:flex-start; justify-content:center; padding:20px; overflow-y:auto;
+  }
+  .ra-form-overlay.show { display:flex; }
+  .ra-form-box {
+    background:var(--dark2); border:1px solid var(--glass-border); border-radius:20px;
+    padding:28px; width:100%; max-width:600px; animation:fadeUp 0.3s ease; margin:auto;
+  }
+  .ra-form-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800;
+    color:var(--neon-cyan); margin-bottom:16px; }
+  .ra-form-label { font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase;
+    color:rgba(255,255,255,0.35); font-family:'Space Mono',monospace; margin-bottom:6px; display:block; }
+  .ra-form-input {
+    width:100%; padding:11px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.1);
+    background:rgba(0,0,0,0.4); color:#fff; font-family:'Inter',sans-serif; font-size:0.88rem;
+    outline:none; transition:border-color 0.2s; margin-bottom:14px;
+  }
+  .ra-form-input:focus { border-color:rgba(0,245,255,0.4); }
+  .ra-form-textarea { min-height:160px; resize:vertical; }
+  .ra-form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .ra-vocab-result { background:rgba(57,255,20,0.05); border:1px solid rgba(57,255,20,0.15);
+    border-radius:10px; padding:12px 14px; margin-bottom:14px; font-size:0.75rem;
+    color:rgba(57,255,20,0.8); display:none; }
+  .ra-form-actions { display:flex; gap:10px; margin-top:6px; }
+  .ra-publish-toggle {
+    display:flex; align-items:center; gap:10px; margin-bottom:16px;
+    padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px;
+  }
+
   /* ===== DEEP LEARNING MODE ===== */
   /* Toggle button replacing "Tự đọc" */
   .dl-toggle-btn {
@@ -1656,6 +1818,191 @@ const IDB = (() => {
   }
   .dl-exit-btn.show { display:flex; }
   .dl-exit-btn:hover { border-color:rgba(255,0,110,0.4); color:rgba(255,0,110,0.7); }
+
+  /* Virtual keyboard (mobile only) */
+  .dl-vkb {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  @media (max-width: 768px) {
+    .dl-vkb { display: flex; }
+  }
+  .dl-vkb-row {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+  .dl-vkb-key {
+    height: 40px;
+    min-width: 28px;
+    padding: 0 4px;
+    flex: 1;
+    max-width: 36px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.9);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.1s, transform 0.08s;
+    display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dl-vkb-key:active {
+    background: rgba(191,0,255,0.35);
+    border-color: rgba(191,0,255,0.7);
+    transform: scale(0.92);
+  }
+  .dl-vkb-key.wide {
+    max-width: 58px;
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.55);
+  }
+  .dl-vkb-key.enter-key {
+    max-width: 72px;
+    background: rgba(191,0,255,0.18);
+    border-color: rgba(191,0,255,0.4);
+    color: var(--neon-purple);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+  }
+  .dl-vkb-key.enter-key:active {
+    background: rgba(191,0,255,0.45);
+  }
+  .dl-vkb-display {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(191,0,255,0.25);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    color: #fff;
+    letter-spacing: 0.08em;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .dl-vkb-display-text { flex: 1; }
+  .dl-vkb-display-cursor {
+    width: 2px; height: 1.2em;
+    background: var(--neon-purple);
+    animation: dlBlink 0.9s step-end infinite;
+    flex-shrink: 0;
+  }
+  @keyframes dlBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .dl-vkb-display.correct { border-color: var(--neon-green); animation: correctFlash 0.4s ease; }
+  .dl-vkb-display.wrong   { border-color: var(--neon-pink);  animation: shake 0.35s ease; }
+
+  /* Input row with check button */
+  .dl-input-row {
+    display:flex; gap:8px; align-items:stretch;
+  }
+  .dl-input-row .dl-input-wrap { flex:1; }
+  .dl-check-btn {
+    width:48px; flex-shrink:0; border-radius:12px; border:none; cursor:pointer;
+    font-size:1.2rem; font-weight:700; transition:all 0.18s;
+    background:rgba(191,0,255,0.12); border:1px solid rgba(191,0,255,0.3); color:rgba(191,0,255,0.7);
+  }
+  .dl-check-btn:hover  { background:rgba(191,0,255,0.22); color:var(--neon-purple); box-shadow:0 0 12px rgba(191,0,255,0.3); }
+  .dl-check-btn.active { background:rgba(191,0,255,0.28); border-color:var(--neon-purple); color:var(--neon-purple); }
+
+  /* Hard word button */
+  .dl-hard-btn {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:3px 10px; border-radius:20px; cursor:pointer; transition:all 0.18s;
+    border:1px solid rgba(255,140,0,0.25); background:rgba(255,140,0,0.07);
+    color:rgba(255,140,0,0.6); font-family:'Space Mono',monospace;
+    font-size:0.6rem; font-weight:700; letter-spacing:0.06em;
+    user-select:none; margin-bottom:8px;
+  }
+  .dl-hard-btn:hover { border-color:rgba(255,140,0,0.5); color:rgba(255,140,0,0.9); background:rgba(255,140,0,0.12); }
+  .dl-hard-btn.marked {
+    border-color:rgba(255,140,0,0.8); background:rgba(255,140,0,0.2);
+    color:#ff8c00; box-shadow:0 0 8px rgba(255,140,0,0.25);
+  }
+  .dl-hard-count {
+    display:none; align-items:center; gap:6px;
+    font-family:'Space Mono',monospace; font-size:0.65rem;
+    color:rgba(255,140,0,0.7); margin-bottom:4px;
+    justify-content:center;
+  }
+  .dl-hard-count.visible { display:flex; }
+  .dl-hard-count-bar {
+    display:flex; gap:3px;
+  }
+  .dl-hard-count-dot {
+    width:8px; height:8px; border-radius:50%;
+    border:1px solid rgba(255,140,0,0.4); background:transparent; transition:background 0.2s;
+  }
+  .dl-hard-count-dot.filled { background:#ff8c00; border-color:#ff8c00; }
+
+  /* Hard loop banner */
+  .dl-hard-banner {
+    display:none; align-items:center; justify-content:center; gap:8px;
+    padding:8px 16px; margin-bottom:10px;
+    background:rgba(255,140,0,0.1); border:1px solid rgba(255,140,0,0.35);
+    border-radius:12px; font-family:'Space Mono',monospace; font-size:0.7rem;
+    color:#ff8c00; letter-spacing:0.04em;
+  }
+  .dl-hard-banner.visible { display:flex; }
+
+  /* Field visibility toggles */
+  .dl-field-toggles {
+    display:flex; gap:6px; justify-content:flex-end; margin-bottom:10px;
+  }
+  .dl-field-btn {
+    padding:3px 9px; border-radius:20px; font-family:'Space Mono',monospace;
+    font-size:0.6rem; font-weight:700; letter-spacing:0.08em; cursor:pointer; transition:all 0.18s;
+    border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.4);
+  }
+  .dl-field-btn.active {
+    background:rgba(191,0,255,0.18); border-color:rgba(191,0,255,0.5); color:var(--neon-purple);
+  }
+  .dl-field-btn:hover { border-color:rgba(191,0,255,0.4); color:var(--neon-purple); }
+
+  /* Mastered button */
+  .dl-btn-mastered {
+    padding:13px 18px; border-radius:12px; cursor:pointer; font-family:'Syne',sans-serif;
+    font-size:0.82rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+    background:rgba(57,255,20,0.08); border:1px solid rgba(57,255,20,0.25); color:var(--neon-green);
+    transition:all 0.2s;
+  }
+  .dl-btn-mastered:hover { background:rgba(57,255,20,0.16); transform:translateY(-1px); box-shadow:0 4px 16px rgba(57,255,20,0.2); }
+
+  /* Summary screen */
+  .dl-summary {
+    max-width:420px; width:100%; text-align:center; animation:fadeUp 0.4s ease;
+  }
+  .dl-summary-icon  { font-size:3.5rem; display:block; margin-bottom:12px; animation:bounce 0.8s ease infinite alternate; }
+  .dl-summary-title {
+    font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; letter-spacing:0.04em;
+    background:linear-gradient(135deg,var(--neon-green),var(--neon-cyan));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    margin-bottom:20px;
+  }
+  .dl-summary-stats {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:24px;
+  }
+  .dl-stat-card {
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+    border-radius:14px; padding:14px 8px; text-align:center;
+  }
+  .dl-stat-val {
+    font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; line-height:1;
+  }
+  .dl-stat-lbl {
+    font-size:0.58rem; letter-spacing:0.15em; text-transform:uppercase;
+    color:rgba(255,255,255,0.3); margin-top:5px; font-family:'Space Mono',monospace;
+  }
 </style>
 </head>
 <body>
@@ -1758,6 +2105,7 @@ const IDB = (() => {
     <div class="admin-main-tabs">
       <button class="admin-main-tab active" id="adminTab-users" onclick="switchAdminTab('users')">◈ Người dùng</button>
       <button class="admin-main-tab" id="adminTab-settings" onclick="switchAdminTab('settings')">⚙ Cài đặt</button>
+      <button class="admin-main-tab" id="adminTab-reading" onclick="switchAdminTab('reading')">📖 Bài Đọc</button>
     </div>
 
     <!-- TAB: Người dùng -->
@@ -1772,6 +2120,17 @@ const IDB = (() => {
       <input class="admin-search" id="adminSearch" placeholder="🔍  Tìm theo tên hoặc email..." oninput="filterAdminUsers()">
       <div class="admin-users-list" id="adminUsersList">
         <div class="admin-loading">⟳ Đang tải dữ liệu...</div>
+      </div>
+    </div>
+
+    <!-- TAB: Bài Đọc (Admin) -->
+    <div class="admin-tab-panel" id="adminPanel-reading">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--neon-cyan);font-family:'Space Mono',monospace">📖 Quản lý bài đọc</div>
+        <button onclick="raOpenCreate()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:10px;color:var(--neon-cyan);font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.05em">+ Thêm bài mới</button>
+      </div>
+      <div id="raAdminList">
+        <div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.8rem">⟳ Đang tải...</div>
       </div>
     </div>
 
@@ -1946,6 +2305,7 @@ const IDB = (() => {
   <div class="main-nav" id="mainNav">
     <button class="main-nav-btn active" id="mainNavPacks" onclick="switchMainTab('packs')">📦 Từ Vựng</button>
     <button class="main-nav-btn" id="mainNavChallenge" onclick="switchMainTab('challenge')">⚡ Thử Thách<span class="nav-dot" id="challengeNavDot" style="display:none"></span></button>
+    <button class="main-nav-btn" id="mainNavReading" onclick="switchMainTab('reading')">📖 Bài Đọc</button>
   </div>
 
   <!-- ===== PACKS SCREEN ===== -->
@@ -1959,6 +2319,10 @@ const IDB = (() => {
     <!-- TAB: Thử Thách -->
     <div id="mainTabChallenge" style="display:none">
       <div id="challengeCardContainer"></div>
+    </div>
+    <!-- TAB: Bài Đọc -->
+    <div id="mainTabReading" style="display:none">
+      <div id="readingContainer"></div>
     </div>
   </div>
 
@@ -3672,10 +4036,13 @@ async function recordStudyActivity(wordCount) {
 function switchMainTab(tab) {
   document.getElementById('mainTabPacks').style.display = tab === 'packs' ? '' : 'none';
   document.getElementById('mainTabChallenge').style.display = tab === 'challenge' ? '' : 'none';
+  document.getElementById('mainTabReading').style.display = tab === 'reading' ? '' : 'none';
   document.getElementById('mainNavPacks').classList.toggle('active', tab === 'packs');
   document.getElementById('mainNavChallenge').classList.toggle('active', tab === 'challenge');
+  document.getElementById('mainNavReading').classList.toggle('active', tab === 'reading');
   if (tab === 'packs') renderPacksGrid();
   if (tab === 'challenge') loadAndRenderChallenge();
+  if (tab === 'reading') raLoadList();
 }
 
 // ============================================================
@@ -3990,6 +4357,8 @@ function activeTimeRecordInteraction() {
 
 async function _activeTimeFlush(mins) {
   if (!isLoggedIn() || mins < 1) return;
+  // Cập nhật in-memory ngay để tổng kết hiển thị đúng
+  _xpSession.todayActiveMin += mins;
   try {
     const today = new Date().toISOString().slice(0,10);
     const ref = window._doc(window._db, 'users', getUID(), 'xp', 'data');
@@ -4227,10 +4596,11 @@ function closeAdmin(e) {
 }
 
 function switchAdminTab(tab) {
-  ['users','settings'].forEach(t => {
+  ['users','settings','reading'].forEach(t => {
     document.getElementById('adminTab-' + t)?.classList.toggle('active', t === tab);
     document.getElementById('adminPanel-' + t)?.classList.toggle('active', t === tab);
   });
+  if (tab === 'reading') raLoadAdminList();
 }
 
 function _adminLoadSettingsUI() {
@@ -5026,8 +5396,20 @@ async function xpLoad() {
     const snap = await window._getDoc(ref);
     if (snap.exists()) {
       const d = snap.data();
-      _xpSession.total = d.total || 0;
+      const today = new Date().toISOString().slice(0,10);
+      const dayKey = 'day_' + today;
+      const todayData = d[dayKey] || {};
+
+      _xpSession.total          = d.total || 0;
       _xpSession.loginStreakDays = d.loginStreakDays || 0;
+
+      // Load lại số liệu hôm nay
+      _xpSession.todayXP        = typeof todayData === 'object' ? (todayData.xp       || 0) : (todayData || 0);
+      _xpSession.todayMastered  = typeof todayData === 'object' ? (todayData.mastered  || 0) : 0;
+      _xpSession.todayArticles  = typeof todayData === 'object' ? (todayData.articles  || 0) : 0;
+      // Active minutes: đọc từ activeMinutesByDay (lưu riêng bởi _activeTimeFlush)
+      const byDay = d.activeMinutesByDay || {};
+      _xpSession.todayActiveMin = byDay[today] || 0;
     }
     _xpSession.loaded = true;
   } catch(e) { console.warn('[XP] load error', e); }
@@ -5048,7 +5430,12 @@ async function _xpSave() {
       total: _xpSession.total,
       loginStreakDays: _xpSession.loginStreakDays,
       lastUpdated: Date.now(),
-      ['day_' + today]: (_xpSession.todayXP),
+      // Lưu tất cả chỉ số hôm nay vào object theo ngày
+      ['day_' + today]: {
+        xp:       _xpSession.todayXP,
+        mastered: _xpSession.todayMastered,
+        articles: _xpSession.todayArticles,
+      },
     }, { merge: true });
   } catch(e) { console.warn('[XP] save error', e); }
 }
@@ -5219,7 +5606,7 @@ function xpRecordOpenPack(packId) {
 function xpOnMastered(btnEl) {
   _xpSession.todayMastered++;
   _totalMasteredSession++;
-  xpAdd(XP_VALUES.MASTERED, 'mastered');
+  xpAdd(XP_VALUES.MASTERED, 'mastered'); // xpAdd đã gọi _xpScheduleSave
   _xpFloatBadge(XP_VALUES.MASTERED, btnEl);
   xpRecordInteraction();
   activeTimeRecordInteraction(); // ✦ active time
@@ -5232,7 +5619,7 @@ function xpOnMastered(btnEl) {
 
 function xpOnArticleOpen() {
   _xpSession.todayArticles++;
-  xpAdd(XP_VALUES.ARTICLE_OPEN, 'article_open');
+  xpAdd(XP_VALUES.ARTICLE_OPEN, 'article_open'); // xpAdd đã gọi _xpScheduleSave
   xpRecordInteraction();
   activeTimeRecordInteraction(); // ✦ active time
 }
@@ -5244,6 +5631,13 @@ function xpOnFlashcardAction() {
 
 // ── Tổng kết hôm nay ──
 function showDailySummary() {
+  // Flush active time tích lũy chưa được đẩy lên
+  if (_activeLastInteraction > 0 && _activeAccumSec >= 60) {
+    const mins = Math.floor(_activeAccumSec / 60);
+    _activeAccumSec -= mins * 60;
+    _xpSession.todayActiveMin += mins; // cập nhật in-memory ngay
+    _activeTimeFlush(mins);
+  }
   const s = _xpSession;
   const streak = s.loginStreakDays;
   const total  = s.total;
@@ -5582,8 +5976,97 @@ window.addEventListener('online',  () => _showOfflineBanner(false));
 window.addEventListener('offline', () => _showOfflineBanner(true));
 if (!navigator.onLine) _showOfflineBanner(true);
 </script>
+  <!-- ===== READING OVERLAY ===== -->
+  <div class="ra-overlay" id="raOverlay">
+    <div class="ra-header">
+      <button class="ra-back-btn" onclick="raClose()">← Quay lại</button>
+      <div class="ra-header-title" id="raOverlayTitle">—</div>
+      <div class="ra-header-num" id="raOverlayNum"></div>
+    </div>
+    <div class="ra-mode-tabs">
+      <button class="ra-mode-btn active" id="raModeFlash" onclick="raSwitchMode('flash')">📚 Từ vựng</button>
+      <button class="ra-mode-btn" id="raModeRead" onclick="raSwitchMode('read')">📖 Đọc bài</button>
+    </div>
+    <!-- Flashcard pane -->
+    <div class="ra-fc-pane active" id="raFcPane">
+      <div class="ra-fc-progress" id="raFcProgress"></div>
+      <div class="ra-fc-card" id="raFcCard" onclick="raFcFlip()">
+        <div class="ra-fc-word" id="raFcWord">—</div>
+        <div class="ra-fc-phonetic" id="raFcPhonetic"></div>
+        <div class="ra-fc-type" id="raFcType"></div>
+        <div class="ra-fc-meaning" id="raFcMeaning"></div>
+        <div class="ra-fc-hint" id="raFcHint">Nhấn để xem nghĩa</div>
+      </div>
+      <div class="ra-fc-actions">
+        <button class="ra-fc-btn-next" onclick="raFcNext()">Tiếp theo →</button>
+        <button class="ra-fc-btn-skip" onclick="raFcSkip()">Bỏ qua</button>
+      </div>
+    </div>
+    <!-- Reading pane -->
+    <div class="ra-read-pane" id="raReadPane">
+      <div class="ra-read-title" id="raReadTitle"></div>
+      <div class="ra-read-meta" id="raReadMeta"></div>
+      <div class="ra-read-body" id="raReadBody"></div>
+    </div>
+    <div class="ra-done-bar" id="raDoneBar" style="display:none">
+      <div class="ra-done-hint" id="raDoneHint">Đọc xong bài này chưa?</div>
+      <button class="ra-done-btn" id="raDoneBtn" onclick="raMarkDone()">✓ Hoàn thành · +XP</button>
+    </div>
+  </div>
+
+  <!-- ===== READING CREATE/EDIT FORM ===== -->
+  <div class="ra-form-overlay" id="raFormOverlay">
+    <div class="ra-form-box">
+      <div class="ra-form-title" id="raFormTitle">+ Thêm bài đọc mới</div>
+
+      <label class="ra-form-label">Tiêu đề bài</label>
+      <input class="ra-form-input" id="raFTitle" placeholder="Ví dụ: The Future of Renewable Energy">
+
+      <div class="ra-form-row">
+        <div>
+          <label class="ra-form-label">Cấp độ</label>
+          <select class="ra-form-input" id="raFLevel" style="margin-bottom:14px">
+            <option value="A2">A2</option>
+            <option value="B1">B1</option>
+            <option value="B2" selected>B2</option>
+            <option value="C1">C1</option>
+            <option value="C2">C2</option>
+          </select>
+        </div>
+        <div>
+          <label class="ra-form-label">Chủ đề</label>
+          <input class="ra-form-input" id="raFTopic" placeholder="Technology, Environment...">
+        </div>
+      </div>
+
+      <label class="ra-form-label">Nội dung bài đọc</label>
+      <textarea class="ra-form-input ra-form-textarea" id="raFContent" placeholder="Paste toàn bộ nội dung bài đọc vào đây..."></textarea>
+
+      <label class="ra-form-label">File từ vựng (.xlsx) — tùy chọn</label>
+      <div style="position:relative;border:1px dashed rgba(0,245,255,0.3);border-radius:10px;padding:16px;text-align:center;margin-bottom:14px;cursor:pointer" onclick="document.getElementById('raFVocabFile').click()">
+        <input type="file" id="raFVocabFile" accept=".xlsx,.xls" style="display:none" onchange="raHandleVocabFile(this)">
+        <div style="font-size:0.75rem;color:rgba(0,245,255,0.6)" id="raVocabFileLabel">📂 Chọn file Excel từ vựng (giống format pack)</div>
+      </div>
+      <div class="ra-vocab-result" id="raVocabResult"></div>
+
+      <div class="ra-publish-toggle">
+        <label class="toggle-switch">
+          <input type="checkbox" id="raFPublished" checked>
+          <span class="toggle-track"></span>
+        </label>
+        <span style="font-size:0.75rem;color:rgba(255,255,255,0.55)">Hiển thị cho người dùng</span>
+      </div>
+
+      <div class="ra-form-actions">
+        <button class="btn-primary" style="flex:1" onclick="raFormSave()">💾 Lưu bài</button>
+        <button class="btn-cancel" onclick="raFormClose()">Hủy</button>
+      </div>
+      <div id="raFormStatus" style="margin-top:10px;font-size:0.75rem;text-align:center"></div>
+    </div>
+  </div>
+
   <!-- ===== DEEP LEARNING OVERLAY ===== -->
-  <button class="dl-exit-btn" id="dlExitBtn" onclick="dlExit()">✕ Thoát</button>
+  <button class="dl-exit-btn" id="dlExitBtn" onclick="dlExitOrSummary()">✕ Kết thúc</button>
   <div class="dl-overlay" id="dlOverlay">
 
     <!-- INTRO SCREEN -->
@@ -5617,29 +6100,69 @@ if (!navigator.onLine) _showOfflineBanner(true);
         <div class="dl-timer-clock" id="dlTimerClock">—</div>
       </div>
       <div class="dl-word-card" id="dlWordCard">
-        <div class="dl-card-progress" id="dlCardProgress">1 / ?</div>
-        <div class="dl-card-word" id="dlCardWord">—</div>
+        <div class="dl-field-toggles">
+          <button class="dl-field-btn active" id="dlToggleEN"  onclick="dlToggleField('en')"  title="Ẩn/hiện từ tiếng Anh">EN</button>
+          <button class="dl-field-btn active" id="dlToggleIPA" onclick="dlToggleField('ipa')" title="Ẩn/hiện phát âm">IPA</button>
+          <button class="dl-field-btn active" id="dlToggleVI"  onclick="dlToggleField('vi')"  title="Ẩn/hiện nghĩa tiếng Việt">VI</button>
+        </div>
+        <div class="dl-hard-count" id="dlHardCount">
+          <span id="dlHardCountText">0 / 5 từ khó</span>
+          <div class="dl-hard-count-bar" id="dlHardCountBar"></div>
+        </div>
+        <div class="dl-hard-banner" id="dlHardBanner">
+          <span>🔥</span>
+          <span id="dlHardBannerText">Đang học loop từ khó</span>
+          <button onclick="dlPauseHardLoop()" style="
+            margin-left:auto;padding:2px 10px;border-radius:20px;cursor:pointer;
+            border:1px solid rgba(255,140,0,0.4);background:rgba(255,140,0,0.1);
+            color:rgba(255,140,0,0.8);font-family:'Space Mono',monospace;
+            font-size:0.58rem;font-weight:700;letter-spacing:0.06em;transition:all 0.15s;
+          ">TẠM DỪNG ✕</button>
+        </div>
+        <div class="dl-card-progress" id="dlCardProgress">1 từ</div>
+        <div class="dl-card-word"     id="dlCardWord">—</div>
         <div class="dl-card-phonetic" id="dlCardPhonetic"></div>
-        <div class="dl-card-meaning" id="dlCardMeaning"></div>
+        <div class="dl-card-meaning"  id="dlCardMeaning"></div>
+        <button class="dl-hard-btn" id="dlHardBtn" onclick="dlToggleHard()">⚑ Từ khó</button>
       </div>
       <div class="dl-write-area">
-        <div class="dl-write-label" id="dlWriteLabel">Viết lại từ trên đây</div>
-        <!-- Canvas (mobile) -->
-        <div class="dl-canvas-wrap" id="dlCanvasWrap" style="display:none">
-          <canvas id="dlCanvas"></canvas>
-          <button class="dl-canvas-clear" onclick="dlClearCanvas()">Xóa</button>
+        <div class="dl-write-label">Gõ lại từ trên đây</div>
+        <!-- Desktop input -->
+        <div class="dl-input-row" id="dlDesktopInput">
+          <div class="dl-input-wrap">
+            <input class="dl-input" id="dlInput" type="text"
+              autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+              inputmode="search" enterkeyhint="go"
+              placeholder="Gõ lại từ..."
+              onkeydown="if(event.key==='Enter')dlCheckInput()"
+              onsearch="dlCheckInput()">
+          </div>
+          <button class="dl-check-btn" id="dlCheckBtn" onclick="dlCheckInput()">✓</button>
         </div>
-        <!-- Input (desktop) -->
-        <div class="dl-input-wrap" id="dlInputWrap">
-          <input class="dl-input" id="dlInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Gõ lại từ..." onkeydown="if(event.key==='Enter')dlCheckInput()">
-          <span class="dl-input-hint">Enter ↵</span>
+        <!-- Virtual keyboard (mobile) -->
+        <div class="dl-vkb" id="dlVkb">
+          <div class="dl-vkb-display" id="dlVkbDisplay">
+            <span class="dl-vkb-display-text" id="dlVkbText"></span>
+            <span class="dl-vkb-display-cursor"></span>
+          </div>
+          <div class="dl-vkb-row" id="dlVkbRow1"></div>
+          <div class="dl-vkb-row" id="dlVkbRow2"></div>
+          <div class="dl-vkb-row" id="dlVkbRow3"></div>
         </div>
       </div>
       <div class="dl-actions">
-        <button class="dl-btn-next" id="dlBtnNext" onclick="dlNext()">Tiếp theo →</button>
-        <button class="dl-btn-skip" onclick="dlSkip()">Bỏ qua</button>
+        <button class="dl-btn-next"     onclick="dlNext()">Tiếp theo →</button>
+        <button class="dl-btn-mastered" onclick="dlMarkMastered()">✓ Đã thuộc</button>
       </div>
       <div class="dl-motivate" id="dlMotivate"></div>
+    </div>
+
+    <!-- SUMMARY SCREEN -->
+    <div class="dl-summary" id="dlSummary" style="display:none">
+      <div class="dl-summary-icon">🎉</div>
+      <div class="dl-summary-title">Phiên học kết thúc!</div>
+      <div class="dl-summary-stats" id="dlSummaryStats"></div>
+      <button class="dl-start-btn" style="margin-top:8px" onclick="dlExit()">Đóng lại</button>
     </div>
 
   </div>
@@ -5826,18 +6349,469 @@ async function processCtxFile(file) {
 
 <script>
 // ============================================================
+//  READING ARTICLES
+//  Firestore: /readingArticles/{id}
+//  User progress: /users/{uid}/xp/data.readingDone = ['id1','id2',...]
+// ============================================================
+
+let raArticles    = [];   // cache danh sách bài
+let raCurrentArt  = null; // bài đang đọc/học
+let raVocabQueue  = [];   // flashcard queue
+let raVocabIndex  = 0;
+let raVocabFlipped = false;
+let raDoneSet     = new Set(); // bài user đã đọc
+let raEditingId   = null; // null = create, string = edit
+let raPendingVocab = [];  // từ vựng parsed từ file Excel
+
+// ── Load danh sách bài (user) ──
+async function raLoadList() {
+  const el = document.getElementById('readingContainer');
+  el.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3)">⟳ Đang tải...</div>';
+
+  // Load progress
+  await raLoadProgress();
+
+  try {
+    const snap = await window._getDocs(
+      window._query(
+        window._collection(window._db, 'readingArticles'),
+        window._orderBy('order','asc')
+      )
+    ).catch(() => null);
+
+    if (!snap || snap.empty) {
+      el.innerHTML = '<div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,0.25)"><div style="font-size:2rem;margin-bottom:12px">📖</div><div>Chưa có bài đọc nào.<br><span style="font-size:0.75rem">Admin sẽ thêm sớm!</span></div></div>';
+      return;
+    }
+
+    raArticles = snap.docs
+      .map(d => ({id: d.id, ...d.data()}))
+      .filter(a => a.published);
+
+    _raRenderList(el);
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,0,110,0.6)">✕ Lỗi tải bài đọc</div>';
+  }
+}
+
+function _raRenderList(el) {
+  if (!raArticles.length) {
+    el.innerHTML = '<div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,0.25)"><div style="font-size:2rem;margin-bottom:12px">📖</div><div>Chưa có bài đọc nào.</div></div>';
+    return;
+  }
+
+  const total = raArticles.length;
+  const done  = raArticles.filter(a => raDoneSet.has(a.id)).length;
+
+  el.innerHTML = `
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-family:'Space Mono',monospace;margin-bottom:8px">Tiến độ</div>
+      <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${done} / ${total}</div>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);margin-top:2px">bài đã đọc</div>
+      <div style="height:4px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;margin-top:10px">
+        <div style="height:100%;width:${total ? Math.round(done/total*100) : 0}%;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-green));border-radius:4px;transition:width 0.5s"></div>
+      </div>
+    </div>
+    <div class="ra-grid">
+      ${raArticles.map((a,i) => _raCardHTML(a, i)).join('')}
+    </div>`;
+}
+
+function _raCardHTML(a, i) {
+  const done = raDoneSet.has(a.id);
+  const vocabCount = (a.vocabulary || []).length;
+  return `
+    <div class="ra-card ${done?'done':''}" onclick="raOpen('${a.id}')">
+      <div class="ra-card-num">Bài ${a.order || i+1}</div>
+      <div class="ra-card-title">${h(a.title || 'Untitled')}</div>
+      <div class="ra-card-meta">
+        ${a.level ? `<span class="ra-badge ra-badge-level">${h(a.level)}</span>` : ''}
+        ${a.topic ? `<span class="ra-badge ra-badge-topic">${h(a.topic)}</span>` : ''}
+        ${vocabCount ? `<span class="ra-badge ra-badge-words">${vocabCount} từ vựng</span>` : ''}
+      </div>
+      ${done ? '<div class="ra-card-done-badge">✓ Đã đọc</div>' : '<div style="font-size:0.68rem;color:rgba(255,255,255,0.25)">Chưa đọc</div>'}
+    </div>`;
+}
+
+// ── Load progress từ Firestore ──
+async function raLoadProgress() {
+  if (!isLoggedIn()) return;
+  try {
+    const ref = window._doc(window._db, 'users', getUID(), 'xp', 'data');
+    const snap = await window._getDoc(ref).catch(() => null);
+    const done = snap?.exists() ? (snap.data().readingDone || []) : [];
+    raDoneSet = new Set(done);
+  } catch(e) {}
+}
+
+// ── Mở bài đọc ──
+async function raOpen(id) {
+  const art = raArticles.find(a => a.id === id);
+  if (!art) return;
+  raCurrentArt = art;
+
+  // Setup overlay
+  document.getElementById('raOverlayTitle').textContent = art.title || '';
+  document.getElementById('raOverlayNum').textContent = `Bài ${art.order || ''}`;
+
+  // Setup vocab flashcard
+  raVocabQueue  = [...(art.vocabulary || [])];
+  raVocabIndex  = 0;
+  raVocabFlipped = false;
+
+  // Switch to vocab mode first (or reading if no vocab)
+  if (raVocabQueue.length) {
+    raSwitchMode('flash');
+    raFcRender();
+  } else {
+    raSwitchMode('read');
+  }
+
+  // Setup reading pane
+  document.getElementById('raReadTitle').textContent = art.title || '';
+  document.getElementById('raReadMeta').innerHTML = `
+    ${art.level ? `<span class="ra-badge ra-badge-level">${h(art.level)}</span>` : ''}
+    ${art.topic ? `<span class="ra-badge ra-badge-topic">${h(art.topic)}</span>` : ''}`;
+  document.getElementById('raReadBody').textContent = art.content || '';
+
+  // Done bar
+  const doneBar = document.getElementById('raDoneBar');
+  const doneBtn = document.getElementById('raDoneBtn');
+  const doneHint = document.getElementById('raDoneHint');
+  doneBar.style.display = '';
+  if (raDoneSet.has(id)) {
+    doneBtn.textContent = '✓ Đã hoàn thành';
+    doneBtn.disabled = true;
+    doneHint.textContent = 'Bạn đã đọc bài này rồi!';
+  } else {
+    doneBtn.textContent = '✓ Hoàn thành · +XP';
+    doneBtn.disabled = false;
+    doneHint.textContent = 'Đọc xong bài này chưa?';
+  }
+
+  document.getElementById('raOverlay').classList.add('show');
+}
+
+function raClose() {
+  document.getElementById('raOverlay').classList.remove('show');
+  raCurrentArt = null;
+}
+
+// ── Switch mode ──
+function raSwitchMode(mode) {
+  const isFlash = mode === 'flash';
+  document.getElementById('raFcPane').classList.toggle('active', isFlash);
+  document.getElementById('raReadPane').classList.toggle('active', !isFlash);
+  document.getElementById('raModeFlash').classList.toggle('active', isFlash);
+  document.getElementById('raModeRead').classList.toggle('active', !isFlash);
+  // Show done bar only in reading mode
+  const doneBar = document.getElementById('raDoneBar');
+  if (doneBar) doneBar.style.display = !isFlash ? '' : 'none';
+}
+
+// ── Flashcard ──
+function raFcRender() {
+  if (!raVocabQueue.length) return;
+  const total = raVocabQueue.length;
+  const w = raVocabQueue[raVocabIndex % total];
+  raVocabFlipped = false;
+
+  document.getElementById('raFcProgress').textContent = `${(raVocabIndex % total) + 1} / ${total}`;
+  document.getElementById('raFcWord').textContent = w.word || '';
+  document.getElementById('raFcPhonetic').textContent = w.phonetics ? `/${w.phonetics}/` : '';
+  document.getElementById('raFcType').textContent = w.type || '';
+  document.getElementById('raFcMeaning').textContent = w.meaning || '';
+  document.getElementById('raFcHint').textContent = 'Nhấn để xem nghĩa';
+
+  const card = document.getElementById('raFcCard');
+  card.classList.remove('flipped');
+  card.style.animation = 'none'; void card.offsetWidth; card.style.animation = 'fadeUp 0.3s ease';
+}
+
+function raFcFlip() {
+  raVocabFlipped = !raVocabFlipped;
+  const card = document.getElementById('raFcCard');
+  card.classList.toggle('flipped', raVocabFlipped);
+  document.getElementById('raFcHint').textContent = raVocabFlipped ? 'Nhấn để ẩn nghĩa' : 'Nhấn để xem nghĩa';
+}
+
+function raFcNext() {
+  raVocabIndex++;
+  if (raVocabIndex >= raVocabQueue.length) {
+    // Hết vòng → gợi ý chuyển sang đọc bài
+    document.getElementById('raFcProgress').textContent = '✓ Đã xem hết từ vựng!';
+    document.getElementById('raFcCard').innerHTML = `
+      <div style="text-align:center;padding:10px">
+        <div style="font-size:2rem;margin-bottom:12px">🎉</div>
+        <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--neon-green);margin-bottom:8px">Xong rồi!</div>
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:16px">Bạn đã xem qua tất cả từ vựng.<br>Sẵn sàng đọc bài chưa?</div>
+        <button onclick="raSwitchMode('read')" style="padding:12px 28px;border-radius:12px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));color:#000">📖 Đọc bài ngay →</button>
+      </div>`;
+    return;
+  }
+  raFcRender();
+}
+
+function raFcSkip() {
+  raVocabIndex++;
+  if (raVocabIndex >= raVocabQueue.length) raVocabIndex = 0;
+  raFcRender();
+}
+
+// ── Mark hoàn thành ──
+async function raMarkDone() {
+  if (!raCurrentArt || !isLoggedIn()) return;
+  const id = raCurrentArt.id;
+  if (raDoneSet.has(id)) return;
+
+  raDoneSet.add(id);
+
+  // Update Firestore
+  try {
+    const ref = window._doc(window._db, 'users', getUID(), 'xp', 'data');
+    const snap = await window._getDoc(ref).catch(() => null);
+    const prev = snap?.exists() ? (snap.data().readingDone || []) : [];
+    if (!prev.includes(id)) {
+      await window._setDoc(ref, { readingDone: [...prev, id] }, { merge: true });
+    }
+  } catch(e) { console.warn('[Reading] save progress error', e); }
+
+  // XP
+  xpOnFlashcardAction();
+  xpAdd(15, 'reading_done');
+  _xpFloatBadge && _xpFloatBadge(15, document.getElementById('raDoneBtn'));
+
+  // Update UI
+  document.getElementById('raDoneBtn').textContent = '✓ Đã hoàn thành';
+  document.getElementById('raDoneBtn').disabled = true;
+  document.getElementById('raDoneHint').textContent = 'Tuyệt vời! +15 XP';
+
+  showToast('success', '📖 +15 XP — Hoàn thành bài đọc!');
+}
+
+// ── ADMIN: Load danh sách ──
+async function raLoadAdminList() {
+  const el = document.getElementById('raAdminList');
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3)">⟳ Đang tải...</div>';
+  try {
+    const snap = await window._getDocs(
+      window._query(
+        window._collection(window._db, 'readingArticles'),
+        window._orderBy('order','asc')
+      )
+    ).catch(() => null);
+
+    if (!snap || snap.empty) {
+      el.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:0.8rem">Chưa có bài nào. Bấm "+ Thêm bài mới" để bắt đầu.</div>';
+      return;
+    }
+
+    const arts = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    el.innerHTML = arts.map(a => `
+      <div class="ra-admin-card">
+        <div class="ra-admin-card-info">
+          <div class="ra-admin-card-title">${a.order ? `#${a.order} · ` : ''}${h(a.title||'Untitled')}</div>
+          <div class="ra-admin-card-meta">
+            ${a.level||''} · ${a.topic||''} · ${(a.vocabulary||[]).length} từ vựng
+            · ${a.published ? '<span style="color:var(--neon-green)">✓ Published</span>' : '<span style="color:rgba(255,230,0,0.7)">Draft</span>'}
+          </div>
+        </div>
+        <div class="ra-admin-btns">
+          <button class="admin-pack-btn admin-pack-btn-view" onclick="raOpenCreate('${a.id}')">Sửa</button>
+          <button class="admin-pack-btn admin-pack-btn-del" onclick="raDelete('${a.id}', '${h(a.title||'')}')">Xóa</button>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--neon-pink);font-size:0.8rem;padding:10px">✕ Lỗi tải dữ liệu</div>';
+  }
+}
+
+// ── ADMIN: Mở form tạo/sửa ──
+async function raOpenCreate(id) {
+  raEditingId   = id || null;
+  raPendingVocab = [];
+
+  document.getElementById('raFormTitle').textContent = id ? '✎ Sửa bài đọc' : '+ Thêm bài đọc mới';
+  document.getElementById('raFTitle').value    = '';
+  document.getElementById('raFLevel').value    = 'B2';
+  document.getElementById('raFTopic').value    = '';
+  document.getElementById('raFContent').value  = '';
+  document.getElementById('raFPublished').checked = true;
+  document.getElementById('raVocabFileLabel').textContent = '📂 Chọn file Excel từ vựng (giống format pack)';
+  document.getElementById('raVocabResult').style.display = 'none';
+  document.getElementById('raFormStatus').textContent = '';
+
+  if (id) {
+    // Load existing
+    try {
+      const snap = await window._getDoc(window._doc(window._db, 'readingArticles', id));
+      if (snap.exists()) {
+        const d = snap.data();
+        document.getElementById('raFTitle').value   = d.title || '';
+        document.getElementById('raFLevel').value   = d.level || 'B2';
+        document.getElementById('raFTopic').value   = d.topic || '';
+        document.getElementById('raFContent').value = d.content || '';
+        document.getElementById('raFPublished').checked = !!d.published;
+        raPendingVocab = d.vocabulary || [];
+        if (raPendingVocab.length) {
+          document.getElementById('raVocabResult').style.display = 'block';
+          document.getElementById('raVocabResult').textContent = `✓ ${raPendingVocab.length} từ vựng đã tải`;
+        }
+      }
+    } catch(e) {}
+  }
+
+  document.getElementById('raFormOverlay').classList.add('show');
+}
+
+function raFormClose() {
+  document.getElementById('raFormOverlay').classList.remove('show');
+  raEditingId = null; raPendingVocab = [];
+}
+
+// ── ADMIN: Xử lý file vocab Excel ──
+function raHandleVocabFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('raVocabFileLabel').textContent = '⟳ Đang đọc file...';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''});
+
+      const COL = {
+        word:      ['word'],
+        meaning:   ['nghĩa tiếng việt','meaning','nghĩa','nghia'],
+        phonetics: ['phonetics','phonetic','phiên âm','phien am'],
+        type:      ['type','loại từ','loai tu'],
+        level:     ['level'],
+      };
+      function getC(row, aliases) {
+        const keys = Object.keys(row).map(k=>k.toLowerCase().trim());
+        for (const a of aliases) { const i=keys.indexOf(a); if(i>=0) return String(Object.values(row)[i]).trim(); }
+        return '';
+      }
+
+      raPendingVocab = rows
+        .map(row => ({
+          word:      getC(row, COL.word),
+          meaning:   getC(row, COL.meaning),
+          phonetics: getC(row, COL.phonetics),
+          type:      getC(row, COL.type),
+          level:     getC(row, COL.level),
+        }))
+        .filter(w => w.word && w.meaning);
+
+      document.getElementById('raVocabFileLabel').textContent = `✓ ${file.name}`;
+      const res = document.getElementById('raVocabResult');
+      res.style.display = 'block';
+      res.textContent = `✓ Đọc được ${raPendingVocab.length} từ vựng từ file`;
+    } catch(err) {
+      document.getElementById('raVocabFileLabel').textContent = '✕ Lỗi đọc file';
+      showToast('error','✕ ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ── ADMIN: Lưu bài ──
+async function raFormSave() {
+  const title   = document.getElementById('raFTitle').value.trim();
+  const level   = document.getElementById('raFLevel').value;
+  const topic   = document.getElementById('raFTopic').value.trim();
+  const content = document.getElementById('raFContent').value.trim();
+  const published = document.getElementById('raFPublished').checked;
+  const status  = document.getElementById('raFormStatus');
+
+  if (!title)   { showToast('error','⚠ Chưa có tiêu đề'); return; }
+  if (!content) { showToast('error','⚠ Chưa có nội dung bài'); return; }
+
+  status.textContent = '⟳ Đang lưu...';
+  status.style.color = 'rgba(255,255,255,0.4)';
+
+  try {
+    // Tính order: nếu tạo mới thì lấy max order + 1
+    let order = 1;
+    if (!raEditingId) {
+      const snap = await window._getDocs(
+        window._collection(window._db, 'readingArticles')
+      ).catch(() => null);
+      if (snap && !snap.empty) {
+        const orders = snap.docs.map(d => d.data().order || 0);
+        order = Math.max(...orders) + 1;
+      }
+    } else {
+      const existing = await window._getDoc(
+        window._doc(window._db, 'readingArticles', raEditingId)
+      ).catch(() => null);
+      order = existing?.data()?.order || 1;
+    }
+
+    const data = {
+      title, level, topic, content,
+      published,
+      order,
+      vocabulary: raPendingVocab,
+      updatedAt: Date.now(),
+      createdBy: getUID(),
+    };
+
+    const ref = raEditingId
+      ? window._doc(window._db, 'readingArticles', raEditingId)
+      : window._doc(window._collection(window._db, 'readingArticles'));
+
+    await window._setDoc(ref, data, { merge: !!raEditingId });
+
+    status.textContent = '✓ Đã lưu thành công!';
+    status.style.color = 'var(--neon-green)';
+    showToast('success', raEditingId ? '✓ Đã cập nhật bài đọc' : '✓ Đã thêm bài đọc mới');
+
+    setTimeout(() => {
+      raFormClose();
+      raLoadAdminList();
+    }, 800);
+  } catch(e) {
+    status.textContent = '✕ Lỗi: ' + e.message;
+    status.style.color = 'var(--neon-pink)';
+  }
+}
+
+// ── ADMIN: Xóa bài ──
+async function raDelete(id, title) {
+  if (!confirm(`Xóa bài "${title}"?
+Hành động này không thể hoàn tác.`)) return;
+  try {
+    await window._deleteDoc(window._doc(window._db, 'readingArticles', id));
+    showToast('success', '✓ Đã xóa bài đọc');
+    raLoadAdminList();
+  } catch(e) {
+    showToast('error', '✕ ' + e.message);
+  }
+}
+</script>
+
+<script>
+// ============================================================
 //  DEEP LEARNING MODE
 // ============================================================
-let dlDuration    = 15;   // minutes chosen
-let dlQueue       = [];   // words for this session
-let dlIndex       = 0;    // current position
-let dlWordsCount  = 0;    // total shown this session
-let dlTimerEnd    = 0;    // timestamp when session ends
-let dlTimerRAF    = null; // requestAnimationFrame id
-let dlIsTouch     = ('ontouchstart' in window);
-let dlCanvas      = null;
-let dlCtx         = null;
-let dlDrawing     = false;
+let dlDuration    = 15;
+let dlQueue       = [];
+let dlIndex       = 0;
+let dlWordsCount  = 0;   // lượt học (kể cả lặp lại)
+let dlMastered    = 0;   // số từ mark đã thuộc trong session
+let dlTimerEnd    = 0;
+let dlTimerRAF    = null;
+let dlCorrectMap  = {};  // word -> số lần gõ đúng liên tiếp
+let dlHardWords   = [];  // danh sách từ khó hiện tại
+let dlInHardLoop  = false; // đang trong loop từ khó hay không
+let dlHardLoopQueue = []; // queue riêng khi đang học loop từ khó
+
+// Trạng thái ẩn/hiện từng field
+let dlHideEN  = false;
+let dlHideIPA = false;
+let dlHideVI  = false;
 
 const DL_MOTIVATE = [
   '🔥 Giữ đà đó!',
@@ -5851,20 +6825,17 @@ const DL_MOTIVATE = [
 ];
 
 const DL_CHECKPOINT = [
-  { n:5,  emoji:'🌱', text:'5 từ xong rồi!',  sub:'Bạn đang khởi động tốt' },
-  { n:10, emoji:'🔥', text:'10 từ! Tuyệt!',   sub:'Não đang ghi nhớ sâu hơn rồi' },
-  { n:15, emoji:'⚡', text:'15 từ! Đỉnh!',    sub:'Bạn đang trong flow state' },
-  { n:20, emoji:'🏆', text:'20 từ! Xuất sắc!',sub:'Trí nhớ cơ bắp đang hình thành' },
-  { n:30, emoji:'🌟', text:'30 từ! Phi thường!',sub:'Bạn là một học máy rồi đây' },
+  { n:5,  emoji:'🌱', text:'5 lượt xong rồi!',   sub:'Bạn đang khởi động tốt' },
+  { n:10, emoji:'🔥', text:'10 lượt! Tuyệt!',    sub:'Não đang ghi nhớ sâu hơn rồi' },
+  { n:15, emoji:'⚡', text:'15 lượt! Đỉnh!',     sub:'Bạn đang trong flow state' },
+  { n:20, emoji:'🏆', text:'20 lượt! Xuất sắc!', sub:'Trí nhớ cơ bắp đang hình thành' },
+  { n:30, emoji:'🌟', text:'30 lượt! Phi thường!',sub:'Bạn là một học máy rồi đây' },
 ];
 
-// ── Open: show intro ──
+// ── Open intro ──
 function dlOpen() {
   if (!words.length) { showToast('error','⚠ Chưa có từ vựng.'); return; }
-  // Show intro, hide others
-  document.getElementById('dlIntro').style.display    = '';
-  document.getElementById('dlCountdown').style.display = 'none';
-  document.getElementById('dlSession').style.display   = 'none';
+  _dlShowScreen('dlIntro');
   document.getElementById('dlOverlay').classList.add('show');
   document.getElementById('dlExitBtn').classList.remove('show');
 }
@@ -5876,104 +6847,149 @@ function dlSetDuration(min, btn) {
   btn.classList.add('active');
 }
 
-// ── Start countdown ──
+// ── Countdown 3-2-1 ──
 function dlStartCountdown() {
-  document.getElementById('dlIntro').style.display     = 'none';
-  document.getElementById('dlCountdown').style.display = '';
+  _dlShowScreen('dlCountdown');
   let n = 3;
   const numEl = document.getElementById('dlCountNum');
   numEl.textContent = n;
-
   const tick = () => {
     n--;
     if (n > 0) {
-      numEl.style.animation = 'none';
-      void numEl.offsetWidth; // reflow
-      numEl.style.animation  = '';
-      numEl.textContent = n;
+      numEl.style.animation = 'none'; void numEl.offsetWidth;
+      numEl.style.animation = ''; numEl.textContent = n;
       setTimeout(tick, 900);
-    } else {
-      dlBeginSession();
-    }
+    } else { dlBeginSession(); }
   };
   setTimeout(tick, 900);
 }
 
 // ── Begin session ──
 function dlBeginSession() {
-  // Build queue from current studyQueue (respects shuffle setting)
-  dlQueue = [...studyQueue];
-  if (!dlQueue.length) dlQueue = words.filter(w=>!w.hidden).map(w=>({...w}));
-  dlIndex = 0; dlWordsCount = 0;
+  // Đảm bảo studyQueue đã được build (phòng trường hợp chưa vào tab flashcard)
+  if (!studyQueue.length) buildQueue();
 
-  document.getElementById('dlCountdown').style.display = 'none';
-  document.getElementById('dlSession').style.display   = '';
+  // Lấy pool từ studyQueue (đã shuffle + filter level + filter mastered)
+  // Fallback: nếu vẫn rỗng thì lấy từ words trực tiếp
+  const pool = studyQueue.length
+    ? [...studyQueue]
+    : words.filter(w => !w.hidden && !w.mastered).map(w => ({...w}));
+
+  // Ăn theo loopSize: đồng nhất với flashcard thường
+  // loopSize > 0 → chỉ học N từ đầu pool (giống loopWindow trong flashcard)
+  // loopSize = 0 → học toàn bộ pool
+  if (loopSize > 0 && pool.length > 0) {
+    dlQueue = pool.slice(0, Math.min(loopSize, pool.length));
+  } else {
+    dlQueue = [...pool];
+  }
+
+  dlIndex      = 0;
+  dlWordsCount = 0;
+  dlMastered   = 0;
+  dlCorrectMap = {};
+  dlHardWords  = [];
+  dlInHardLoop = false;
+
+  _dlShowScreen('dlSession');
   document.getElementById('dlExitBtn').classList.add('show');
 
-  // Timer setup
+  statsStartSession(); // bắt đầu đếm active time
   dlTimerEnd = Date.now() + dlDuration * 60 * 1000;
   dlTickTimer();
 
-  // Setup input mode
-  const isTouch = ('ontouchstart' in window) && window.innerWidth < 768;
-  if (isTouch) {
-    document.getElementById('dlCanvasWrap').style.display = '';
-    document.getElementById('dlInputWrap').style.display  = 'none';
-    dlInitCanvas();
-  } else {
-    document.getElementById('dlCanvasWrap').style.display = 'none';
-    document.getElementById('dlInputWrap').style.display  = '';
-    setTimeout(() => document.getElementById('dlInput')?.focus(), 100);
-  }
+  // Reset field toggle state to active
+  dlHideEN = dlHideIPA = dlHideVI = false;
+  ['dlToggleEN','dlToggleIPA','dlToggleVI'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.classList.add('active');
+  });
 
   dlRenderCard();
+  // Init virtual keyboard or native input depending on screen size
+  dlVkbInit();
+  if (window.innerWidth > 768) {
+    setTimeout(() => document.getElementById('dlInput')?.focus(), 200);
+  }
 }
 
-// ── Timer tick ──
+// ── Timer ──
 function dlTickTimer() {
   const remaining = dlTimerEnd - Date.now();
   if (remaining <= 0) { dlFinish(); return; }
-
-  const totalMs   = dlDuration * 60 * 1000;
-  const pct       = (remaining / totalMs) * 100;
-  const mins      = Math.floor(remaining / 60000);
-  const secs      = Math.floor((remaining % 60000) / 1000);
-
-  const fill  = document.getElementById('dlTimerFill');
-  const clock = document.getElementById('dlTimerClock');
+  const totalMs = dlDuration * 60 * 1000;
+  const pct     = (remaining / totalMs) * 100;
+  const mins    = Math.floor(remaining / 60000);
+  const secs    = Math.floor((remaining % 60000) / 1000);
+  const fill    = document.getElementById('dlTimerFill');
+  const clock   = document.getElementById('dlTimerClock');
   if (fill)  fill.style.width = pct + '%';
   if (clock) clock.textContent = `${mins}:${secs.toString().padStart(2,'0')}`;
-
   dlTimerRAF = setTimeout(dlTickTimer, 500);
 }
 
-// ── Render current card ──
+// ── Render card ──
 function dlRenderCard() {
   if (!dlQueue.length) return;
-  if (dlIndex >= dlQueue.length) dlIndex = 0; // loop
+  if (dlIndex >= dlQueue.length) dlIndex = 0;
   const w = dlQueue[dlIndex];
 
-  document.getElementById('dlCardProgress').textContent = `${dlWordsCount + 1} từ`;
-  document.getElementById('dlCardWord').textContent     = w.word || '';
-  document.getElementById('dlCardPhonetic').textContent = w.phonetics ? `/${w.phonetics}/` : '';
-  document.getElementById('dlCardMeaning').textContent  = w.meaning || '';
+  document.getElementById('dlCardProgress').textContent = `${dlWordsCount + 1} lượt`;
 
-  // Reset input
+  const wordEl = document.getElementById('dlCardWord');
+  wordEl.textContent = w.word || '';
+  wordEl.style.opacity = dlHideEN ? '0' : '1';
+  wordEl.style.filter  = dlHideEN ? 'blur(8px)' : 'none';
+  wordEl.style.userSelect = dlHideEN ? 'none' : '';
+
+  const ipaEl = document.getElementById('dlCardPhonetic');
+  ipaEl.textContent   = w.phonetics ? `/${w.phonetics}/` : '';
+  ipaEl.style.display = (!w.phonetics || dlHideIPA) ? 'none' : '';
+
+  const viEl = document.getElementById('dlCardMeaning');
+  viEl.textContent = w.meaning || '';
+  viEl.style.opacity = dlHideVI ? '0' : '1';
+  viEl.style.filter  = dlHideVI ? 'blur(8px)' : 'none';
+  viEl.style.userSelect = dlHideVI ? 'none' : '';
+
   const inp = document.getElementById('dlInput');
-  if (inp) { inp.value = ''; inp.className = 'dl-input'; inp.focus(); }
-  // Reset canvas
-  dlClearCanvas();
+  if (inp) { inp.value = ''; inp.className = 'dl-input'; if (window.innerWidth > 768) inp.focus(); }
+  dlVkbReset();
 
-  // Motivate occasionally
+  // Sync hard word button
+  const isHard = dlHardWords.some(x => x.word === w.word);
+  dlUpdateHardBtn(isHard);
+  const hardBtn = document.getElementById('dlHardBtn');
+  if (hardBtn) hardBtn.style.display = dlInHardLoop ? 'none' : '';
+  dlUpdateHardCount();
+
   if (dlWordsCount > 0 && dlWordsCount % 3 === 0) dlShowMotivate();
   else document.getElementById('dlMotivate').textContent = '';
 
-  // Animate card in
   const card = document.getElementById('dlWordCard');
   if (card) { card.style.animation = 'none'; void card.offsetWidth; card.style.animation = 'fadeUp 0.3s ease'; }
 }
 
-// ── Check desktop input ──
+// ── Field toggles ──
+function dlToggleField(field) {
+  if (field === 'en') {
+    dlHideEN = !dlHideEN;
+    document.getElementById('dlToggleEN').classList.toggle('active', !dlHideEN);
+    // Nếu bật lại EN (đang nhìn từ) → reset streak của từ hiện tại
+    if (!dlHideEN && dlQueue[dlIndex]) {
+      dlCorrectMap[dlQueue[dlIndex].word] = 0;
+    }
+  } else if (field === 'ipa') {
+    dlHideIPA = !dlHideIPA;
+    document.getElementById('dlToggleIPA').classList.toggle('active', !dlHideIPA);
+  } else if (field === 'vi') {
+    dlHideVI = !dlHideVI;
+    document.getElementById('dlToggleVI').classList.toggle('active', !dlHideVI);
+  }
+  dlRenderCard(); // re-apply visibility
+}
+
+// ── Check input ──
 function dlCheckInput() {
   const inp  = document.getElementById('dlInput');
   if (!inp) return;
@@ -5984,32 +7000,358 @@ function dlCheckInput() {
   if (val === word) {
     inp.classList.add('correct');
     dlConfetti(inp);
-    setTimeout(dlNext, 600);
+    xpOnFlashcardAction(); // active time
+    setTimeout(() => dlNext(word), 550);
   } else {
+    dlCorrectMap[word] = 0;
     inp.classList.add('wrong');
-    setTimeout(() => { inp.classList.remove('wrong'); inp.value = ''; }, 800);
+    setTimeout(() => { inp.classList.remove('wrong'); inp.value = ''; inp.focus(); }, 800);
   }
 }
 
-// ── Next word ──
-function dlNext() {
+// ── Next ── (gọi sau khi gõ đúng — truyền word vừa đúng)
+function dlNext(correctWord) {
   dlWordsCount++;
-  dlIndex++;
-  if (dlIndex >= dlQueue.length) dlIndex = 0;
 
-  // Check checkpoint
+  // Chỉ tính streak khi từ tiếng Anh đang bị ẩn (EN toggle off)
+  // → người học phải tự nhớ, không được nhìn từ để gõ
+  if (correctWord && dlHideEN) {
+    dlCorrectMap[correctWord] = (dlCorrectMap[correctWord] || 0) + 1;
+    if (dlCorrectMap[correctWord] >= 3) {
+      dlCorrectMap[correctWord] = 0;
+      _dlAutoAddWord(correctWord);
+    }
+  }
+
+  dlIndex++;
+  // Hard loop xoay vòng liên tục — chỉ kết thúc khi hết từ (dlMarkMastered xử lý)
+  if (dlIndex >= dlQueue.length) dlIndex = 0;
   const cp = DL_CHECKPOINT.find(c => c.n === dlWordsCount);
   if (cp) dlShowCheckpoint(cp);
-
   dlRenderCard();
 }
 
-// ── Skip ──
-function dlSkip() {
-  dlIndex++;
-  if (dlIndex >= dlQueue.length) dlIndex = 0;
+// ── Tự thay từ đã thuộc bằng từ mới (đúng 3 lần ở chế độ ẩn EN) ──
+function _dlAutoAddWord(learnedWord) {
+  // Mark mastered trong words array + sync flashcard
+  const wIdx = words.findIndex(x => x.word === learnedWord);
+  if (wIdx >= 0 && !words[wIdx].mastered) {
+    words[wIdx].mastered = true;
+    dlMastered++;
+    saveData();
+    studyQueue = studyQueue.filter(x => x.word !== learnedWord);
+    recordStudyActivity(1);
+    refreshStatsBar();
+    updateStudyBadge();
+    challengeRecordStudyDay();
+    xpOnMastered(null);
+    activeTimeRecordInteraction();
+  }
+
+  // 1. Xóa từ đã "nắm vững" khỏi dlQueue
+  const removeIdx = dlQueue.findIndex(w => w.word === learnedWord);
+  if (removeIdx !== -1) {
+    dlQueue.splice(removeIdx, 1);
+    if (dlIndex > removeIdx) dlIndex--;
+    if (dlIndex >= dlQueue.length) dlIndex = 0;
+  }
+
+  // 2. Nếu loopSize đang bật: queue sau khi xóa < loopSize → thêm từ mới vào bù
+  //    Nếu loopSize = 0 (tắt): luôn thêm từ mới vào
+  const shouldAdd = (loopSize === 0) || (dlQueue.length < loopSize);
+  if (!shouldAdd) {
+    _dlShowSwapToast(learnedWord, null);
+    return;
+  }
+
+  // 3. Tìm từ mới chưa có trong queue, chưa mastered
+  const inQueue = new Set(dlQueue.map(x => x.word));
+  const candidates = words.filter(w =>
+    !w.mastered && !w.hidden && !inQueue.has(w.word) && w.word !== learnedWord
+  );
+
+  if (!candidates.length) {
+    _dlShowSwapToast(learnedWord, null);
+    return;
+  }
+
+  // 4. Chèn từ mới vào đúng vị trí vừa xóa
+  const picked = candidates[Math.floor(Math.random() * candidates.length)];
+  const insertAt = Math.min(removeIdx !== -1 ? removeIdx : dlQueue.length, dlQueue.length);
+  dlQueue.splice(insertAt, 0, { ...picked });
+
+  _dlShowSwapToast(learnedWord, picked.word);
+}
+
+function _dlShowSwapToast(removed, added) {
+  const el = document.createElement('div');
+  el.style.cssText = [
+    'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);',
+    'background:rgba(10,10,30,0.95);border:1px solid rgba(191,0,255,0.4);',
+    'border-radius:20px;padding:8px 18px;',
+    'font-family:"Space Mono",monospace;font-size:0.7rem;',
+    'color:var(--neon-purple);z-index:500;',
+    'animation:fadeUp 0.3s ease;white-space:nowrap;text-align:center;line-height:1.6;',
+  ].join('');
+  el.textContent = added
+    ? '✦ ' + removed + ' → thay bằng: ' + added
+    : '✦ ' + removed + ' đã nắm vững! Không còn từ mới.';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
+// ── Hard word: toggle ──
+function dlToggleHard() {
+  if (dlInHardLoop) return;
+  const w = dlQueue[dlIndex];
+  if (!w) return;
+
+  const already = dlHardWords.findIndex(x => x.word === w.word);
+  const maxHard = loopSize > 0 ? loopSize : 5;
+
+  if (already >= 0) {
+    // Bỏ đánh dấu → đưa từ trở lại queue tại vị trí hiện tại
+    dlHardWords.splice(already, 1);
+    // Chèn lại vào queue ngay sau vị trí hiện tại
+    dlQueue.splice(dlIndex + 1, 0, {...w});
+    dlUpdateHardBtn(false);
+    dlUpdateHardCount();
+    _dlToast('Đã bỏ "' + w.word + '" khỏi nhóm từ khó, đưa lại vào học');
+  } else {
+    if (dlHardWords.length >= maxHard) {
+      _dlToast('Đã đủ ' + maxHard + ' từ khó trong vòng!', '#ff4444');
+      return;
+    }
+
+    // Ghi nhớ từ rồi RÚT NGAY khỏi queue hiện tại
+    dlHardWords.push({...w});
+    dlQueue.splice(dlIndex, 1);
+
+    // Bù từ mới vào queue (nếu loopSize bật và còn thiếu chỗ)
+    const shouldFill = (loopSize === 0) || (dlQueue.length < loopSize);
+    if (shouldFill) {
+      const inQueue = new Set(dlQueue.map(x => x.word));
+      const inHard  = new Set(dlHardWords.map(x => x.word));
+      const cands = words.filter(wx =>
+        !wx.mastered && !wx.hidden && !inQueue.has(wx.word) && !inHard.has(wx.word)
+      );
+      if (cands.length) {
+        const picked = cands[Math.floor(Math.random() * cands.length)];
+        dlQueue.splice(dlIndex, 0, {...picked}); // chèn vào đúng vị trí vừa xóa
+      }
+    }
+
+    // Clamp index
+    if (dlIndex >= dlQueue.length) dlIndex = 0;
+
+    if (dlHardWords.length >= maxHard && !dlInHardLoop) {
+      // Đủ loop từ khó → bắt đầu ngay
+      _dlToast('⚑ Đủ ' + maxHard + ' từ khó — bắt đầu loop!');
+      dlHardLoopQueue = [...dlQueue]; // snapshot queue hiện tại
+      setTimeout(dlStartHardLoop, 800);
+    } else {
+      _dlToast('⚑ "' + w.word + '" vào nhóm từ khó (' + dlHardWords.length + '/' + maxHard + ')');
+      dlRenderCard();
+    }
+  }
+}
+
+// ── Bắt đầu học loop từ khó ──
+function dlStartHardLoop() {
+  dlInHardLoop = true;
+  const maxHard = loopSize > 0 ? loopSize : 5;
+
+  // Lưu queue hiện tại, tạo queue mới chỉ gồm từ khó
+  dlHardLoopQueue = [...dlQueue];
+  dlQueue = dlHardWords.map(w => ({...w}));
+  dlIndex = 0;
+
+  // Hiện banner
+  const banner = document.getElementById('dlHardBanner');
+  const bannerText = document.getElementById('dlHardBannerText');
+  if (banner) { banner.classList.add('visible'); }
+  if (bannerText) bannerText.textContent = 'Loop từ khó — bấm Đã thuộc để kết thúc';
+
+  // Ẩn hard count dots khi đang trong loop
+  const countEl = document.getElementById('dlHardCount');
+  if (countEl) countEl.classList.remove('visible');
+
+  // Reset dlCorrectMap cho các từ khó để tính lại
+  dlHardWords.forEach(hw => { dlCorrectMap[hw.word] = 0; });
+
   dlRenderCard();
-  document.getElementById('dlMotivate').textContent = '';
+  _dlCheckpointPopup('🔥', 'Loop từ khó bắt đầu!', 'Học đến khi tích hết ' + dlQueue.length + ' từ');
+}
+
+// ── Tạm dừng hard loop → về học bình thường, giữ nguyên dlHardWords ──
+function dlPauseHardLoop() {
+  dlInHardLoop = false;
+
+  // Khôi phục queue cũ, bỏ các từ đang trong hard loop (chúng vẫn nằm trong dlHardWords)
+  const hardSet = new Set(dlHardWords.map(x => x.word));
+  dlQueue = dlHardLoopQueue.filter(w => !hardSet.has(w.word));
+
+  // Nếu queue cũ rỗng, build lại
+  if (!dlQueue.length) {
+    buildQueue();
+    const pool = studyQueue.length
+      ? [...studyQueue]
+      : words.filter(w => !w.hidden && !w.mastered).map(w => ({...w}));
+    dlQueue = (loopSize > 0 && pool.length > 0)
+      ? pool.slice(0, Math.min(loopSize, pool.length))
+      : [...pool];
+    // Bỏ các từ đang trong hard pool
+    dlQueue = dlQueue.filter(w => !hardSet.has(w.word));
+  }
+
+  dlIndex = 0;
+
+  // Ẩn banner
+  const banner = document.getElementById('dlHardBanner');
+  if (banner) banner.classList.remove('visible');
+
+  // Hiện lại dots counter để người dùng thấy còn bao nhiêu từ khó đang chờ
+  dlUpdateHardCount();
+
+  dlRenderCard();
+  _dlToast('Đã tạm dừng loop từ khó · ' + dlHardWords.length + ' từ đang chờ');
+}
+
+// ── Kết thúc hard loop → quay về queue thường ──
+function dlEndHardLoop() {
+  dlInHardLoop = false;
+  dlHardWords  = []; // clear sau khi học xong
+
+  // Khôi phục queue cũ, bỏ các từ khó đã học xong
+  const hardSet = new Set(dlQueue.map(x => x.word));
+  dlQueue = dlHardLoopQueue.filter(w => !hardSet.has(w.word));
+
+  // Nếu queue cũ rỗng, lấy lại từ studyQueue
+  if (!dlQueue.length) {
+    buildQueue();
+    dlQueue = studyQueue.length
+      ? (loopSize > 0 ? [...studyQueue].slice(0, loopSize) : [...studyQueue])
+      : words.filter(w => !w.hidden && !w.mastered).map(w => ({...w}));
+  }
+
+  dlIndex = 0;
+
+  // Ẩn banner
+  const banner = document.getElementById('dlHardBanner');
+  if (banner) banner.classList.remove('visible');
+
+  // Cập nhật lại dots (giờ = 0)
+  dlUpdateHardCount();
+
+  dlRenderCard();
+  _dlCheckpointPopup('✅', 'Loop từ khó xong!', 'Tiếp tục học bình thường');
+}
+
+// ── Update nút hard trên thẻ ──
+function dlUpdateHardBtn(isMarked) {
+  const btn = document.getElementById('dlHardBtn');
+  if (!btn) return;
+  btn.classList.toggle('marked', isMarked);
+  btn.textContent = isMarked ? '⚑ Từ khó (đã đánh dấu)' : '⚑ Từ khó';
+}
+
+// ── Update dots counter ──
+function dlUpdateHardCount() {
+  const maxHard = loopSize > 0 ? loopSize : 5;
+  const countEl  = document.getElementById('dlHardCount');
+  const countTxt = document.getElementById('dlHardCountText');
+  const bar      = document.getElementById('dlHardCountBar');
+  if (!countEl || !bar) return;
+
+  countEl.classList.toggle('visible', dlHardWords.length > 0 && !dlInHardLoop);
+  if (countTxt) countTxt.textContent = dlHardWords.length + ' / ' + maxHard + ' từ khó';
+
+  bar.innerHTML = '';
+  for (let i = 0; i < maxHard; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dl-hard-count-dot' + (i < dlHardWords.length ? ' filled' : '');
+    bar.appendChild(dot);
+  }
+}
+
+// ── Mini toast helper ──
+function _dlToast(msg, color) {
+  const el = document.createElement('div');
+  el.style.cssText = [
+    'position:fixed;bottom:110px;left:50%;transform:translateX(-50%);',
+    'background:rgba(10,10,30,0.95);border:1px solid rgba(255,140,0,0.4);',
+    'border-radius:20px;padding:8px 18px;',
+    'font-family:"Space Mono",monospace;font-size:0.7rem;',
+    'color:' + (color || '#ff8c00') + ';z-index:500;',
+    'animation:fadeUp 0.3s ease;white-space:nowrap;text-align:center;',
+  ].join('');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
+}
+
+// ── Checkpoint popup helper (reuse existing) ──
+function _dlCheckpointPopup(emoji, text, sub) {
+  dlShowCheckpoint({ emoji, text, sub });
+}
+
+// ── Mark mastered: remove from queue, add new words ──
+function dlMarkMastered() {
+  if (!dlQueue.length) return;
+  const w = dlQueue[dlIndex];
+
+  // Mark in main words array + sync về flashcard
+  const idx = words.findIndex(x => x.word === w.word);
+  if (idx >= 0 && !words[idx].mastered) {
+    words[idx].mastered = true;
+    dlMastered++;
+    saveData();
+    studyQueue = studyQueue.filter(x => x.word !== w.word);
+    recordStudyActivity(1);
+    refreshStatsBar();
+    updateStudyBadge();
+    challengeRecordStudyDay();
+    // XP + active time — giống flashcard thường
+    xpOnMastered(document.getElementById('dlBtnMastered'));
+    activeTimeRecordInteraction();
+  }
+  // Nếu đang trong hard loop → xóa khỏi dlHardWords để dots cập nhật đúng
+  if (dlInHardLoop) {
+    dlHardWords = dlHardWords.filter(x => x.word !== w.word);
+  }
+
+  // Remove from dlQueue
+  dlQueue.splice(dlIndex, 1);
+
+  // Thêm từ mới vào bù — KHÔNG thêm khi đang trong hard loop
+  if (!dlInHardLoop) {
+    const shouldAddNew = (loopSize === 0) || (dlQueue.length < loopSize);
+    if (shouldAddNew) {
+      const inQueue = new Set(dlQueue.map(x => x.word));
+      const candidates = words.filter(w2 => !w2.mastered && !w2.hidden && !inQueue.has(w2.word));
+      if (candidates.length) {
+        dlQueue.push({ ...candidates[Math.floor(Math.random() * candidates.length)] });
+      }
+    }
+  }
+
+  if (!dlQueue.length) {
+    if (dlInHardLoop) {
+      // Hết từ trong hard loop → kết thúc hard loop, về học bình thường
+      dlEndHardLoop();
+    } else {
+      dlFinish();
+    }
+    return;
+  }
+
+  if (dlIndex >= dlQueue.length) dlIndex = 0;
+  dlWordsCount++;
+  const cp = DL_CHECKPOINT.find(c => c.n === dlWordsCount);
+  if (cp) dlShowCheckpoint(cp);
+
+  dlConfetti(document.getElementById('dlInput'));
+  dlRenderCard();
 }
 
 // ── Motivate ──
@@ -6020,7 +7362,7 @@ function dlShowMotivate() {
   el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
 }
 
-// ── Checkpoint ──
+// ── Checkpoint popup ──
 function dlShowCheckpoint(cp) {
   const el = document.createElement('div');
   el.className = 'dl-checkpoint';
@@ -6036,71 +7378,163 @@ function dlShowCheckpoint(cp) {
 // ── Confetti ──
 function dlConfetti(anchor) {
   const colors = ['#bf00ff','#00f5ff','#39ff14','#ffe600','#ff006e'];
-  const rect   = anchor ? anchor.getBoundingClientRect() : { left: window.innerWidth/2, top: window.innerHeight/2, width: 0 };
+  const rect   = anchor ? anchor.getBoundingClientRect() : { left:window.innerWidth/2, top:window.innerHeight/2, width:0 };
   for (let i = 0; i < 14; i++) {
     const dot = document.createElement('div');
     dot.className = 'dl-confetti-dot';
-    dot.style.cssText = `
-      left:${rect.left + rect.width/2 + (Math.random()-0.5)*120}px;
-      top:${rect.top}px;
-      background:${colors[i % colors.length]};
-      animation-duration:${0.6 + Math.random()*0.6}s;
-      animation-delay:${Math.random()*0.15}s;
-    `;
+    dot.style.cssText = `left:${rect.left + rect.width/2 + (Math.random()-0.5)*120}px;top:${rect.top}px;background:${colors[i%colors.length]};animation-duration:${0.6+Math.random()*0.6}s;animation-delay:${Math.random()*0.15}s;`;
     document.body.appendChild(dot);
     setTimeout(() => dot.remove(), 1400);
   }
 }
 
-// ── Canvas (mobile) ──
-function dlInitCanvas() {
-  dlCanvas = document.getElementById('dlCanvas');
-  if (!dlCanvas) return;
-  // Size canvas to its CSS size
-  const w = dlCanvas.offsetWidth || 320;
-  dlCanvas.width  = w * (window.devicePixelRatio || 1);
-  dlCanvas.height = 110 * (window.devicePixelRatio || 1);
-  dlCtx = dlCanvas.getContext('2d');
-  dlCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
-  dlCtx.strokeStyle = '#bf80ff';
-  dlCtx.lineWidth   = 2.5;
-  dlCtx.lineCap     = 'round';
-  dlCtx.lineJoin    = 'round';
+// ── Show summary screen ──
+function dlShowSummary() {
+  if (dlWordsCount === 0) { dlExit(); return; } // không học gì → thoát thẳng
 
-  const getPos = (e) => {
-    const r = dlCanvas.getBoundingClientRect();
-    const t = e.touches ? e.touches[0] : e;
-    return { x: t.clientX - r.left, y: t.clientY - r.top };
-  };
-
-  dlCanvas.addEventListener('mousedown',  e => { dlDrawing=true; const p=getPos(e); dlCtx.beginPath(); dlCtx.moveTo(p.x,p.y); });
-  dlCanvas.addEventListener('mousemove',  e => { if(!dlDrawing)return; const p=getPos(e); dlCtx.lineTo(p.x,p.y); dlCtx.stroke(); });
-  dlCanvas.addEventListener('mouseup',    () => dlDrawing=false);
-  dlCanvas.addEventListener('touchstart', e => { e.preventDefault(); dlDrawing=true; const p=getPos(e); dlCtx.beginPath(); dlCtx.moveTo(p.x,p.y); }, {passive:false});
-  dlCanvas.addEventListener('touchmove',  e => { e.preventDefault(); if(!dlDrawing)return; const p=getPos(e); dlCtx.lineTo(p.x,p.y); dlCtx.stroke(); }, {passive:false});
-  dlCanvas.addEventListener('touchend',   () => dlDrawing=false);
-}
-
-function dlClearCanvas() {
-  if (!dlCtx || !dlCanvas) return;
-  dlCtx.clearRect(0, 0, dlCanvas.width, dlCanvas.height);
-}
-
-// ── Finish / Exit ──
-function dlFinish() {
   clearTimeout(dlTimerRAF);
-  dlExit();
-  showToast('success', `✓ Hoàn thành ${dlWordsCount} từ trong ${dlDuration} phút! 🧠`);
+  document.getElementById('dlExitBtn').classList.remove('show');
+
+  const mins = dlDuration;
+  const statsEl = document.getElementById('dlSummaryStats');
+  statsEl.innerHTML = `
+    <div class="dl-stat-card">
+      <div class="dl-stat-val" style="color:var(--neon-cyan)">${dlWordsCount}</div>
+      <div class="dl-stat-lbl">Lượt học</div>
+    </div>
+    <div class="dl-stat-card">
+      <div class="dl-stat-val" style="color:var(--neon-green)">${dlMastered}</div>
+      <div class="dl-stat-lbl">Đã thuộc</div>
+    </div>
+    <div class="dl-stat-card">
+      <div class="dl-stat-val" style="color:var(--neon-purple)">${mins}</div>
+      <div class="dl-stat-lbl">Phút học</div>
+    </div>
+  `;
+  _dlShowScreen('dlSummary');
 }
 
+// ── Finish (timer hết) ──
+function dlFinish() {
+  dlShowSummary();
+}
+
+// ── Exit button (thoát giữa chừng) ──
 function dlExit() {
   clearTimeout(dlTimerRAF);
+  statsStopSession(); // dừng đếm active time
+  activeTimeFlushOnExit();
   document.getElementById('dlOverlay').classList.remove('show');
   document.getElementById('dlExitBtn').classList.remove('show');
-  // Reset screens
-  document.getElementById('dlIntro').style.display     = '';
-  document.getElementById('dlCountdown').style.display = 'none';
-  document.getElementById('dlSession').style.display   = 'none';
+  _dlShowScreen('dlIntro');
+}
+
+// ── Helper: show one screen, hide the rest ──
+function _dlShowScreen(id) {
+  ['dlIntro','dlCountdown','dlSession','dlSummary'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.style.display = (s === id) ? '' : 'none';
+  });
+}
+
+// ── Virtual Keyboard ──
+const DL_VKB_ROWS = [
+  ['q','w','e','r','t','y','u','i','o','p'],
+  ['a','s','d','f','g','h','j','k','l'],
+  ['⌫', 'z','x','c','v','b','n','m', 'ENTER'],
+];
+let dlVkbValue = '';
+
+function dlVkbInit() {
+  const isMobile = window.innerWidth <= 768;
+  document.getElementById('dlDesktopInput').style.display = isMobile ? 'none' : '';
+  const vkb = document.getElementById('dlVkb');
+  if (!vkb) return;
+
+  if (!isMobile) { vkb.style.display = 'none'; return; }
+  vkb.style.display = 'flex';
+
+  // Build rows
+  DL_VKB_ROWS.forEach((row, ri) => {
+    const rowEl = document.getElementById('dlVkbRow' + (ri+1));
+    if (!rowEl) return;
+    rowEl.innerHTML = '';
+    row.forEach(key => {
+      const btn = document.createElement('button');
+      btn.className = 'dl-vkb-key';
+      if (key === '⌫')    { btn.classList.add('wide'); btn.textContent = '⌫'; }
+      else if (key === 'ENTER') { btn.classList.add('enter-key'); btn.textContent = 'ENTER'; }
+      else                { btn.textContent = key; }
+      btn.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        dlVkbPress(key);
+      });
+      rowEl.appendChild(btn);
+    });
+  });
+
+  dlVkbValue = '';
+  dlVkbRender();
+}
+
+function dlVkbPress(key) {
+  if (key === '⌫') {
+    dlVkbValue = dlVkbValue.slice(0, -1);
+  } else if (key === 'ENTER') {
+    dlVkbCheck();
+    return;
+  } else {
+    dlVkbValue += key;
+  }
+  dlVkbRender();
+}
+
+function dlVkbRender() {
+  const el = document.getElementById('dlVkbText');
+  if (el) el.textContent = dlVkbValue;
+}
+
+function dlVkbCheck() {
+  const val  = dlVkbValue.trim().toLowerCase();
+  const word = (dlQueue[dlIndex]?.word || '').toLowerCase().trim();
+  const disp = document.getElementById('dlVkbDisplay');
+  if (!val) return;
+
+  if (val === word) {
+    disp.classList.add('correct');
+    dlConfetti(disp);
+    xpOnFlashcardAction(); // active time
+    setTimeout(() => {
+      disp.classList.remove('correct');
+      dlVkbValue = ''; dlVkbRender();
+      dlNext(word);
+    }, 550);
+  } else {
+    dlCorrectMap[word] = 0;
+    disp.classList.add('wrong');
+    setTimeout(() => {
+      disp.classList.remove('wrong');
+      dlVkbValue = ''; dlVkbRender();
+    }, 700);
+  }
+}
+
+function dlVkbReset() {
+  dlVkbValue = '';
+  dlVkbRender();
+  const disp = document.getElementById('dlVkbDisplay');
+  if (disp) disp.className = 'dl-vkb-display';
+}
+
+// ── Exit button smart handler ──
+function dlExitOrSummary() {
+  const session = document.getElementById('dlSession');
+  const isInSession = session && session.style.display !== 'none';
+  if (isInSession && dlWordsCount > 0) {
+    dlShowSummary();
+  } else {
+    dlExit();
+  }
 }
 </script>
 </body>
