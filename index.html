@@ -2269,13 +2269,6 @@ const IDB = (() => {
           <div id="cloudBadge" style="font-size:0.68rem;color:rgba(255,255,255,0.3);letter-spacing:0.05em;margin-top:2px">☁ Chưa lưu</div>
         </div>
       </div>
-      <!-- Source Link Banner -->
-      <div class="source-banner" id="sourceBanner">
-        <span class="source-banner-icon">🔗</span>
-        <span class="source-banner-text">Bộ từ này được tạo từ <strong id="sourceBannerLabel">một bài viết</strong>. Bạn có muốn xem bài viết gốc không?</span>
-        <a href="#" id="sourceBannerLink" class="source-banner-link" target="_blank" rel="noopener">Xem bài viết</a>
-        <button class="source-banner-close" onclick="document.getElementById('sourceBanner').classList.remove('show')" title="Đóng">×</button>
-      </div>
       <div class="tabs" style="margin-bottom:0">
         <button class="tab-btn active" id="tabInput" onclick="switchTab('input')">✦ Nhập Từ</button>
         <button class="tab-btn" id="tabFlashcard" onclick="switchTab('flashcard')">⚡ Flashcard</button>
@@ -2861,7 +2854,8 @@ function updateStudyBadge() {
 }
 
 function backToPacks() {
-  _showSourceBanner(''); // ẩn banner khi thoát
+  // Xóa link toast nếu đang hiển thị
+  document.getElementById('_linkToast')?.remove();
   showPacksScreen();
 }
 
@@ -7035,15 +7029,8 @@ function dlVkbReset() {
 // ══════════════════════════════════════════════════════
 
 function _showSourceBanner(link) {
-  const banner = document.getElementById('sourceBanner');
-  const linkEl  = document.getElementById('sourceBannerLink');
-  const labelEl = document.getElementById('sourceBannerLabel');
-  if (!banner) return;
-  if (!link) {
-    banner.classList.remove('show');
-    return;
-  }
-  // Detect nguồn để hiện tên đẹp hơn
+  // Bỏ banner — dùng toast khi vào pack có link
+  if (!link) return;
   let sourceName = 'bài viết gốc';
   if (link.includes('ted.com'))       sourceName = 'TED Talk';
   else if (link.includes('bbc.'))     sourceName = 'BBC';
@@ -7051,9 +7038,40 @@ function _showSourceBanner(link) {
   else if (link.includes('guardian')) sourceName = 'The Guardian';
   else if (link.includes('cnn.'))     sourceName = 'CNN';
 
-  if (labelEl) labelEl.textContent = sourceName;
-  if (linkEl)  { linkEl.href = link; linkEl.textContent = 'Xem ' + sourceName; }
-  banner.classList.add('show');
+  // Hiện toast với link clickable
+  const msg = `📖 Bộ từ từ <a href="${link}" target="_blank" rel="noopener" style="color:var(--neon-cyan);text-decoration:underline">${sourceName}</a> — Bạn có muốn xem bài viết gốc không?`;
+  _showLinkToast(msg);
+}
+
+function _showLinkToast(html) {
+  // Xóa toast cũ nếu có
+  const old = document.getElementById('_linkToast');
+  if (old) old.remove();
+
+  const el = document.createElement('div');
+  el.id = '_linkToast';
+  el.style.cssText = [
+    'position:fixed','bottom:80px','left:50%','transform:translateX(-50%)',
+    'background:#0d0d1f','border:1px solid rgba(0,245,255,0.25)',
+    'border-radius:14px','padding:12px 20px',
+    'font-size:0.78rem','color:rgba(255,255,255,0.7)',
+    'max-width:92vw','text-align:center',
+    'z-index:900','line-height:1.5',
+    'animation:_toastIn 0.3s ease','box-shadow:0 4px 30px rgba(0,0,0,0.5)'
+  ].join(';');
+
+  // Thêm CSS animation nếu chưa có
+  if (!document.getElementById('_toastStyle')) {
+    const s = document.createElement('style');
+    s.id = '_toastStyle';
+    s.textContent = '@keyframes _toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}';
+    document.head.appendChild(s);
+  }
+
+  el.innerHTML = html + '<button onclick="this.parentNode.remove()" style="margin-left:14px;background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:1rem;vertical-align:middle">×</button>';
+  document.body.appendChild(el);
+  // Tự xóa sau 8 giây
+  setTimeout(() => el?.remove(), 8000);
 }
 
 function _showArticleModal(link, packName) {
@@ -7096,6 +7114,8 @@ function dlExitOrSummary() {
   }
 }
 
+</script>
+
 <!-- ── Article Link Modal (sau khi thuộc hết) ── -->
 <div class="article-modal-overlay" id="articleModal">
   <div class="article-modal">
@@ -7113,6 +7133,6 @@ function dlExitOrSummary() {
     </div>
   </div>
 </div>
-</script>
+
 </body>
 </html>
