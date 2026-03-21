@@ -703,6 +703,107 @@ const IDB = (() => {
   }
   .fc-art-btn:hover { color:var(--neon-cyan); }
 
+  /* ── ETYMOLOGY BUTTON (flashcard) ── */
+  .fc-etym-btn {
+    display:inline-flex; align-items:center; gap:5px; margin-top:4px;
+    font-size:0.68rem; font-family:'Space Mono',monospace; letter-spacing:0.04em;
+    color:rgba(191,0,255,0.55); cursor:pointer; transition:all 0.18s;
+    background:none; border:1px solid rgba(191,0,255,0.2); border-radius:20px;
+    padding:4px 11px;
+  }
+  .fc-etym-btn:hover { color:var(--neon-purple); border-color:rgba(191,0,255,0.5); background:rgba(191,0,255,0.07); }
+  .fc-etym-btn.loading { opacity:0.6; pointer-events:none; animation:pulse 1s infinite; }
+
+  /* ── ETYMOLOGY MODAL ── */
+  .etym-overlay {
+    display:none; position:fixed; inset:0; z-index:1200;
+    background:rgba(0,0,0,0.8); backdrop-filter:blur(6px);
+    align-items:center; justify-content:center;
+  }
+  .etym-overlay.show { display:flex; }
+  .etym-modal {
+    background:var(--dark2); border:1px solid rgba(191,0,255,0.3);
+    border-radius:22px; padding:0; width:92%; max-width:520px;
+    max-height:80vh; display:flex; flex-direction:column;
+    box-shadow:0 0 60px rgba(191,0,255,0.2); animation:fadeUp 0.3s ease;
+    overflow:hidden;
+  }
+  .etym-modal-header {
+    padding:22px 24px 16px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    background:linear-gradient(135deg, rgba(191,0,255,0.08), rgba(0,245,255,0.04));
+    flex-shrink:0;
+  }
+  .etym-modal-tag {
+    font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--neon-purple); font-family:'Space Mono',monospace;
+    margin-bottom:6px; opacity:0.8;
+  }
+  .etym-modal-word {
+    font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800;
+    background:linear-gradient(135deg,var(--neon-purple),var(--neon-cyan));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; letter-spacing:0.02em; line-height:1;
+  }
+  .etym-modal-body {
+    padding:20px 24px; overflow-y:auto; flex:1;
+    font-size:0.83rem; line-height:1.75; color:rgba(255,255,255,0.75);
+  }
+  .etym-modal-body::-webkit-scrollbar { width:4px; }
+  .etym-modal-body::-webkit-scrollbar-thumb { background:rgba(191,0,255,0.3); border-radius:4px; }
+  .etym-modal-body h3 {
+    font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700;
+    letter-spacing:0.15em; text-transform:uppercase;
+    color:rgba(191,0,255,0.7); margin:16px 0 6px;
+  }
+  .etym-modal-body h3:first-child { margin-top:0; }
+  .etym-root-chips {
+    display:flex; flex-wrap:wrap; gap:7px; margin:10px 0;
+  }
+  .etym-chip {
+    display:inline-flex; flex-direction:column; align-items:center;
+    padding:7px 13px; border-radius:12px;
+    background:rgba(191,0,255,0.08); border:1px solid rgba(191,0,255,0.25);
+    font-family:'Space Mono',monospace;
+  }
+  .etym-chip-root { font-size:0.82rem; font-weight:700; color:var(--neon-purple); }
+  .etym-chip-lang { font-size:0.58rem; color:rgba(255,255,255,0.35); letter-spacing:0.08em; margin-top:1px; }
+  .etym-chip-meaning { font-size:0.68rem; color:rgba(255,255,255,0.55); margin-top:2px; }
+  .etym-related {
+    display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;
+  }
+  .etym-related-word {
+    font-size:0.72rem; padding:3px 10px; border-radius:20px;
+    background:rgba(0,245,255,0.07); border:1px solid rgba(0,245,255,0.18);
+    color:var(--neon-cyan); font-family:'Space Mono',monospace;
+  }
+  .etym-modal-footer {
+    padding:14px 24px; border-top:1px solid rgba(255,255,255,0.06);
+    display:flex; justify-content:flex-end; flex-shrink:0;
+  }
+  .etym-close-btn {
+    padding:9px 22px; border-radius:20px; border:1px solid rgba(255,255,255,0.12);
+    background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.5);
+    font-family:'Space Mono',monospace; font-size:0.72rem; cursor:pointer;
+    transition:all 0.18s; letter-spacing:0.06em;
+  }
+  .etym-close-btn:hover { border-color:rgba(191,0,255,0.4); color:var(--neon-purple); }
+  .etym-loading-state {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:40px 24px; gap:14px; color:rgba(255,255,255,0.35);
+    font-family:'Space Mono',monospace; font-size:0.75rem; letter-spacing:0.06em;
+  }
+  .etym-spinner {
+    width:36px; height:36px; border:3px solid rgba(191,0,255,0.2);
+    border-top-color:var(--neon-purple); border-radius:50%;
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .etym-error-state {
+    padding:30px 24px; text-align:center; color:rgba(255,0,110,0.7);
+    font-size:0.78rem; line-height:1.6;
+  }
+
   /* ── ARTICLE DRAWER ── */
   .art-overlay {
     display:none; position:fixed; inset:0; z-index:1100;
@@ -1199,6 +1300,83 @@ const IDB = (() => {
   .profile-streak-count { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:var(--neon-yellow); }
   .profile-streak-label { font-size:0.7rem; color:rgba(255,255,255,0.35); }
   .profile-section-title { font-size:0.62rem; color:rgba(255,255,255,0.3); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
+
+  /* ── REVIEW MODE TOGGLE ── */
+  .review-mode-card {
+    background: rgba(255,0,110,0.04);
+    border: 1px solid rgba(255,0,110,0.18);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .review-mode-card.active {
+    border-color: rgba(255,0,110,0.45);
+    box-shadow: 0 0 14px rgba(255,0,110,0.1);
+  }
+  .review-mode-info { flex: 1; min-width: 0; }
+  .review-mode-title {
+    font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,0,110,0.7); margin-bottom: 3px;
+    display: flex; align-items: center; gap: 5px;
+    font-family: 'Space Mono', monospace; font-weight: 700;
+    transition: color 0.2s;
+  }
+  .review-mode-card.active .review-mode-title { color: var(--neon-pink); }
+  .review-mode-desc {
+    font-size: 0.68rem; color: rgba(255,255,255,0.3); line-height: 1.5;
+  }
+  .review-toggle { position: relative; width: 38px; height: 20px; flex-shrink: 0; }
+  .review-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .review-toggle-track {
+    position: absolute; inset: 0; border-radius: 999px; cursor: pointer;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .review-toggle-track::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: rgba(255,255,255,0.35); transition: transform 0.25s, background 0.25s;
+  }
+  .review-toggle input:checked + .review-toggle-track {
+    background: rgba(255,0,110,0.25); border-color: rgba(255,0,110,0.6);
+    box-shadow: 0 0 10px rgba(255,0,110,0.3);
+  }
+  .review-toggle input:checked + .review-toggle-track::after {
+    transform: translateX(18px); background: var(--neon-pink);
+  }
+
+  /* ── NÚT ✕ RÀ SOÁT TRÊN FLASHCARD ── */
+  .fc-review-hide-btn {
+    position: absolute; top: 10px; right: 10px; z-index: 10;
+    width: 28px; height: 28px; border-radius: 8px;
+    background: rgba(255,0,110,0.1); border: 1px solid rgba(255,0,110,0.3);
+    color: rgba(255,0,110,0.6); font-size: 0.85rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.18s; line-height: 1;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  }
+  .fc-review-hide-btn:hover {
+    background: rgba(255,0,110,0.22); border-color: var(--neon-pink);
+    color: var(--neon-pink); box-shadow: 0 0 10px rgba(255,0,110,0.3);
+    transform: scale(1.12);
+  }
+  /* Badge nhỏ báo đang bật chế độ rà soát */
+  .review-mode-badge {
+    display: none; align-items: center; gap: 5px;
+    font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(255,0,110,0.6); font-family: 'Space Mono', monospace;
+    margin-bottom: 6px; justify-content: center;
+  }
+  .review-mode-badge.visible { display: flex; }
+  .review-mode-badge-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--neon-pink); animation: pulse 1.5s infinite;
+  }
 
   /* ── LOOP SIZE SETTING ── */
   .loop-setting-card {
@@ -1858,98 +2036,6 @@ const IDB = (() => {
     font-size:0.58rem; letter-spacing:0.15em; text-transform:uppercase;
     color:rgba(255,255,255,0.3); margin-top:5px; font-family:'Space Mono',monospace;
   }
-
-  /* ── Source Link Banner (hiện khi vào pack có link) ── */
-  .source-banner {
-    display: none;
-    align-items: center;
-    gap: 10px;
-    margin: 0 0 12px;
-    padding: 10px 16px;
-    background: rgba(0,245,255,0.05);
-    border: 1px solid rgba(0,245,255,0.18);
-    border-radius: 12px;
-    font-size: 0.75rem;
-    color: rgba(255,255,255,0.55);
-    animation: bannerFadeIn 0.4s ease;
-  }
-  .source-banner.show { display: flex; }
-  @keyframes bannerFadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
-  .source-banner-icon { font-size: 1rem; flex-shrink: 0; }
-  .source-banner-text { flex: 1; line-height: 1.4; }
-  .source-banner-text strong { color: rgba(0,245,255,0.8); font-weight: 600; }
-  .source-banner-link {
-    flex-shrink: 0;
-    padding: 5px 14px;
-    background: rgba(0,245,255,0.1);
-    border: 1px solid rgba(0,245,255,0.3);
-    border-radius: 20px;
-    color: var(--neon-cyan);
-    font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-decoration: none;
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .source-banner-link:hover { background: rgba(0,245,255,0.2); }
-  .source-banner-close {
-    background: none; border: none; color: rgba(255,255,255,0.2);
-    cursor: pointer; font-size: 1rem; padding: 0 0 0 4px;
-    transition: color 0.15s; flex-shrink: 0;
-  }
-  .source-banner-close:hover { color: rgba(255,255,255,0.5); }
-
-  /* ── Article Modal (hiện sau khi thuộc hết) ── */
-  .article-modal-overlay {
-    display: none; position: fixed; inset: 0; z-index: 500;
-    background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-    align-items: center; justify-content: center; padding: 24px;
-  }
-  .article-modal-overlay.show { display: flex; }
-  .article-modal {
-    background: #0d0d1f;
-    border: 1px solid rgba(0,245,255,0.2);
-    border-radius: 24px;
-    padding: 36px 32px;
-    max-width: 420px; width: 100%;
-    text-align: center;
-    animation: modalPop 0.35s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  @keyframes modalPop { from { opacity:0; transform:scale(0.88); } to { opacity:1; transform:scale(1); } }
-  .article-modal-emoji { font-size: 3rem; margin-bottom: 16px; display: block; }
-  .article-modal-title {
-    font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800;
-    background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; margin-bottom: 10px;
-  }
-  .article-modal-sub {
-    font-size: 0.82rem; color: rgba(255,255,255,0.45);
-    line-height: 1.6; margin-bottom: 24px;
-  }
-  .article-modal-sub strong { color: rgba(0,245,255,0.7); font-weight: 600; }
-  .article-modal-btns { display: flex; flex-direction: column; gap: 10px; }
-  .article-modal-btn-yes {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 13px 24px;
-    background: linear-gradient(135deg, rgba(0,245,255,0.15), rgba(57,255,20,0.1));
-    border: 1px solid rgba(0,245,255,0.35);
-    border-radius: 12px; color: var(--neon-cyan);
-    font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 800;
-    letter-spacing: 0.08em; text-decoration: none;
-    transition: all 0.2s; cursor: pointer;
-  }
-  .article-modal-btn-yes:hover { background: linear-gradient(135deg, rgba(0,245,255,0.25), rgba(57,255,20,0.18)); transform: translateY(-1px); }
-  .article-modal-btn-no {
-    padding: 11px 24px;
-    background: none; border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px; color: rgba(255,255,255,0.3);
-    font-family: 'Space Mono', monospace; font-size: 0.72rem;
-    cursor: pointer; transition: all 0.2s; letter-spacing: 0.04em;
-  }
-  .article-modal-btn-no:hover { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
 </style>
 </head>
 <body>
@@ -2016,6 +2102,17 @@ const IDB = (() => {
       <button class="sync-profile-btn download" id="syncDownBtn" onclick="manualPull()">
         <span>⬇</span><span>Tải cloud xuống</span>
       </button>
+    </div>
+    <!-- ── REVIEW MODE ── -->
+    <div class="review-mode-card" id="reviewModeCard">
+      <div class="review-mode-info">
+        <div class="review-mode-title">🔍 Chế độ rà soát</div>
+        <div class="review-mode-desc">Hiện nút ✕ trên mỗi flashcard để ẩn từ không cần học.</div>
+      </div>
+      <label class="review-toggle">
+        <input type="checkbox" id="reviewModeToggle" onchange="setReviewMode(this.checked)">
+        <span class="review-toggle-track"></span>
+      </label>
     </div>
     <!-- ── LOOP SETTING ── -->
     <div class="loop-setting-card">
@@ -2129,6 +2226,29 @@ const IDB = (() => {
           <button class="admin-save-btn" id="adminSaveCelebrate" onclick="adminSaveCelebrateSettings()">✓ Lưu cài đặt chúc mừng</button>
         </div>
 
+        <!-- ── MAVIS API KEY ── -->
+        <div class="admin-settings-card" style="border-color:rgba(191,0,255,0.2)">
+          <div class="admin-settings-card-title" style="color:var(--neon-purple)">🔑 MAVIS API Key</div>
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);line-height:1.6;margin-bottom:14px">
+            Key dùng chung cho toàn hệ thống. Được lưu trên Firestore, áp dụng cho tất cả người dùng.<br>
+            Lấy key tại <a href="https://mavis.io.vn" target="_blank" style="color:var(--neon-purple);text-decoration:none">mavis.io.vn</a> · Endpoint: <code style="color:rgba(191,0,255,0.7);font-size:0.68rem">https://mavis.io.vn/v1/messages</code>
+          </div>
+          <div style="display:flex;gap:10px;align-items:stretch">
+            <input type="password" id="mavisApiKeyInput" placeholder="mavis-xxxxxxxx"
+              style="flex:1;background:rgba(191,0,255,0.05);border:1px solid rgba(191,0,255,0.25);border-radius:10px;
+                     padding:10px 14px;color:#fff;font-family:'Space Mono',monospace;font-size:0.82rem;
+                     outline:none;transition:border-color 0.2s"
+              onfocus="this.style.borderColor='rgba(191,0,255,0.55)'"
+              onblur="this.style.borderColor='rgba(191,0,255,0.25)'"
+              onkeydown="if(event.key==='Enter')adminSaveMavisKey()">
+            <button onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password';this.textContent=this.previousElementSibling.type==='password'?'👁':'🙈'"
+              style="padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;cursor:pointer;font-size:0.9rem;color:rgba(255,255,255,0.4);transition:all 0.18s"
+              title="Hiện/ẩn key">👁</button>
+          </div>
+          <div id="mavisKeyStatus" style="font-size:0.68rem;margin-top:8px;min-height:18px;font-family:'Space Mono',monospace;letter-spacing:0.04em"></div>
+          <button class="admin-save-btn" id="adminSaveMavisKey" onclick="adminSaveMavisKey()" style="margin-top:12px;border-color:rgba(191,0,255,0.4);color:var(--neon-purple)">✓ Lưu API Key</button>
+        </div>
+
       </div>
     </div>
 
@@ -2186,6 +2306,25 @@ const IDB = (() => {
   </div>
 </div>
 
+<!-- ETYMOLOGY MODAL -->
+<div class="etym-overlay" id="etymOverlay" onclick="if(event.target===this)closeEtymModal()">
+  <div class="etym-modal" id="etymModal">
+    <div class="etym-modal-header">
+      <div class="etym-modal-tag">🌱 Gốc từ · Etymology</div>
+      <div class="etym-modal-word" id="etymModalWord">—</div>
+    </div>
+    <div class="etym-modal-body" id="etymModalBody">
+      <div class="etym-loading-state">
+        <div class="etym-spinner"></div>
+        <span>Đang tra gốc từ...</span>
+      </div>
+    </div>
+    <div class="etym-modal-footer">
+      <button class="etym-close-btn" onclick="closeEtymModal()">✕ Đóng</button>
+    </div>
+  </div>
+</div>
+
 <!-- IMPORT MODAL -->
 <div class="modal-overlay" id="importModal">
   <div class="modal">
@@ -2205,7 +2344,6 @@ const IDB = (() => {
     <div class="pack-modal-title" id="packModalTitle">✦ Tạo gói từ vựng mới</div>
     <input type="text" id="packNameInput" placeholder="Tên gói, VD: IELTS, Business English..." maxlength="50">
     <input type="text" id="packDescInput" placeholder="Mô tả ngắn (tùy chọn)" maxlength="80">
-    <input type="text" id="packSourceLink" placeholder="🔗 Link bài viết gốc (tùy chọn)" maxlength="500" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 14px;color:#fff;font-family:'Inter',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;margin-bottom:14px;" onfocus="this.style.borderColor='rgba(0,245,255,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
     <div class="pack-modal-actions">
       <button class="btn-primary" style="flex:1;justify-content:center" onclick="savePackModal()">✓ Lưu</button>
       <button class="btn-danger" style="justify-content:center" onclick="closePackModal()">✕ Hủy</button>
@@ -2442,6 +2580,9 @@ let loopSize = parseInt(localStorage.getItem('lexon_loop_size') || '0');
 // loopWindow: mảng chỉ số trong studyQueue đang trong vòng lặp
 let loopWindow = [];
 let loopWindowIndex = 0;
+
+// ── REVIEW MODE ── (chế độ rà soát)
+let reviewMode = localStorage.getItem('lexon_review_mode') === '1';
 
 // ============================================================
 //  FIREBASE HELPERS
@@ -2845,7 +2986,6 @@ async function openPack(pack) {
   }
 
   buildQueue(); renderList(); updateStudyBadge();
-  _showSourceBanner(pack.sourceLink || '');
 }
 
 function updateStudyBadge() {
@@ -2853,11 +2993,7 @@ function updateStudyBadge() {
   document.getElementById('studyPackBadge').textContent = `${words.length} từ · ${m} đã thuộc`;
 }
 
-function backToPacks() {
-  // Xóa link toast nếu đang hiển thị
-  document.getElementById('_linkToast')?.remove();
-  showPacksScreen();
-}
+function backToPacks() { showPacksScreen(); }
 
 // ============================================================
 //  PACK MODAL
@@ -2867,7 +3003,6 @@ function openPackModal(packId) {
   document.getElementById('packModalTitle').textContent = packId ? '✎ Đổi tên gói' : '✦ Tạo gói từ vựng mới';
   document.getElementById('packNameInput').value = packId ? (packs.find(p=>p.id===packId)?.name||'') : '';
   document.getElementById('packDescInput').value = packId ? (packs.find(p=>p.id===packId)?.desc||'') : '';
-  document.getElementById('packSourceLink').value = packId ? (packs.find(p=>p.id===packId)?.sourceLink||'') : '';
   document.getElementById('packModal').classList.add('show');
   setTimeout(() => document.getElementById('packNameInput').focus(), 100);
 }
@@ -2879,12 +3014,11 @@ async function savePackModal() {
   const name = document.getElementById('packNameInput').value.trim();
   if (!name) { showToast('error', '⚠ Vui lòng nhập tên gói!'); return; }
   const desc = document.getElementById('packDescInput').value.trim();
-  const sourceLink = document.getElementById('packSourceLink').value.trim();
   if (editingPackId) {
     const p = packs.find(p => p.id === editingPackId);
-    if (p) { p.name = name; p.desc = desc; p.sourceLink = sourceLink; }
+    if (p) { p.name = name; p.desc = desc; }
   } else {
-    packs.push({ id: 'pack_' + Date.now(), name, desc, sourceLink, createdAt: Date.now() });
+    packs.push({ id: 'pack_' + Date.now(), name, desc, createdAt: Date.now() });
   }
   await savePacks();
   closePackModal();
@@ -3303,21 +3437,51 @@ function _updateLoopUI() {
 function _syncLoopUIOnOpen() { _updateLoopUI(); }
 
 // ============================================================
-//  FLASHCARD
+//  REVIEW MODE
 // ============================================================
+function setReviewMode(on) {
+  reviewMode = !!on;
+  localStorage.setItem('lexon_review_mode', reviewMode ? '1' : '0');
+  _syncReviewModeUI();
+  // Re-render flashcard nếu đang ở tab flashcard
+  const fc = document.getElementById('panel-flashcard');
+  if (fc && fc.classList.contains('active')) {
+    renderFlashcard();
+  }
+}
+
+function _syncReviewModeUI() {
+  const toggle = document.getElementById('reviewModeToggle');
+  const card   = document.getElementById('reviewModeCard');
+  if (toggle) toggle.checked = reviewMode;
+  if (card)   card.classList.toggle('active', reviewMode);
+}
+
+// Ẩn từ hiện tại qua nút ✕ rà soát
+function reviewHideCurrentWord() {
+  const c = studyQueue[currentIndex];
+  if (!c) return;
+  const idx = words.findIndex(x => x.word === c.word);
+  if (idx < 0) return;
+  words[idx].hidden = true;
+  words[idx].mastered = false; // reset mastered khi ẩn (theo logic toggleHideWord)
+  saveData();
+  buildQueue();
+  renderList();
+  updateStudyBadge();
+  refreshStatsBar();
+  // Tiếp tục render flashcard
+  isFlipped = false;
+  renderFlashcard();
+}
+
+
 function renderFlashcard() {
   const el = document.getElementById('fc-content');
   if (!words.length) { el.innerHTML='<div class="warn-box">⚠ Chưa có từ vựng. Vào tab "Nhập Từ" để thêm!</div>'; return; }
   const rem = words.filter(w=>!w.mastered && !w.hidden);
   if (!rem.length) {
-    const _sl = currentPack?.sourceLink || '';
-    if (_sl) {
-      // Có link → dùng modal hỏi xem bài viết
-      el.innerHTML=`<div class="card celebration"><span class="celebration-icon">🎉</span><h2>Xuất Sắc!</h2><p>Bạn đã thuộc hết <strong style="color:var(--neon-green)">${words.length}</strong> từ vựng!</p><button class="btn-restart" onclick="resetMastered()">↺ Học Lại</button></div>`;
-      _showArticleModal(_sl, currentPack?.name || 'bài viết');
-    } else {
-      el.innerHTML=`<div class="card celebration"><span class="celebration-icon">🎉</span><h2>Xuất Sắc!</h2><p>Bạn đã thuộc hết <strong style="color:var(--neon-green)">${words.length}</strong> từ vựng!</p><button class="btn-restart" onclick="resetMastered()">↺ Học Lại</button></div>`;
-    }
+    el.innerHTML=`<div class="card celebration"><span class="celebration-icon">🎉</span><h2>Xuất Sắc!</h2><p>Bạn đã thuộc hết <strong style="color:var(--neon-green)">${words.length}</strong> từ vựng!</p><button class="btn-restart" onclick="resetMastered()">↺ Học Lại</button></div>`;
     return;
   }
   if (!studyQueue.length||currentIndex>=studyQueue.length) buildQueue();
@@ -3371,8 +3535,8 @@ function renderFlashcard() {
         <span style="opacity:0.6">Tổng window: ${loopWindow.length} từ</span>
       </div>
     </div>` : ''}
+    ${reviewMode ? `<div class="review-mode-badge visible"><span class="review-mode-badge-dot"></span>Chế độ rà soát đang bật — nhấn ✕ để ẩn từ</div>` : ''}
     <div class="fc-controls">
-      <div class="prog-info"><strong>${currentIndex+1}</strong> / ${studyQueue.length}</div>
       <div class="prog-wrap"><div class="prog-bar" style="width:${prog}%"></div></div>
       <button class="dl-toggle-btn" id="dlToggleBtn" onclick="dlOpen()">
         <span class="dl-toggle-dot"></span>DEEP LEARNING
@@ -3396,6 +3560,7 @@ function renderFlashcard() {
     </div>
     <div class="fc-scene">
       <div class="flashcard" id="theCard" onclick="flipCard()">
+        ${reviewMode ? `<button class="fc-review-hide-btn" onclick="reviewHideCurrentWord();event.stopPropagation()" title="Ẩn từ này (chế độ rà soát)">✕</button>` : ''}
         <div class="fc-face fc-front">
           <div class="fc-hint">${reversedMode ? 'Tiếng Việt – Nhấp để xem tiếng Anh ↕' : 'Nhấp để xem nghĩa ↕'}</div>
           ${reversedMode ? `
@@ -3413,7 +3578,10 @@ function renderFlashcard() {
             </div>
           `}
           ${c.example?`<div class="fc-example" style="margin-top:6px" onclick="event.stopPropagation()">🗣 ${h(c.example)}</div>`:''}
-          <button class="fc-art-btn" onclick="openArtDrawer(studyQueue[currentIndex]);event.stopPropagation()">📰 xem ngữ cảnh báo chí →</button>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" onclick="event.stopPropagation()">
+            <button class="fc-art-btn" onclick="openArtDrawer(studyQueue[currentIndex]);event.stopPropagation()">📰 xem ngữ cảnh báo chí →</button>
+            <button class="fc-etym-btn" id="etymBtnFront" onclick="openEtymModal('${c.word.replace(/'/g,\"\\'\").replace(/\`/g,\"\\\`\")}');event.stopPropagation()">🌱 Gốc từ</button>
+          </div>
         </div>
         <div class="fc-face fc-back">
           <div class="fc-hint">${reversedMode ? 'Tiếng Anh' : 'Nghĩa tiếng Việt'}</div>
@@ -3441,7 +3609,10 @@ function renderFlashcard() {
             : (c.example_vi ? `<div class="fc-example" style="margin-top:6px" onclick="event.stopPropagation()">🗣 ${h(c.example_vi)}</div>`
                : c.example  ? `<div class="fc-example" style="margin-top:6px" onclick="event.stopPropagation()">🗣 ${h(c.example)}</div>` : '')
           }
-          <button class="fc-art-btn" onclick="openArtDrawer(studyQueue[currentIndex]);event.stopPropagation()">📰 xem ngữ cảnh báo chí →</button>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" onclick="event.stopPropagation()">
+            <button class="fc-art-btn" onclick="openArtDrawer(studyQueue[currentIndex]);event.stopPropagation()">📰 xem ngữ cảnh báo chí →</button>
+            <button class="fc-etym-btn" id="etymBtnBack" onclick="openEtymModal('${c.word.replace(/'/g,\"\\'\").replace(/\`/g,\"\\\`\")}');event.stopPropagation()">🌱 Gốc từ</button>
+          </div>
         </div>
         <!-- Sizer: đẩy chiều cao theo nội dung thực của mặt front -->
         <div class="fc-sizer" aria-hidden="true">
@@ -3452,7 +3623,7 @@ function renderFlashcard() {
           ${c.level     ? `<div class="fc-level"    style="opacity:0">_</div>` : ''}
           <div class="fc-speak-row" style="opacity:0"><button class="fc-speak-btn fc-speak-us">🔊 US</button><button class="fc-speak-btn fc-speak-uk">🔊 UK</button></div>
           ${c.example   ? `<div class="fc-example"  style="opacity:0">🗣 ${h(c.example)}</div>` : ''}
-          <button class="fc-art-btn" style="opacity:0">📰 xem ngữ cảnh báo chí →</button>
+          <button class="fc-art-btn" style="opacity:0">📰 xem ngữ cảnh báo chí →</button><button class="fc-etym-btn" style="opacity:0">🌱 Gốc từ</button>
         </div>
       </div>
     </div>
@@ -3922,6 +4093,7 @@ async function openProfile() {
 
   document.getElementById('profileOverlay').classList.add('show');
   _syncLoopUIOnOpen();
+  _syncReviewModeUI();
 
   try {
     const snap = await window._getDoc(userDoc());
@@ -4512,7 +4684,6 @@ async function openAdminPack(pack) {
   }
 
   buildQueue(); renderFlashcard(); renderList(); updateStudyBadge();
-  _showSourceBanner(pack.sourceLink || '');
 }
 
 
@@ -7023,88 +7194,164 @@ function dlVkbReset() {
   if (disp) disp.className = 'dl-vkb-display';
 }
 
+// ============================================================
+//  MAVIS API KEY — Admin save/load
+// ============================================================
+async function adminSaveMavisKey() {
+  const input = document.getElementById('mavisApiKeyInput');
+  const status = document.getElementById('mavisKeyStatus');
+  const btn = document.getElementById('adminSaveMavisKey');
+  const key = input.value.trim();
 
-// ══════════════════════════════════════════════════════
-// SOURCE LINK — banner + article modal helpers
-// ══════════════════════════════════════════════════════
-
-function _showSourceBanner(link) {
-  // Bỏ banner — dùng toast khi vào pack có link
-  if (!link) return;
-  let sourceName = 'bài viết gốc';
-  if (link.includes('ted.com'))       sourceName = 'TED Talk';
-  else if (link.includes('bbc.'))     sourceName = 'BBC';
-  else if (link.includes('nytimes'))  sourceName = 'New York Times';
-  else if (link.includes('guardian')) sourceName = 'The Guardian';
-  else if (link.includes('cnn.'))     sourceName = 'CNN';
-
-  // Hiện toast với link clickable
-  const msg = `📖 Bộ từ từ <a href="${link}" target="_blank" rel="noopener" style="color:var(--neon-cyan);text-decoration:underline">${sourceName}</a> — Bạn có muốn xem bài viết gốc không?`;
-  _showLinkToast(msg);
-}
-
-function _showLinkToast(html) {
-  // Xóa toast cũ nếu có
-  const old = document.getElementById('_linkToast');
-  if (old) old.remove();
-
-  const el = document.createElement('div');
-  el.id = '_linkToast';
-  el.style.cssText = [
-    'position:fixed','bottom:80px','left:50%','transform:translateX(-50%)',
-    'background:#0d0d1f','border:1px solid rgba(0,245,255,0.25)',
-    'border-radius:14px','padding:12px 20px',
-    'font-size:0.78rem','color:rgba(255,255,255,0.7)',
-    'max-width:92vw','text-align:center',
-    'z-index:900','line-height:1.5',
-    'animation:_toastIn 0.3s ease','box-shadow:0 4px 30px rgba(0,0,0,0.5)'
-  ].join(';');
-
-  // Thêm CSS animation nếu chưa có
-  if (!document.getElementById('_toastStyle')) {
-    const s = document.createElement('style');
-    s.id = '_toastStyle';
-    s.textContent = '@keyframes _toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}';
-    document.head.appendChild(s);
+  if (!key) { status.textContent = '✕ Vui lòng nhập key'; status.style.color = 'var(--neon-pink)'; return; }
+  if (!key.startsWith('mavis-') && !key.startsWith('sk-')) {
+    status.textContent = '⚠ Key thường bắt đầu bằng "mavis-"'; status.style.color = 'var(--neon-yellow)';
   }
 
-  el.innerHTML = html + '<button onclick="this.parentNode.remove()" style="margin-left:14px;background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:1rem;vertical-align:middle">×</button>';
-  document.body.appendChild(el);
-  // Tự xóa sau 8 giây
-  setTimeout(() => el?.remove(), 8000);
+  btn.textContent = '⏳ Đang lưu...'; btn.disabled = true;
+  try {
+    const db = window._db, docFn = window._doc, setDocFn = window._setDoc;
+    await setDocFn(docFn(db, 'system', 'config'), { mavisApiKey: key }, { merge: true });
+    status.textContent = '✓ Đã lưu thành công!'; status.style.color = 'var(--neon-green)';
+    window._mavisApiKey = key; // cache in memory
+    input.value = ''; input.placeholder = key.slice(0, 10) + '••••••••';
+  } catch(e) {
+    status.textContent = '✕ Lỗi lưu: ' + e.message; status.style.color = 'var(--neon-pink)';
+  }
+  btn.textContent = '✓ Lưu API Key'; btn.disabled = false;
 }
 
-function _showArticleModal(link, packName) {
-  const overlay  = document.getElementById('articleModal');
-  const linkEl   = document.getElementById('articleModalLink');
-  const labelEl  = document.getElementById('articleModalLabel');
-  if (!overlay) return;
-
-  let sourceName = 'bài viết gốc';
-  if (link.includes('ted.com'))       sourceName = 'TED Talk';
-  else if (link.includes('bbc.'))     sourceName = 'bài viết BBC';
-  else if (link.includes('nytimes'))  sourceName = 'bài viết NYT';
-  else if (link.includes('guardian')) sourceName = 'bài The Guardian';
-  else if (link.includes('cnn.'))     sourceName = 'bài CNN';
-
-  if (labelEl) labelEl.textContent = sourceName;
-  if (linkEl)  linkEl.href = link;
-
-  // Nhỏ delay để celebration render trước
-  setTimeout(() => overlay.classList.add('show'), 400);
+async function mavisGetKey() {
+  if (window._mavisApiKey) return window._mavisApiKey;
+  try {
+    const db = window._db, docFn = window._doc, getDocFn = window._getDoc;
+    const snap = await getDocFn(docFn(db, 'system', 'config'));
+    if (snap.exists()) {
+      window._mavisApiKey = snap.data().mavisApiKey || null;
+      return window._mavisApiKey;
+    }
+  } catch(e) { console.warn('mavisGetKey error:', e); }
+  return null;
 }
 
-function closeArticleModal() {
-  document.getElementById('articleModal')?.classList.remove('show');
+// Load key vào input khi mở Admin Settings tab
+const _origSwitchAdminTab = window.switchAdminTab;
+// Hook after switchAdminTab loads (defined later) — use event-based approach
+function _mavisLoadKeyToInput() {
+  mavisGetKey().then(key => {
+    if (!key) return;
+    const inp = document.getElementById('mavisApiKeyInput');
+    if (inp) { inp.placeholder = key.slice(0, 10) + '••••••••'; }
+  });
 }
 
-function articleModalStudyAgain() {
-  closeArticleModal();
-  resetMastered();
+// ============================================================
+//  ETYMOLOGY MODAL
+// ============================================================
+let _etymCache = {}; // word → html content
+
+function openEtymModal(word) {
+  if (!word) return;
+  const overlay = document.getElementById('etymOverlay');
+  const wordEl  = document.getElementById('etymModalWord');
+  const bodyEl  = document.getElementById('etymModalBody');
+
+  wordEl.textContent = word;
+  overlay.classList.add('show');
+
+  // Cache hit
+  if (_etymCache[word.toLowerCase()]) {
+    bodyEl.innerHTML = _etymCache[word.toLowerCase()];
+    return;
+  }
+
+  // Loading state
+  bodyEl.innerHTML = '<div class="etym-loading-state"><div class="etym-spinner"></div><span>Đang tra gốc từ...</span></div>';
+
+  _fetchEtymology(word).then(html => {
+    _etymCache[word.toLowerCase()] = html;
+    // Check modal still open for same word
+    if (document.getElementById('etymModalWord').textContent === word) {
+      bodyEl.innerHTML = html;
+    }
+  }).catch(err => {
+    bodyEl.innerHTML = `<div class="etym-error-state">⚠ Không thể tra gốc từ lúc này.<br><span style="font-size:0.7rem;opacity:0.6">${err.message}</span></div>`;
+  });
 }
 
-// ── Exit button smart handler ──
-function dlExitOrSummary() {
+function closeEtymModal() {
+  document.getElementById('etymOverlay').classList.remove('show');
+}
+
+async function _fetchEtymology(word) {
+  const apiKey = await mavisGetKey();
+  if (!apiKey) throw new Error('Chưa có MAVIS API Key. Admin vui lòng cài đặt trong phần ⚙ Admin → Cài đặt.');
+
+  const prompt = `Bạn là chuyên gia ngôn ngữ học. Hãy tra cứu etymology (gốc từ) của từ tiếng Anh: "${word}"
+
+Trả lời ĐÚNG theo cấu trúc HTML sau (không thêm gì ngoài HTML):
+
+<h3>Nguồn gốc</h3>
+<p>[Giải thích ngắn gọn 2-3 câu về nguồn gốc từ này, bằng tiếng Việt]</p>
+
+<h3>Các thành phần gốc</h3>
+<div class="etym-root-chips">
+  [Với MỖI gốc từ, tạo một chip:]
+  <div class="etym-chip">
+    <span class="etym-chip-root">[gốc từ gốc]</span>
+    <span class="etym-chip-lang">[ngôn ngữ gốc, VD: Latin, Greek, Old English]</span>
+    <span class="etym-chip-meaning">[nghĩa gốc]</span>
+  </div>
+</div>
+
+<h3>Biến đổi qua thời gian</h3>
+<p>[Mô tả ngắn gọn từ đã biến đổi như thế nào qua các thế kỷ]</p>
+
+<h3>Từ cùng gốc</h3>
+<div class="etym-related">
+  [Liệt kê 4-6 từ tiếng Anh cùng gốc:]
+  <span class="etym-related-word">[từ]</span>
+</div>
+
+Chỉ trả về HTML, không markdown, không giải thích thêm.`;
+
+  const resp = await fetch('https://mavis.io.vn/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4.5',
+      max_tokens: 900,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    if (resp.status === 402) throw new Error('Hết quota MAVIS. Vui lòng kiểm tra tài khoản.');
+    if (resp.status === 401) throw new Error('API Key không hợp lệ.');
+    throw new Error(err.error?.message || `HTTP ${resp.status}`);
+  }
+
+  const data = await resp.json();
+  const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  // Strip any accidental markdown fences
+  return text.replace(/```html?|```/gi, '').trim();
+}
+
+// Hook switchAdminTab to load key preview when settings tab opens
+document.addEventListener('DOMContentLoaded', () => {
+  const origSwitch = window.switchAdminTab;
+  if (typeof origSwitch === 'function') {
+    window.switchAdminTab = function(tab) {
+      origSwitch(tab);
+      if (tab === 'settings') _mavisLoadKeyToInput();
+    };
+  }
+});
   const session = document.getElementById('dlSession');
   const isInSession = session && session.style.display !== 'none';
   if (isInSession && dlWordsCount > 0) {
@@ -7113,26 +7360,6 @@ function dlExitOrSummary() {
     dlExit();
   }
 }
-
 </script>
-
-<!-- ── Article Link Modal (sau khi thuộc hết) ── -->
-<div class="article-modal-overlay" id="articleModal">
-  <div class="article-modal">
-    <span class="article-modal-emoji">🎉</span>
-    <div class="article-modal-title">Xuất Sắc!</div>
-    <div class="article-modal-sub">
-      Bạn đã thuộc hết tất cả từ vựng!<br>
-      Bạn có muốn đọc <strong id="articleModalLabel">bài viết gốc</strong> chứa bộ từ này không?
-    </div>
-    <div class="article-modal-btns">
-      <a href="#" id="articleModalLink" class="article-modal-btn-yes" target="_blank" rel="noopener" onclick="closeArticleModal()">
-        🔗 Xem bài viết gốc
-      </a>
-      <button class="article-modal-btn-no" onclick="articleModalStudyAgain()">↺ Học lại · Đóng</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
