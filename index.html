@@ -6344,9 +6344,7 @@ async function openRootWord(wordObj) {
 }
 
 async function fetchRootWord(word, apiKey) {
-  const systemPrompt = `You are an etymology expert. Respond with ONLY a raw JSON object — no markdown, no code fences, no extra text. JSON keys: root, origin_language, root_meaning, word_parts (array of {part, meaning}), related_words (array of strings), explanation. Use Vietnamese for all explanations.`;
-
-  const userPrompt = `Phân tích từ gốc (etymology) của từ tiếng Anh: "${word}". Trả về JSON với: root (gốc từ), origin_language (ngôn ngữ nguồn), root_meaning (nghĩa gốc tiếng Việt), word_parts (cấu trúc từng phần), related_words (từ cùng gốc), explanation (2-3 câu tiếng Việt giúp nhớ từ).`;
+  const prompt = `Gốc của từ: ${word}. Chỉ trả về JSON, không giải thích thêm: {"cauTao":"...","lichSu":"...","meoNhoR":"..."}`;
 
   const res = await fetch(`${MAVIS_BASE_URL}/v1/messages`, {
     method: 'POST',
@@ -6356,10 +6354,9 @@ async function fetchRootWord(word, apiKey) {
       'anthropic-version': '2023-06-01'
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 800,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }]
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 400,
+      messages: [{ role: 'user', content: prompt }]
     })
   });
 
@@ -6386,62 +6383,35 @@ async function fetchRootWord(word, apiKey) {
   try {
     return JSON.parse(jsonMatch ? jsonMatch[0] : clean);
   } catch(e) {
-    return { explanation: rawText, root: '', origin_language: '', root_meaning: '', word_parts: [], related_words: [] };
+    return { cauTao: '', lichSu: rawText, meoNhoR: '' };
   }
 }
 
 function renderRootWordResult(container, data) {
+  const sections = [
+    { key: 'cauTao',   icon: '🧩', label: 'Cấu tạo từ'          },
+    { key: 'lichSu',   icon: '📜', label: 'Lịch sử hình thành'  },
+    { key: 'meoNhoR',  icon: '💡', label: 'Mẹo ghi nhớ'         },
+  ];
+
   let html = '';
-
-  if (data.root) {
+  for (const s of sections) {
+    const val = data[s.key];
+    if (!val) continue;
     html += `<div class="rootword-section">
-      <div class="rootword-section-label">Gốc từ</div>
-      <div class="rootword-section-content">
-        <strong style="color:var(--neon-purple);font-size:1rem">${h(data.root)}</strong>
-        ${data.origin_language ? `<span style="margin-left:8px;color:rgba(255,255,255,0.35);font-size:0.72rem">(${h(data.origin_language)})</span>` : ''}
-      </div>
-    </div>`;
-  }
-
-  if (data.root_meaning) {
-    html += `<div class="rootword-section">
-      <div class="rootword-section-label">Nghĩa gốc</div>
-      <div class="rootword-section-content">${h(data.root_meaning)}</div>
-    </div>`;
-  }
-
-  if (data.word_parts && data.word_parts.length > 0) {
-    const parts = data.word_parts.map(p =>
-      `<span class="rootword-tag">${h(p.part)}</span><span style="color:rgba(255,255,255,0.45);font-size:0.72rem;margin-right:10px"> = ${h(p.meaning)}</span>`
-    ).join('');
-    html += `<div class="rootword-section">
-      <div class="rootword-section-label">Cấu trúc từ</div>
-      <div class="rootword-section-content" style="line-height:2">${parts}</div>
-    </div>`;
-  }
-
-  if (data.explanation) {
-    html += `<div class="rootword-section">
-      <div class="rootword-section-label">Giải thích</div>
-      <div class="rootword-section-content">${h(data.explanation)}</div>
-    </div>`;
-  }
-
-  if (data.related_words && data.related_words.length > 0) {
-    const tags = data.related_words.map(w => `<span class="rootword-tag">${h(w)}</span>`).join('');
-    html += `<div class="rootword-section">
-      <div class="rootword-section-label">Từ liên quan</div>
-      <div class="rootword-section-content">${tags}</div>
+      <div class="rootword-section-label">${s.icon} ${s.label}</div>
+      <div class="rootword-section-content">${h(val)}</div>
     </div>`;
   }
 
   if (!html) {
-    html = `<div class="rootword-section-content">${h(data.explanation || 'Không tìm thấy thông tin.')}</div>`;
+    // fallback nếu Claude trả về text thay vì JSON
+    const raw = typeof data === 'string' ? data : JSON.stringify(data);
+    html = `<div class="rootword-section-content">${h(raw)}</div>`;
   }
 
   container.innerHTML = html;
 }
-
 function closeRootWord() {
   document.getElementById('rootwordOverlay').classList.remove('show');
 }
