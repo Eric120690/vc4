@@ -13,7 +13,7 @@
   import { getFirestore, doc, setDoc, getDoc, deleteDoc, collection, getDocs, query, orderBy, limit,
            enableIndexedDbPersistence }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -55,8 +55,6 @@
   window._limit       = limit;
   window._GoogleAuthProvider = GoogleAuthProvider;
   window._signInWithPopup    = signInWithPopup;
-  window._signInWithRedirect = signInWithRedirect;
-  window._getRedirectResult  = getRedirectResult;
   window._signOut            = signOut;
 
   // Lắng nghe trạng thái đăng nhập
@@ -374,8 +372,8 @@ const IDB = (() => {
   .challenge-status-tag.failed { background:rgba(255,0,110,0.1); border:1px solid rgba(255,0,110,0.3); color:var(--neon-pink); }
   .btn-challenge-create { font-size:0.7rem; background:rgba(255,255,255,0.04); border:1px dashed rgba(255,255,255,0.15); color:rgba(255,255,255,0.35); padding:6px 14px; border-radius:999px; cursor:pointer; transition:all 0.2s; font-family:'Space Mono',monospace; letter-spacing:0.05em; }
   .btn-challenge-create:hover { border-color:rgba(255,230,0,0.4); color:var(--neon-yellow); }
-  .challenge-modal-overlay { position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; transition:opacity 0.25s; }
-  .challenge-modal-overlay.show { display:flex; opacity:1; pointer-events:all; }
+  .challenge-modal-overlay { position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+  .challenge-modal-overlay.show { opacity:1; pointer-events:all; }
   .challenge-modal { background:#0d0d1f; border:1px solid rgba(255,230,0,0.2); border-radius:20px; padding:28px; width:100%; max-width:400px; margin:16px; transform:translateY(16px); transition:transform 0.25s; }
   .challenge-modal-overlay.show .challenge-modal { transform:translateY(0); }
   .challenge-modal-title { font-size:0.9rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--neon-yellow); margin-bottom:18px; }
@@ -705,105 +703,74 @@ const IDB = (() => {
   }
   .fc-art-btn:hover { color:var(--neon-cyan); }
 
-  /* ── ETYMOLOGY BUTTON (flashcard) ── */
-  .fc-etym-btn {
+  /* ── NÚT ROOT WORD ── */
+  .fc-root-btn {
     display:inline-flex; align-items:center; gap:5px; margin-top:4px;
     font-size:0.68rem; font-family:'Space Mono',monospace; letter-spacing:0.04em;
-    color:rgba(191,0,255,0.55); cursor:pointer; transition:all 0.18s;
-    background:none; border:1px solid rgba(191,0,255,0.2); border-radius:20px;
-    padding:4px 11px;
+    color:rgba(191,0,255,0.6); cursor:pointer; transition:color 0.15s;
+    background:none; border:none; padding:2px 0;
   }
-  .fc-etym-btn:hover { color:var(--neon-purple); border-color:rgba(191,0,255,0.5); background:rgba(191,0,255,0.07); }
-  .fc-etym-btn.loading { opacity:0.6; pointer-events:none; animation:pulse 1s infinite; }
+  .fc-root-btn:hover { color:var(--neon-purple); }
 
-  /* ── ETYMOLOGY MODAL ── */
-  .etym-overlay {
+  /* ── ROOT WORD MODAL ── */
+  .rootword-overlay {
     display:none; position:fixed; inset:0; z-index:1200;
-    background:rgba(0,0,0,0.8); backdrop-filter:blur(6px);
-    align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.75); backdrop-filter:blur(6px);
+    align-items:center; justify-content:center; padding:20px;
   }
-  .etym-overlay.show { display:flex; }
-  .etym-modal {
-    background:var(--dark2); border:1px solid rgba(191,0,255,0.3);
-    border-radius:22px; padding:0; width:92%; max-width:520px;
-    max-height:80vh; display:flex; flex-direction:column;
-    box-shadow:0 0 60px rgba(191,0,255,0.2); animation:fadeUp 0.3s ease;
-    overflow:hidden;
+  .rootword-overlay.show { display:flex; }
+  .rootword-modal {
+    background:#0d0d1f; border:1px solid rgba(191,0,255,0.25);
+    border-radius:20px; padding:28px; width:100%; max-width:420px;
+    box-shadow:0 0 40px rgba(191,0,255,0.15);
+    position:relative;
   }
-  .etym-modal-header {
-    padding:22px 24px 16px;
-    border-bottom:1px solid rgba(255,255,255,0.06);
-    background:linear-gradient(135deg, rgba(191,0,255,0.08), rgba(0,245,255,0.04));
-    flex-shrink:0;
+  .rootword-header {
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;
   }
-  .etym-modal-tag {
-    font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase;
-    color:var(--neon-purple); font-family:'Space Mono',monospace;
-    margin-bottom:6px; opacity:0.8;
+  .rootword-title {
+    font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:800;
+    letter-spacing:0.15em; text-transform:uppercase; color:var(--neon-purple);
   }
-  .etym-modal-word {
-    font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800;
-    background:linear-gradient(135deg,var(--neon-purple),var(--neon-cyan));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    background-clip:text; letter-spacing:0.02em; line-height:1;
+  .rootword-close {
+    width:28px; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);
+    background:transparent; color:rgba(255,255,255,0.4); cursor:pointer;
+    font-size:0.85rem; display:flex; align-items:center; justify-content:center;
+    transition:all 0.15s;
   }
-  .etym-modal-body {
-    padding:20px 24px; overflow-y:auto; flex:1;
-    font-size:0.83rem; line-height:1.75; color:rgba(255,255,255,0.75);
+  .rootword-close:hover { background:rgba(255,0,110,0.1); color:var(--neon-pink); border-color:rgba(255,0,110,0.25); }
+  .rootword-word {
+    font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800;
+    color:#fff; margin-bottom:16px; letter-spacing:0.03em;
   }
-  .etym-modal-body::-webkit-scrollbar { width:4px; }
-  .etym-modal-body::-webkit-scrollbar-thumb { background:rgba(191,0,255,0.3); border-radius:4px; }
-  .etym-modal-body h3 {
-    font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700;
-    letter-spacing:0.15em; text-transform:uppercase;
-    color:rgba(191,0,255,0.7); margin:16px 0 6px;
+  .rootword-body {
+    min-height:80px; font-size:0.82rem; line-height:1.7; color:rgba(255,255,255,0.75);
   }
-  .etym-modal-body h3:first-child { margin-top:0; }
-  .etym-root-chips {
-    display:flex; flex-wrap:wrap; gap:7px; margin:10px 0;
+  .rootword-loading {
+    display:flex; align-items:center; gap:8px; color:rgba(191,0,255,0.7);
+    font-family:'Space Mono',monospace; font-size:0.72rem;
   }
-  .etym-chip {
-    display:inline-flex; flex-direction:column; align-items:center;
-    padding:7px 13px; border-radius:12px;
-    background:rgba(191,0,255,0.08); border:1px solid rgba(191,0,255,0.25);
-    font-family:'Space Mono',monospace;
-  }
-  .etym-chip-root { font-size:0.82rem; font-weight:700; color:var(--neon-purple); }
-  .etym-chip-lang { font-size:0.58rem; color:rgba(255,255,255,0.35); letter-spacing:0.08em; margin-top:1px; }
-  .etym-chip-meaning { font-size:0.68rem; color:rgba(255,255,255,0.55); margin-top:2px; }
-  .etym-related {
-    display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;
-  }
-  .etym-related-word {
-    font-size:0.72rem; padding:3px 10px; border-radius:20px;
-    background:rgba(0,245,255,0.07); border:1px solid rgba(0,245,255,0.18);
-    color:var(--neon-cyan); font-family:'Space Mono',monospace;
-  }
-  .etym-modal-footer {
-    padding:14px 24px; border-top:1px solid rgba(255,255,255,0.06);
-    display:flex; justify-content:flex-end; flex-shrink:0;
-  }
-  .etym-close-btn {
-    padding:9px 22px; border-radius:20px; border:1px solid rgba(255,255,255,0.12);
-    background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.5);
-    font-family:'Space Mono',monospace; font-size:0.72rem; cursor:pointer;
-    transition:all 0.18s; letter-spacing:0.06em;
-  }
-  .etym-close-btn:hover { border-color:rgba(191,0,255,0.4); color:var(--neon-purple); }
-  .etym-loading-state {
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    padding:40px 24px; gap:14px; color:rgba(255,255,255,0.35);
-    font-family:'Space Mono',monospace; font-size:0.75rem; letter-spacing:0.06em;
-  }
-  .etym-spinner {
-    width:36px; height:36px; border:3px solid rgba(191,0,255,0.2);
+  @keyframes rootSpin { to { transform:rotate(360deg); } }
+  .rootword-spinner {
+    width:14px; height:14px; border:2px solid rgba(191,0,255,0.2);
     border-top-color:var(--neon-purple); border-radius:50%;
-    animation:spin 0.8s linear infinite;
+    animation:rootSpin 0.8s linear infinite; flex-shrink:0;
   }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  .etym-error-state {
-    padding:30px 24px; text-align:center; color:rgba(255,0,110,0.7);
-    font-size:0.78rem; line-height:1.6;
+  .rootword-error { color:rgba(255,0,110,0.8); font-size:0.78rem; }
+  .rootword-no-key {
+    color:rgba(255,230,0,0.8); font-size:0.78rem; line-height:1.6;
+  }
+  .rootword-section { margin-bottom:12px; }
+  .rootword-section-label {
+    font-size:0.58rem; letter-spacing:0.15em; text-transform:uppercase;
+    color:rgba(191,0,255,0.5); font-family:'Space Mono',monospace; margin-bottom:4px;
+  }
+  .rootword-section-content { color:rgba(255,255,255,0.8); font-size:0.82rem; line-height:1.7; }
+  .rootword-tag {
+    display:inline-block; padding:2px 10px; border-radius:999px;
+    background:rgba(191,0,255,0.1); border:1px solid rgba(191,0,255,0.25);
+    color:var(--neon-purple); font-family:'Space Mono',monospace;
+    font-size:0.65rem; margin-right:5px; margin-bottom:4px; letter-spacing:0.06em;
   }
 
   /* ── ARTICLE DRAWER ── */
@@ -930,7 +897,7 @@ const IDB = (() => {
 
   /* LOGIN OVERLAY */
   .login-overlay {
-    display:none; position:fixed; inset:0; z-index:9000;
+    display:none; position:fixed; inset:0; z-index:200;
     background:rgba(5,5,15,0.95); backdrop-filter:blur(10px);
     align-items:center; justify-content:center; flex-direction:column; gap:24px;
   }
@@ -1113,7 +1080,7 @@ const IDB = (() => {
 
   /* ===== LOGIN OVERLAY ===== */
   .login-overlay {
-    display:none; position:fixed; inset:0; z-index:9000;
+    display:none; position:fixed; inset:0; z-index:200;
     background:rgba(5,5,15,0.96); backdrop-filter:blur(12px);
     align-items:center; justify-content:center;
   }
@@ -1172,7 +1139,7 @@ const IDB = (() => {
 
   /* ===== ACCESS DENIED ===== */
   .access-denied-overlay {
-    display:none; position:fixed; inset:0; z-index:9001;
+    display:none; position:fixed; inset:0; z-index:205;
     background:rgba(5,5,15,0.97); backdrop-filter:blur(12px);
     align-items:center; justify-content:center;
   }
@@ -2228,27 +2195,30 @@ const IDB = (() => {
           <button class="admin-save-btn" id="adminSaveCelebrate" onclick="adminSaveCelebrateSettings()">✓ Lưu cài đặt chúc mừng</button>
         </div>
 
-        <!-- ── MAVIS API KEY ── -->
-        <div class="admin-settings-card" style="border-color:rgba(191,0,255,0.2)">
-          <div class="admin-settings-card-title" style="color:var(--neon-purple)">🔑 MAVIS API Key</div>
-          <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);line-height:1.6;margin-bottom:14px">
-            Key dùng chung cho toàn hệ thống. Được lưu trên Firestore, áp dụng cho tất cả người dùng.<br>
-            Lấy key tại <a href="https://mavis.io.vn" target="_blank" style="color:var(--neon-purple);text-decoration:none">mavis.io.vn</a> · Endpoint: <code style="color:rgba(191,0,255,0.7);font-size:0.68rem">https://mavis.io.vn/v1/messages</code>
+        <!-- Card 3: MAVIS API Key -->
+        <div class="admin-settings-card">
+          <div class="admin-settings-card-title">🔑 Cài đặt API – Root Word</div>
+          <div class="admin-settings-row">
+            <div>
+              <div class="admin-settings-label">MAVIS API Key</div>
+              <div class="admin-settings-sub">Dùng để tra gốc từ qua Claude AI</div>
+            </div>
           </div>
-          <div style="display:flex;gap:10px;align-items:stretch">
-            <input type="password" id="mavisApiKeyInput" placeholder="mavis-xxxxxxxx"
-              style="flex:1;background:rgba(191,0,255,0.05);border:1px solid rgba(191,0,255,0.25);border-radius:10px;
-                     padding:10px 14px;color:#fff;font-family:'Space Mono',monospace;font-size:0.82rem;
-                     outline:none;transition:border-color 0.2s"
-              onfocus="this.style.borderColor='rgba(191,0,255,0.55)'"
-              onblur="this.style.borderColor='rgba(191,0,255,0.25)'"
-              onkeydown="if(event.key==='Enter')adminSaveMavisKey()">
-            <button onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password';this.textContent=this.previousElementSibling.type==='password'?'👁':'🙈'"
-              style="padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;cursor:pointer;font-size:0.9rem;color:rgba(255,255,255,0.4);transition:all 0.18s"
-              title="Hiện/ẩn key">👁</button>
+          <div style="margin-top:10px">
+            <input type="password" id="adminMavisApiKey" placeholder="mavis-xxxxxxxx"
+              style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+                     border-radius:10px;padding:10px 14px;color:#fff;font-size:0.82rem;
+                     font-family:'Space Mono',monospace;outline:none;transition:border-color 0.2s;
+                     letter-spacing:0.05em;">
           </div>
-          <div id="mavisKeyStatus" style="font-size:0.68rem;margin-top:8px;min-height:18px;font-family:'Space Mono',monospace;letter-spacing:0.04em"></div>
-          <button class="admin-save-btn" id="adminSaveMavisKey" onclick="adminSaveMavisKey()" style="margin-top:12px;border-color:rgba(191,0,255,0.4);color:var(--neon-purple)">✓ Lưu API Key</button>
+          <div style="margin-top:10px;padding:10px 14px;background:rgba(0,0,0,0.25);border-radius:10px;
+                      font-size:0.7rem;color:rgba(255,255,255,0.35);line-height:1.8">
+            API Key lấy từ <a href="https://mavis.io.vn/dashboard" target="_blank"
+              style="color:rgba(191,0,255,0.7);text-decoration:none">mavis.io.vn/dashboard</a><br>
+            Key được lưu cục bộ trên trình duyệt (localStorage).<br>
+            Endpoint: <span style="color:rgba(0,245,255,0.5);font-family:'Space Mono',monospace;font-size:0.65rem">https://mavis.io.vn/v1/messages</span>
+          </div>
+          <button class="admin-save-btn" id="adminSaveMavisKey" onclick="adminSaveMavisApiKey()" style="margin-top:12px">✓ Lưu API Key</button>
         </div>
 
       </div>
@@ -2304,25 +2274,6 @@ const IDB = (() => {
     <div class="challenge-modal-actions">
       <button class="btn-primary" style="flex:1;justify-content:center" onclick="saveChallenge()">✓ Tạo thử thách</button>
       <button class="btn-cancel" onclick="closeChallengeModal()">✕ Hủy</button>
-    </div>
-  </div>
-</div>
-
-<!-- ETYMOLOGY MODAL -->
-<div class="etym-overlay" id="etymOverlay" onclick="if(event.target===this)closeEtymModal()">
-  <div class="etym-modal" id="etymModal">
-    <div class="etym-modal-header">
-      <div class="etym-modal-tag">🌱 Gốc từ · Etymology</div>
-      <div class="etym-modal-word" id="etymModalWord">—</div>
-    </div>
-    <div class="etym-modal-body" id="etymModalBody">
-      <div class="etym-loading-state">
-        <div class="etym-spinner"></div>
-        <span>Đang tra gốc từ...</span>
-      </div>
-    </div>
-    <div class="etym-modal-footer">
-      <button class="etym-close-btn" onclick="closeEtymModal()">✕ Đóng</button>
     </div>
   </div>
 </div>
@@ -3580,10 +3531,8 @@ function renderFlashcard() {
             </div>
           `}
           ${c.example?`<div class="fc-example" style="margin-top:6px" onclick="event.stopPropagation()">🗣 ${h(c.example)}</div>`:''}
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" onclick="event.stopPropagation()">
-            <button class="fc-art-btn" onclick="openArtDrawer(studyQueue[currentIndex]);event.stopPropagation()">📰 xem ngữ cảnh báo chí →</button>
-            <button class="fc-etym-btn" id="etymBtnFront" onclick="openEtymModal('${c.word.replace(/'/g,\"\\'\").replace(/\`/g,\"\\\`\")}');event.stopPropagation()">🌱 Gốc từ</button>
-          </div>
+          <button class="fc-art-btn" onclick="openArtDrawer(studyQueue[currentIndex]);event.stopPropagation()">📰 xem ngữ cảnh báo chí →</button>
+          <button class="fc-root-btn" onclick="openRootWord(studyQueue[currentIndex]);event.stopPropagation()">🌱 Root word →</button>
         </div>
         <div class="fc-face fc-back">
           <div class="fc-hint">${reversedMode ? 'Tiếng Anh' : 'Nghĩa tiếng Việt'}</div>
@@ -3611,10 +3560,8 @@ function renderFlashcard() {
             : (c.example_vi ? `<div class="fc-example" style="margin-top:6px" onclick="event.stopPropagation()">🗣 ${h(c.example_vi)}</div>`
                : c.example  ? `<div class="fc-example" style="margin-top:6px" onclick="event.stopPropagation()">🗣 ${h(c.example)}</div>` : '')
           }
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" onclick="event.stopPropagation()">
-            <button class="fc-art-btn" onclick="openArtDrawer(studyQueue[currentIndex]);event.stopPropagation()">📰 xem ngữ cảnh báo chí →</button>
-            <button class="fc-etym-btn" id="etymBtnBack" onclick="openEtymModal('${c.word.replace(/'/g,\"\\'\").replace(/\`/g,\"\\\`\")}');event.stopPropagation()">🌱 Gốc từ</button>
-          </div>
+          <button class="fc-art-btn" onclick="openArtDrawer(studyQueue[currentIndex]);event.stopPropagation()">📰 xem ngữ cảnh báo chí →</button>
+          <button class="fc-root-btn" onclick="openRootWord(studyQueue[currentIndex]);event.stopPropagation()">🌱 Root word →</button>
         </div>
         <!-- Sizer: đẩy chiều cao theo nội dung thực của mặt front -->
         <div class="fc-sizer" aria-hidden="true">
@@ -3625,7 +3572,7 @@ function renderFlashcard() {
           ${c.level     ? `<div class="fc-level"    style="opacity:0">_</div>` : ''}
           <div class="fc-speak-row" style="opacity:0"><button class="fc-speak-btn fc-speak-us">🔊 US</button><button class="fc-speak-btn fc-speak-uk">🔊 UK</button></div>
           ${c.example   ? `<div class="fc-example"  style="opacity:0">🗣 ${h(c.example)}</div>` : ''}
-          <button class="fc-art-btn" style="opacity:0">📰 xem ngữ cảnh báo chí →</button><button class="fc-etym-btn" style="opacity:0">🌱 Gốc từ</button>
+          <button class="fc-art-btn" style="opacity:0">📰 xem ngữ cảnh báo chí →</button>
         </div>
       </div>
     </div>
@@ -3866,31 +3813,14 @@ async function checkAccess(user) {
 async function signInWithGoogle() {
   const msgEl = document.getElementById('loginStatusMsg');
   if (msgEl) { msgEl.textContent = '⟳ Đang đăng nhập...'; msgEl.style.color = 'rgba(255,255,255,0.4)'; }
-
-  // Chờ Firebase ready nếu chưa xong
-  if (!window._firebaseReady || !window._GoogleAuthProvider) {
-    await new Promise(resolve => window.addEventListener('firebase-ready', resolve, { once: true }));
-  }
-
   try {
     const provider = new window._GoogleAuthProvider();
-    // Dùng redirect thay popup — hoạt động ổn định hơn trên mọi browser/hosting
-    await window._signInWithRedirect(window._auth, provider);
+    await window._signInWithPopup(window._auth, provider);
   } catch(e) {
-    if (msgEl) { msgEl.textContent = '✕ Đăng nhập thất bại: ' + e.message; msgEl.style.color = 'var(--neon-pink)'; }
-  }
-}
-
-// Xử lý kết quả redirect khi quay về trang
-async function _handleRedirectResult() {
-  if (!window._getRedirectResult) return;
-  try {
-    const result = await window._getRedirectResult(window._auth);
-    // onAuthStateChanged sẽ tự xử lý user sau redirect
-  } catch(e) {
-    if (e.code !== 'auth/cancelled-popup-request') {
-      const msgEl = document.getElementById('loginStatusMsg');
-      if (msgEl) { msgEl.textContent = '✕ ' + e.message; msgEl.style.color = 'var(--neon-pink)'; }
+    if (e.code !== 'auth/popup-closed-by-user') {
+      if (msgEl) { msgEl.textContent = '✕ Đăng nhập thất bại: ' + e.message; msgEl.style.color = 'var(--neon-pink)'; }
+    } else {
+      if (msgEl) { msgEl.textContent = ''; }
     }
   }
 }
@@ -4749,6 +4679,9 @@ function _adminLoadSettingsUI() {
   set('xpSet-STREAK_7',  v.STREAK_BONUS[7]  || 5);
   set('xpSet-STREAK_14', v.STREAK_BONUS[14] || 10);
   set('xpSet-STREAK_21', v.STREAK_BONUS[21] || 20);
+  // Load MAVIS API Key
+  const keyEl = document.getElementById('adminMavisApiKey');
+  if (keyEl) keyEl.value = localStorage.getItem('lexon_mavis_api_key') || '';
 }
 
 async function adminSaveXPValues() {
@@ -5485,7 +5418,6 @@ async function handleAuthChange(user) {
 
 // Tự khởi động khi Firebase sẵn sàng
 window.addEventListener('firebase-ready', () => {
-  _handleRedirectResult(); // xử lý kết quả sau redirect login
   handleAuthChange(window._currentUser);
 });
 
@@ -6257,6 +6189,20 @@ if (!navigator.onLine) _showOfflineBanner(true);
 
   </div>
 
+  <!-- ROOT WORD MODAL -->
+  <div class="rootword-overlay" id="rootwordOverlay" onclick="if(event.target===this)closeRootWord()">
+    <div class="rootword-modal">
+      <div class="rootword-header">
+        <div class="rootword-title">🌱 Root Word</div>
+        <button class="rootword-close" onclick="closeRootWord()">✕</button>
+      </div>
+      <div class="rootword-word" id="rootwordTitle">—</div>
+      <div class="rootword-body" id="rootwordBody">
+        <div class="rootword-loading"><div class="rootword-spinner"></div> Đang tra cứu...</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ARTICLE DRAWER -->
   <div class="art-overlay" id="artOverlay" onclick="if(event.target===this)closeArtDrawer()">
     <div class="art-drawer">
@@ -6319,6 +6265,164 @@ function toggleArt(i) {
 function closeArtDrawer() {
   document.getElementById('artOverlay').classList.remove('open');
 }
+
+// ── ROOT WORD FEATURE ──
+const MAVIS_BASE_URL = 'https://mavis.io.vn';
+const ROOTWORD_CACHE = {};
+
+function getMavisApiKey() {
+  return localStorage.getItem('lexon_mavis_api_key') || '';
+}
+
+function openRootWord(wordObj) {
+  if (!wordObj) return;
+  const word = wordObj.word || '';
+  const overlay = document.getElementById('rootwordOverlay');
+  const titleEl = document.getElementById('rootwordTitle');
+  const bodyEl  = document.getElementById('rootwordBody');
+
+  titleEl.textContent = word;
+  overlay.classList.add('show');
+
+  const apiKey = getMavisApiKey();
+  if (!apiKey) {
+    bodyEl.innerHTML = `<div class="rootword-no-key">
+      ⚠ Chưa có API Key.<br>
+      Vui lòng vào <strong>Admin → Cài đặt → MAVIS API Key</strong> để nhập key.<br>
+      <br>Lấy key miễn phí tại <a href="https://mavis.io.vn/register" target="_blank"
+        style="color:rgba(191,0,255,0.8)">mavis.io.vn/register</a>
+    </div>`;
+    return;
+  }
+
+  if (ROOTWORD_CACHE[word]) {
+    renderRootWordResult(bodyEl, ROOTWORD_CACHE[word]);
+    return;
+  }
+
+  bodyEl.innerHTML = `<div class="rootword-loading"><div class="rootword-spinner"></div> Đang tra cứu gốc từ...</div>`;
+  fetchRootWord(word, apiKey)
+    .then(result => {
+      ROOTWORD_CACHE[word] = result;
+      renderRootWordResult(bodyEl, result);
+    })
+    .catch(err => {
+      bodyEl.innerHTML = `<div class="rootword-error">✕ Lỗi: ${err.message}</div>`;
+    });
+}
+
+async function fetchRootWord(word, apiKey) {
+  const prompt = `Analyze the English word "${word}" and provide its etymology/root word information in Vietnamese. Respond ONLY with a valid JSON object (no markdown, no backticks) with this exact structure:
+{
+  "root": "the main root/origin of the word",
+  "origin_language": "Latin/Greek/Old English/etc",
+  "root_meaning": "original meaning of the root in Vietnamese",
+  "word_parts": [{"part": "prefix/root/suffix", "meaning": "its meaning"}],
+  "related_words": ["word1", "word2", "word3"],
+  "explanation": "2-3 sentence explanation in Vietnamese about the word's etymology and how knowing the root helps remember it"
+}`;
+
+  const res = await fetch(`${MAVIS_BASE_URL}/v1/messages`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(()=>'');
+    if (res.status === 401) throw new Error('API Key không hợp lệ (401)');
+    if (res.status === 402) throw new Error('Hết quota, vui lòng nâng cấp gói MAVIS (402)');
+    throw new Error(`Lỗi server ${res.status}: ${errText.slice(0,120)}`);
+  }
+
+  const data = await res.json();
+  const rawText = (data.content || []).map(b => b.text || '').join('');
+  const clean = rawText.replace(/```json|```/g, '').trim();
+  try {
+    return JSON.parse(clean);
+  } catch(e) {
+    return { explanation: rawText, root: '', origin_language: '', root_meaning: '', word_parts: [], related_words: [] };
+  }
+}
+
+function renderRootWordResult(container, data) {
+  let html = '';
+
+  if (data.root) {
+    html += `<div class="rootword-section">
+      <div class="rootword-section-label">Gốc từ</div>
+      <div class="rootword-section-content">
+        <strong style="color:var(--neon-purple);font-size:1rem">${h(data.root)}</strong>
+        ${data.origin_language ? `<span style="margin-left:8px;color:rgba(255,255,255,0.35);font-size:0.72rem">(${h(data.origin_language)})</span>` : ''}
+      </div>
+    </div>`;
+  }
+
+  if (data.root_meaning) {
+    html += `<div class="rootword-section">
+      <div class="rootword-section-label">Nghĩa gốc</div>
+      <div class="rootword-section-content">${h(data.root_meaning)}</div>
+    </div>`;
+  }
+
+  if (data.word_parts && data.word_parts.length > 0) {
+    const parts = data.word_parts.map(p =>
+      `<span class="rootword-tag">${h(p.part)}</span><span style="color:rgba(255,255,255,0.45);font-size:0.72rem;margin-right:10px"> = ${h(p.meaning)}</span>`
+    ).join('');
+    html += `<div class="rootword-section">
+      <div class="rootword-section-label">Cấu trúc từ</div>
+      <div class="rootword-section-content" style="line-height:2">${parts}</div>
+    </div>`;
+  }
+
+  if (data.explanation) {
+    html += `<div class="rootword-section">
+      <div class="rootword-section-label">Giải thích</div>
+      <div class="rootword-section-content">${h(data.explanation)}</div>
+    </div>`;
+  }
+
+  if (data.related_words && data.related_words.length > 0) {
+    const tags = data.related_words.map(w => `<span class="rootword-tag">${h(w)}</span>`).join('');
+    html += `<div class="rootword-section">
+      <div class="rootword-section-label">Từ liên quan</div>
+      <div class="rootword-section-content">${tags}</div>
+    </div>`;
+  }
+
+  if (!html) {
+    html = `<div class="rootword-section-content">${h(data.explanation || 'Không tìm thấy thông tin.')}</div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+function closeRootWord() {
+  document.getElementById('rootwordOverlay').classList.remove('show');
+}
+
+// Admin: save MAVIS API Key
+function adminSaveMavisApiKey() {
+  if (!isAdmin()) return;
+  const key = (document.getElementById('adminMavisApiKey')?.value || '').trim();
+  if (key) {
+    localStorage.setItem('lexon_mavis_api_key', key);
+  } else {
+    localStorage.removeItem('lexon_mavis_api_key');
+  }
+  const btn = document.getElementById('adminSaveMavisKey');
+  if (btn) { btn.textContent = '✓ Đã lưu!'; btn.classList.add('saved'); setTimeout(() => { btn.textContent = '✓ Lưu API Key'; btn.classList.remove('saved'); }, 2000); }
+}
+
+
 // ── CONTEXT FILE UPLOAD (Admin) ──
 function handleDragOver2(e) { e.preventDefault(); document.getElementById('ctxDropzone').classList.add('drag-over'); }
 function handleDragLeave2() { document.getElementById('ctxDropzone').classList.remove('drag-over'); }
@@ -7214,164 +7318,8 @@ function dlVkbReset() {
   if (disp) disp.className = 'dl-vkb-display';
 }
 
-// ============================================================
-//  MAVIS API KEY — Admin save/load
-// ============================================================
-async function adminSaveMavisKey() {
-  const input = document.getElementById('mavisApiKeyInput');
-  const status = document.getElementById('mavisKeyStatus');
-  const btn = document.getElementById('adminSaveMavisKey');
-  const key = input.value.trim();
-
-  if (!key) { status.textContent = '✕ Vui lòng nhập key'; status.style.color = 'var(--neon-pink)'; return; }
-  if (!key.startsWith('mavis-') && !key.startsWith('sk-')) {
-    status.textContent = '⚠ Key thường bắt đầu bằng "mavis-"'; status.style.color = 'var(--neon-yellow)';
-  }
-
-  btn.textContent = '⏳ Đang lưu...'; btn.disabled = true;
-  try {
-    const db = window._db, docFn = window._doc, setDocFn = window._setDoc;
-    await setDocFn(docFn(db, 'system', 'config'), { mavisApiKey: key }, { merge: true });
-    status.textContent = '✓ Đã lưu thành công!'; status.style.color = 'var(--neon-green)';
-    window._mavisApiKey = key; // cache in memory
-    input.value = ''; input.placeholder = key.slice(0, 10) + '••••••••';
-  } catch(e) {
-    status.textContent = '✕ Lỗi lưu: ' + e.message; status.style.color = 'var(--neon-pink)';
-  }
-  btn.textContent = '✓ Lưu API Key'; btn.disabled = false;
-}
-
-async function mavisGetKey() {
-  if (window._mavisApiKey) return window._mavisApiKey;
-  try {
-    const db = window._db, docFn = window._doc, getDocFn = window._getDoc;
-    const snap = await getDocFn(docFn(db, 'system', 'config'));
-    if (snap.exists()) {
-      window._mavisApiKey = snap.data().mavisApiKey || null;
-      return window._mavisApiKey;
-    }
-  } catch(e) { console.warn('mavisGetKey error:', e); }
-  return null;
-}
-
-// Load key vào input khi mở Admin Settings tab
-const _origSwitchAdminTab = window.switchAdminTab;
-// Hook after switchAdminTab loads (defined later) — use event-based approach
-function _mavisLoadKeyToInput() {
-  mavisGetKey().then(key => {
-    if (!key) return;
-    const inp = document.getElementById('mavisApiKeyInput');
-    if (inp) { inp.placeholder = key.slice(0, 10) + '••••••••'; }
-  });
-}
-
-// ============================================================
-//  ETYMOLOGY MODAL
-// ============================================================
-let _etymCache = {}; // word → html content
-
-function openEtymModal(word) {
-  if (!word) return;
-  const overlay = document.getElementById('etymOverlay');
-  const wordEl  = document.getElementById('etymModalWord');
-  const bodyEl  = document.getElementById('etymModalBody');
-
-  wordEl.textContent = word;
-  overlay.classList.add('show');
-
-  // Cache hit
-  if (_etymCache[word.toLowerCase()]) {
-    bodyEl.innerHTML = _etymCache[word.toLowerCase()];
-    return;
-  }
-
-  // Loading state
-  bodyEl.innerHTML = '<div class="etym-loading-state"><div class="etym-spinner"></div><span>Đang tra gốc từ...</span></div>';
-
-  _fetchEtymology(word).then(html => {
-    _etymCache[word.toLowerCase()] = html;
-    // Check modal still open for same word
-    if (document.getElementById('etymModalWord').textContent === word) {
-      bodyEl.innerHTML = html;
-    }
-  }).catch(err => {
-    bodyEl.innerHTML = `<div class="etym-error-state">⚠ Không thể tra gốc từ lúc này.<br><span style="font-size:0.7rem;opacity:0.6">${err.message}</span></div>`;
-  });
-}
-
-function closeEtymModal() {
-  document.getElementById('etymOverlay').classList.remove('show');
-}
-
-async function _fetchEtymology(word) {
-  const apiKey = await mavisGetKey();
-  if (!apiKey) throw new Error('Chưa có MAVIS API Key. Admin vui lòng cài đặt trong phần ⚙ Admin → Cài đặt.');
-
-  const prompt = `Bạn là chuyên gia ngôn ngữ học. Hãy tra cứu etymology (gốc từ) của từ tiếng Anh: "${word}"
-
-Trả lời ĐÚNG theo cấu trúc HTML sau (không thêm gì ngoài HTML):
-
-<h3>Nguồn gốc</h3>
-<p>[Giải thích ngắn gọn 2-3 câu về nguồn gốc từ này, bằng tiếng Việt]</p>
-
-<h3>Các thành phần gốc</h3>
-<div class="etym-root-chips">
-  [Với MỖI gốc từ, tạo một chip:]
-  <div class="etym-chip">
-    <span class="etym-chip-root">[gốc từ gốc]</span>
-    <span class="etym-chip-lang">[ngôn ngữ gốc, VD: Latin, Greek, Old English]</span>
-    <span class="etym-chip-meaning">[nghĩa gốc]</span>
-  </div>
-</div>
-
-<h3>Biến đổi qua thời gian</h3>
-<p>[Mô tả ngắn gọn từ đã biến đổi như thế nào qua các thế kỷ]</p>
-
-<h3>Từ cùng gốc</h3>
-<div class="etym-related">
-  [Liệt kê 4-6 từ tiếng Anh cùng gốc:]
-  <span class="etym-related-word">[từ]</span>
-</div>
-
-Chỉ trả về HTML, không markdown, không giải thích thêm.`;
-
-  const resp = await fetch('https://mavis.io.vn/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4.5',
-      max_tokens: 900,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
-
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({}));
-    if (resp.status === 402) throw new Error('Hết quota MAVIS. Vui lòng kiểm tra tài khoản.');
-    if (resp.status === 401) throw new Error('API Key không hợp lệ.');
-    throw new Error(err.error?.message || `HTTP ${resp.status}`);
-  }
-
-  const data = await resp.json();
-  const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-  // Strip any accidental markdown fences
-  return text.replace(/```html?|```/gi, '').trim();
-}
-
-// Hook switchAdminTab to load key preview when settings tab opens
-document.addEventListener('DOMContentLoaded', () => {
-  const origSwitch = window.switchAdminTab;
-  if (typeof origSwitch === 'function') {
-    window.switchAdminTab = function(tab) {
-      origSwitch(tab);
-      if (tab === 'settings') _mavisLoadKeyToInput();
-    };
-  }
-});
+// ── Exit button smart handler ──
+function dlExitOrSummary() {
   const session = document.getElementById('dlSession');
   const isInSession = session && session.style.display !== 'none';
   if (isInSession && dlWordsCount > 0) {
