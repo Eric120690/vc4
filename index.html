@@ -372,8 +372,8 @@ const IDB = (() => {
   .challenge-status-tag.failed { background:rgba(255,0,110,0.1); border:1px solid rgba(255,0,110,0.3); color:var(--neon-pink); }
   .btn-challenge-create { font-size:0.7rem; background:rgba(255,255,255,0.04); border:1px dashed rgba(255,255,255,0.15); color:rgba(255,255,255,0.35); padding:6px 14px; border-radius:999px; cursor:pointer; transition:all 0.2s; font-family:'Space Mono',monospace; letter-spacing:0.05em; }
   .btn-challenge-create:hover { border-color:rgba(255,230,0,0.4); color:var(--neon-yellow); }
-  .challenge-modal-overlay { position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s; }
-  .challenge-modal-overlay.show { opacity:1; pointer-events:all; }
+  .challenge-modal-overlay { position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; transition:opacity 0.25s; }
+  .challenge-modal-overlay.show { display:flex; opacity:1; pointer-events:all; }
   .challenge-modal { background:#0d0d1f; border:1px solid rgba(255,230,0,0.2); border-radius:20px; padding:28px; width:100%; max-width:400px; margin:16px; transform:translateY(16px); transition:transform 0.25s; }
   .challenge-modal-overlay.show .challenge-modal { transform:translateY(0); }
   .challenge-modal-title { font-size:0.9rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--neon-yellow); margin-bottom:18px; }
@@ -3864,6 +3864,12 @@ async function checkAccess(user) {
 async function signInWithGoogle() {
   const msgEl = document.getElementById('loginStatusMsg');
   if (msgEl) { msgEl.textContent = '⟳ Đang đăng nhập...'; msgEl.style.color = 'rgba(255,255,255,0.4)'; }
+
+  // Chờ Firebase ready nếu chưa xong
+  if (!window._firebaseReady || !window._GoogleAuthProvider) {
+    await new Promise(resolve => window.addEventListener('firebase-ready', resolve, { once: true }));
+  }
+
   try {
     const provider = new window._GoogleAuthProvider();
     await window._signInWithPopup(window._auth, provider);
