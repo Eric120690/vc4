@@ -4681,7 +4681,7 @@ function _adminLoadSettingsUI() {
   set('xpSet-STREAK_21', v.STREAK_BONUS[21] || 20);
   // Load MAVIS API Key
   const keyEl = document.getElementById('adminMavisApiKey');
-  if (keyEl) keyEl.value = localStorage.getItem('lexon_mavis_api_key') || '';
+  if (keyEl) keyEl.value = _mavisApiKey || '';
 }
 
 async function adminSaveXPValues() {
@@ -5459,6 +5459,7 @@ const XP_MILESTONES = _getMilestones();
 
 // Celebrate config — load từ Firestore appConfig, fallback về default
 let CELEBRATE_EVERY = 5;  // cứ N từ đã thuộc → chúc mừng
+let _mavisApiKey = '';  // load từ Firestore appConfig, chỉ admin mới set
 let _totalMasteredSession = 0; // đếm tổng từ đã thuộc trong session (kể cả reset)
 
 async function _loadAppConfig() {
@@ -5476,6 +5477,7 @@ async function _loadAppConfig() {
         if (d.xpValues.STREAK_BONUS !== undefined) XP_VALUES.STREAK_BONUS = d.xpValues.STREAK_BONUS;
       }
       if (d.celebrateEvery !== undefined) CELEBRATE_EVERY = d.celebrateEvery;
+      if (d.mavisApiKey      !== undefined) _mavisApiKey      = d.mavisApiKey;
     }
   } catch(e) { console.warn('[AppConfig] load error', e); }
 }
@@ -6268,13 +6270,19 @@ function closeArtDrawer() {
 
 // ── ROOT WORD FEATURE ──
 const MAVIS_BASE_URL = 'https://mavis.io.vn';
+// In-memory cache (session), tránh re-fetch trong cùng 1 phiên
 const ROOTWORD_CACHE = {};
 
 function getMavisApiKey() {
-  return localStorage.getItem('lexon_mavis_api_key') || '';
+  return _mavisApiKey || '';
 }
 
-function openRootWord(wordObj) {
+// Lấy key Firestore-safe: lowercase, chỉ giữ a-z0-9_
+function _rootWordDocKey(word) {
+  return word.toLowerCase().replace(/[^a-z0-9]/g, '_');
+}
+
+async function openRootWord(wordObj) {
   if (!wordObj) return;
   const word = wordObj.word || '';
   const overlay = document.getElementById('rootwordOverlay');
@@ -6286,41 +6294,59 @@ function openRootWord(wordObj) {
 
   const apiKey = getMavisApiKey();
   if (!apiKey) {
-    bodyEl.innerHTML = `<div class="rootword-no-key">
-      ⚠ Chưa có API Key.<br>
-      Vui lòng vào <strong>Admin → Cài đặt → MAVIS API Key</strong> để nhập key.<br>
-      <br>Lấy key miễn phí tại <a href="https://mavis.io.vn/register" target="_blank"
-        style="color:rgba(191,0,255,0.8)">mavis.io.vn/register</a>
-    </div>`;
+    bodyEl.innerHTML = '<div class="rootword-no-key">🚧 Tính năng này chưa được cập nhật.</div>';
     return;
   }
 
+  // 1. Check in-memory cache trước (nhanh nhất)
   if (ROOTWORD_CACHE[word]) {
     renderRootWordResult(bodyEl, ROOTWORD_CACHE[word]);
     return;
   }
 
+  bodyEl.innerHTML = `<div class="rootword-loading"><div class="rootword-spinner"></div> Đang tải...</div>`;
+
+  // 2. Check Firestore cache
+  try {
+    const docKey = _rootWordDocKey(word);
+    const ref = window._doc(window._db, 'rootWords', docKey);
+    const snap = await window._getDoc(ref);
+    if (snap.exists()) {
+      const cached = snap.data();
+      ROOTWORD_CACHE[word] = cached;
+      renderRootWordResult(bodyEl, cached);
+      return;
+    }
+  } catch(e) {
+    console.warn('[RootWord] Firestore read error', e);
+  }
+
+  // 3. Gọi API nếu chưa có trong DB
   bodyEl.innerHTML = `<div class="rootword-loading"><div class="rootword-spinner"></div> Đang tra cứu gốc từ...</div>`;
-  fetchRootWord(word, apiKey)
-    .then(result => {
-      ROOTWORD_CACHE[word] = result;
-      renderRootWordResult(bodyEl, result);
-    })
-    .catch(err => {
-      bodyEl.innerHTML = `<div class="rootword-error">✕ Lỗi: ${err.message}</div>`;
-    });
+  try {
+    const result = await fetchRootWord(word, apiKey);
+    // Lưu vào in-memory cache
+    ROOTWORD_CACHE[word] = result;
+    // Lưu vào Firestore để dùng lại sau
+    try {
+      const docKey = _rootWordDocKey(word);
+      await window._setDoc(
+        window._doc(window._db, 'rootWords', docKey),
+        { ...result, _word: word, _savedAt: Date.now() }
+      );
+    } catch(e) {
+      console.warn('[RootWord] Firestore write error', e);
+    }
+    renderRootWordResult(bodyEl, result);
+  } catch(err) {
+    bodyEl.innerHTML = `<div class="rootword-error">✕ Lỗi: ${err.message}</div>`;
+  }
 }
 
 async function fetchRootWord(word, apiKey) {
-  const prompt = `Analyze the English word "${word}" and provide its etymology/root word information in Vietnamese. Respond ONLY with a valid JSON object (no markdown, no backticks) with this exact structure:
-{
-  "root": "the main root/origin of the word",
-  "origin_language": "Latin/Greek/Old English/etc",
-  "root_meaning": "original meaning of the root in Vietnamese",
-  "word_parts": [{"part": "prefix/root/suffix", "meaning": "its meaning"}],
-  "related_words": ["word1", "word2", "word3"],
-  "explanation": "2-3 sentence explanation in Vietnamese about the word's etymology and how knowing the root helps remember it"
-}`;
+  const systemPrompt = `You are an etymology expert. Respond with ONLY a raw JSON object — no markdown, no code fences, no extra text. JSON keys: root, origin_language, root_meaning, word_parts (array of {part, meaning}), related_words (array of strings), explanation. Use Vietnamese for all explanations.`;
+
+  const userPrompt = `Phân tích từ gốc (etymology) của từ tiếng Anh: "${word}". Trả về JSON với: root (gốc từ), origin_language (ngôn ngữ nguồn), root_meaning (nghĩa gốc tiếng Việt), word_parts (cấu trúc từng phần), related_words (từ cùng gốc), explanation (2-3 câu tiếng Việt giúp nhớ từ).`;
 
   const res = await fetch(`${MAVIS_BASE_URL}/v1/messages`, {
     method: 'POST',
@@ -6332,7 +6358,8 @@ async function fetchRootWord(word, apiKey) {
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }]
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }]
     })
   });
 
@@ -6344,10 +6371,20 @@ async function fetchRootWord(word, apiKey) {
   }
 
   const data = await res.json();
-  const rawText = (data.content || []).map(b => b.text || '').join('');
-  const clean = rawText.replace(/```json|```/g, '').trim();
+  let rawText = '';
+  if (typeof data.content === 'string') {
+    rawText = data.content;
+  } else if (Array.isArray(data.content)) {
+    rawText = data.content.map(b => b.text || (typeof b === 'string' ? b : '')).join('');
+  } else if (data.choices) {
+    rawText = data.choices?.[0]?.message?.content || '';
+  }
+  // Strip markdown fences
+  const clean = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+  // Extract JSON block even if there's surrounding text
+  const jsonMatch = clean.match(/\{[\s\S]*\}/);
   try {
-    return JSON.parse(clean);
+    return JSON.parse(jsonMatch ? jsonMatch[0] : clean);
   } catch(e) {
     return { explanation: rawText, root: '', origin_language: '', root_meaning: '', word_parts: [], related_words: [] };
   }
@@ -6410,16 +6447,19 @@ function closeRootWord() {
 }
 
 // Admin: save MAVIS API Key
-function adminSaveMavisApiKey() {
+async function adminSaveMavisApiKey() {
   if (!isAdmin()) return;
   const key = (document.getElementById('adminMavisApiKey')?.value || '').trim();
-  if (key) {
-    localStorage.setItem('lexon_mavis_api_key', key);
-  } else {
-    localStorage.removeItem('lexon_mavis_api_key');
-  }
-  const btn = document.getElementById('adminSaveMavisKey');
-  if (btn) { btn.textContent = '✓ Đã lưu!'; btn.classList.add('saved'); setTimeout(() => { btn.textContent = '✓ Lưu API Key'; btn.classList.remove('saved'); }, 2000); }
+  _mavisApiKey = key;
+  try {
+    await window._setDoc(
+      window._doc(window._db, 'appConfig', 'scoring'),
+      { mavisApiKey: key },
+      { merge: true }
+    );
+    const btn = document.getElementById('adminSaveMavisKey');
+    if (btn) { btn.textContent = '✓ Đã lưu!'; btn.classList.add('saved'); setTimeout(() => { btn.textContent = '✓ Lưu API Key'; btn.classList.remove('saved'); }, 2000); }
+  } catch(e) { alert('Lỗi lưu API Key: ' + e.message); }
 }
 
 
