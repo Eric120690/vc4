@@ -13,7 +13,7 @@
   import { getFirestore, doc, setDoc, getDoc, deleteDoc, collection, getDocs, query, orderBy, limit,
            enableIndexedDbPersistence }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -55,6 +55,8 @@
   window._limit       = limit;
   window._GoogleAuthProvider = GoogleAuthProvider;
   window._signInWithPopup    = signInWithPopup;
+  window._signInWithRedirect = signInWithRedirect;
+  window._getRedirectResult  = getRedirectResult;
   window._signOut            = signOut;
 
   // Lắng nghe trạng thái đăng nhập
@@ -3872,12 +3874,23 @@ async function signInWithGoogle() {
 
   try {
     const provider = new window._GoogleAuthProvider();
-    await window._signInWithPopup(window._auth, provider);
+    // Dùng redirect thay popup — hoạt động ổn định hơn trên mọi browser/hosting
+    await window._signInWithRedirect(window._auth, provider);
   } catch(e) {
-    if (e.code !== 'auth/popup-closed-by-user') {
-      if (msgEl) { msgEl.textContent = '✕ Đăng nhập thất bại: ' + e.message; msgEl.style.color = 'var(--neon-pink)'; }
-    } else {
-      if (msgEl) { msgEl.textContent = ''; }
+    if (msgEl) { msgEl.textContent = '✕ Đăng nhập thất bại: ' + e.message; msgEl.style.color = 'var(--neon-pink)'; }
+  }
+}
+
+// Xử lý kết quả redirect khi quay về trang
+async function _handleRedirectResult() {
+  if (!window._getRedirectResult) return;
+  try {
+    const result = await window._getRedirectResult(window._auth);
+    // onAuthStateChanged sẽ tự xử lý user sau redirect
+  } catch(e) {
+    if (e.code !== 'auth/cancelled-popup-request') {
+      const msgEl = document.getElementById('loginStatusMsg');
+      if (msgEl) { msgEl.textContent = '✕ ' + e.message; msgEl.style.color = 'var(--neon-pink)'; }
     }
   }
 }
@@ -5472,6 +5485,7 @@ async function handleAuthChange(user) {
 
 // Tự khởi động khi Firebase sẵn sàng
 window.addEventListener('firebase-ready', () => {
+  _handleRedirectResult(); // xử lý kết quả sau redirect login
   handleAuthChange(window._currentUser);
 });
 
